@@ -4,6 +4,47 @@ A NodeJS server app with a combined Angular client.
 
 The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
+## Creating the Angular Service
+
+Create a service with the CLI command ```ng g s services/backendApi```.
+Import that into the app.module.ts file and add it to the providers list.
+Also create two models for a list and details that can be used to check the responses against.
+Since we are using http now we also need to import the HttpClientModule and add it to the imports array in the app.module.ts or we will get a "no provider for" error.
+
+Things have changed a bit in Angular and the first problem here is the difference between using these:
+``` 
+import { Http, Response } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
+```
+
+There is no json in which can be used like this:
+```
+.then(response => response.json() as ListModel[])
+```
+
+The response object is a JSON by default, so there's no need to parse it.  Also, the type checking is done like this ```return this.httpClient.get<ListModel>``` instead of something like this ```getList(): Promise<void | ListModel[]>```
+
+There are other differences in using rxjs.  Doing this import ```import { Observable } from "rxjs/Observable";``` causes this error: *Observable is declared but its value is never read.*  The new Angular 6 way to do this is ```import { Observable } from "rxjs";```.
+
+We can also use an interceptor which allow middleware logic to be inserted in the pipeline as well as listen for progress, but we wont be doing any of that yet.  There is still the question of how to use these http functions.  [This blog](https://www.academind.com/learn/javascript/rxjs-6-what-changed/) has a good intro to what has changed.
+
+There are so many defaults now, that errors don't need to be handled by, ahem, hand.  Everything can be done on one line:
+```
+getList() {return this.httpClient.get<ListModel>(this.backendListUrl).pipe(data => data)}
+```
+
+Still, some might prefer how this looks:
+```
+  getList() {
+    return this.httpClient.get<ListModel>(this.backendListUrl)
+      .pipe(data => data);
+  }
+```  
+
+The next problem then is the port used to develop using ng serve is 4200, but the server is using 5000, so we get this error:
+```GET http://localhost:4200/api/list 404 (Not Found)```
+
+To see if the code works first, we can build the project and restart the server.  It does work, but this is not a great work flow.  What we need is to specify the port for http calls when running on localhost.
 
 
 ## The Beginning
@@ -13,6 +54,8 @@ The base Heroku NodeJS example app was cloned from [this repo](https://github.co
 [This](https://blog.cloudboost.io/run-your-angular-app-on-nodejs-c89f1e99ddd3) was the helpful blog which helped us serve the Angular app using the Heroku base app. It basically shows how to create an array of file types to check for and serve as well as default to the index.html file.
 
 It was decided to deploy the built Angular project instead of having the server build the project because of the need to have the server have all the build tools installed.  A lot of people recommend including all the dev dependencies in the dependencies section of the package.json file, but given the failed first attempt it's simpler to to the dev work locally and just build the project before deploying.
+
+The .gitignore file from the angular project was copied into the node file with the extension of the my-dream-app/ added at the beginning of each path.  This will make sure that the node_modules and other files are not deployed to the server.  The vendor.js file can take between 11 to 15 seconds to load on the server.  The Content-Length is 2941257.  This is not great.
 
 ## Previous Floating Fjord
 
