@@ -10,3 +10,45 @@ npm-debug.log
 # Docker
 Dockerfile
 docker-compose.yml
+
+# Angular App ----------------------------------------------------------
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+my-dream-app/dist
+my-dream-app/tmp
+my-dream-app/out-tsc
+
+# dependencies
+my-dream-app/node_modules
+
+# IDEs and editors
+my-dream-app/.idea
+my-dream-app/.project
+my-dream-app/.classpath
+my-dream-app/.c9/
+my-dream-app/*.launch
+my-dream-app/.settings/
+my-dream-app/*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+my-dream-app/.sass-cache
+my-dream-app/connect.lock
+my-dream-app/coverage
+my-dream-app/libpeerconnection.log
+my-dream-app/npm-debug.log
+my-dream-appyarn-error.log
+my-dream-app/testem.log
+my-dream-app/typings
+
+# System Files
+my-dream-app/.DS_Store
+my-dream-app/Thumbs.db
+
