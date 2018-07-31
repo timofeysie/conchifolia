@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BackendApiService } from './services/backend-api.service';
 import { Observable } from "rxjs";
+import { DetailModel } from './models/detail.model';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +13,13 @@ export class AppComponent {
     this.backendApiService.getList().subscribe(
       data => {
         console.log('data',data);
+        this.list = data['list'];
       },
       error => {
         console.error('error',error);
       }
     );
   }
-  title = 'app';
+  title = 'List of Cognitive Bias';
+  list: DetailModel[];
 }
