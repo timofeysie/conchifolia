@@ -7,7 +7,7 @@
 <ul>
   <div *ngFor="let item of list">
     <li *ngIf="item.cognitive_biasLabel">
-      <h3>{{ item.cognitive_biasLabel }}</h3>
+      <h3 (click)="clickEvent(item.cognitive_biasLabel)">{{ item.cognitive_biasLabel }}</h3>
     </li>
   </div>
 </ul>

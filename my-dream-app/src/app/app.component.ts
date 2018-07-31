@@ -22,4 +22,14 @@ export class AppComponent {
   }
   title = 'List of Cognitive Bias';
   list: DetailModel[];
+  clickEvent(cognitive_biasLabel: string) {
+    this.backendApiService.getDetail(cognitive_biasLabel).subscribe(
+      data => {
+        console.log('data',data);
+      },
+      error => {
+        console.error('error',error);
+      }
+    );
+  }
 }

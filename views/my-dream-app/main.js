@@ -41,7 +41,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h2>\n    {{ title }}\n  </h2>\n</div>\n<ul>\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel\">\n      <h3>{{ item.cognitive_biasLabel }}</h3>\n    </li>\n  </div>\n</ul>\n\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h2>\n    {{ title }}\n  </h2>\n</div>\n<ul>\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel\">\n      <h3 (click)=\"clickEvent(item.cognitive_biasLabel)\">{{ item.cognitive_biasLabel }}</h3>\n    </li>\n  </div>\n</ul>\n\n"
 
 /***/ }),
 
@@ -80,6 +80,13 @@ var AppComponent = /** @class */ (function () {
             console.error('error', error);
         });
     }
+    AppComponent.prototype.clickEvent = function (cognitive_biasLabel) {
+        this.backendApiService.getDetail(cognitive_biasLabel).subscribe(function (data) {
+            console.log('data', data);
+        }, function (error) {
+            console.error('error', error);
+        });
+    };
     AppComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-root',
