@@ -6,3 +6,6 @@
     position: relative;
     top: 2px;
 }
+.title::first-letter {
+    text-transform: capitalize;
+}

@@ -7,3 +7,6 @@ ion-item-options {
 .version_text {
     font-size: 0.4em;
 }
+.list::first-letter {
+    text-transform: capitalize;
+}

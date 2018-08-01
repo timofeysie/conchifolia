@@ -56,7 +56,9 @@ express()
             });
         }).on('error', (e) => {
             console.error(`Got error: ${e.message}`);
-            res.status(e.status).send(e.message);
+            if (typeof e.status !== 'undefined') {
+              res.status(e.status).send(e.message);
+            }
         });
   })
   .get("/api/detail/:id", function(req, res) {

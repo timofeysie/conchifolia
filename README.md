@@ -4,6 +4,137 @@ A NodeJS server app with a combined Angular client.
 
 The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
+## Implementing detail page routing
+
+Using the CLI to create the routing module like this: 
+```ng generate module app-routing --flat --module=app```.
+
+Then create two pages:
+```
+ng generate page pages/list
+ng generate page pages/detail
+```
+
+The list page can contain the markup we have already in the app.component.  The detail page will be to hold the full description result from the API call we have just finished.
+
+Got this error:
+```
+Schematic "page" not found in collection "@schematics/angular".
+```
+
+That's a CLI thing.  So tried this:
+```
+$ sudo npm install -g @angular/cli
+...
+Your global Angular CLI version (6.1.1) is greater than your local
+version (6.0.8). The local Angular CLI version is used.
+To disable this warning use "ng config -g cli.warnings.versionMismatch false".
+Schematic "page" not found in collection "@schematics/angular".
+```
+
+So did this:
+```
+$ npm install @angular/cli
+```
+
+But we still get the same mismatch error.  Tried again, but despite using sudo:
+```
+$ sudo npm install -g angular-cli
+...
+gyp ERR! configure error 
+gyp ERR! stack Error: EACCES: permission denied, mkdir '/Users/tim/.nvm/versions/node/v8.9.4/lib/node_modules/angular-cli/node_modules/node-sass/build'
+gyp ERR! System Darwin 14.5.0
+```
+
+This is not the recommended install line.  Strange things are happening now:
+```
+$ npm install @angular/cli@latest
++ @angular/cli@6.1.1
+added 9 packages from 9 contributors, updated 4 packages and audited 21762 packages in 36.357s
+QuinquenniumF:my-dream-app tim$ ng generate page pages/detail
+-bash: /Users/tim/.nvm/versions/node/v8.9.4/bin/ng: No such file or directory
+QuinquenniumF:my-dream-app tim$ nvm use 8
+Now using node v8.9.4 (npm v6.1.0)
+QuinquenniumF:my-dream-app tim$ ng generate page pages/detail
+-bash: ng: command not found
+QuinquenniumF:my-dream-app tim$ sudo npm install -g @angular/cli@latest
+npm ERR! path /Users/tim/.nvm/versions/node/v8.9.4/bin/ng
+npm ERR! code EEXIST
+npm ERR! Refusing to delete /Users/tim/.nvm/versions/node/v8.9.4/bin/ng: ../lib/node_modules/angular-cli/bin/ng symlink target is not controlled by npm /Users/tim/.nvm/versions/node/v8.9.4/lib/node_modules/@angular/cli
+npm ERR! File exists: /Users/tim/.nvm/versions/node/v8.9.4/bin/ng
+npm ERR! Move it away, and try again.
+npm ERR! A complete log of this run can be found in:
+```
+
+Could have just added the pages by hand by now]\\=][][]'
+
+So that's just what we'll do.  Copy the pages directory from loranthifolia, but change HomePage to ListPage which makes more sense.  The modules only have to be configured in the router module which we already have.
+
+```
+$ sudo npm i -g @angular/cli
+npm ERR! path /Users/tim/.nvm/versions/node/v8.9.4/bin/ng
+npm ERR! code EEXIST
+npm ERR! Refusing to delete /Users/tim/.nvm/versions/node/v8.9.4/bin/ng: ../lib/node_modules/angular-cli/bin/ng symlink target is not controlled by npm /Users/tim/.nvm/versions/node/v8.9.4/lib/node_modules/@angular/cli
+```
+
+Installed node 9 via nvm and built again:
+```
+This usually happens because your environment has changed since running `npm install`.
+Run `npm rebuild node-sass` to download the binding for your current environment.
+...
+$ npm rebuild node-sass
+```
+
+The the ng build command completes.  First test of the navigation reveals this error:
+```
+core.js:1671 ERROR Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'detail'
+Error: Cannot match any routes. URL Segment: 'detail'
+```
+
+After fooling with things a bit, the app.component loads but to a white screen and the list page is not shown, despite it being the default redirect.  Oh.  Had a type in the list module path name.  But still the white screen.  The url shows the redirect to the list route.
+
+The @Component({ selector: 'app-page-list' should be this, right?  The list page constructor is never called.  Maybe we need to put everything in the ng on init function?  Trying the route config for the base route without the ```pathMatch: 'full'``` part.
+
+Then we get this error:
+```
+Error: Invalid configuration of route '{path: "", redirectTo: "list"}': please provide 'pathMatch'. The default value of 'pathMatch' is 'prefix', but often the intent is to use 'full'.
+```
+
+Trying the value *prefix* then.  Bingo.  Now we are back to the detail page error:
+```
+core.js:1671 ERROR Error: Uncaught (in promise): Error: Cannot match any routes. URL Segment: 'detail'
+Error: Cannot match any routes. URL Segment: 'detail'
+```
+
+There is now a double 'list/list' in the url.  Changing this:
+```path: 'list',``` to ```path: '',``` in the module, and for detail.  That's how we had it in the loranthifolia project.  Doesn't help.  Maybe we need this: ```path: 'detail/:id',```.  That didn't help.  Then while offline testing, it seems that since the ids are sent thru with spaces in them.  I think the curator lib replaces spaces with a dash, so if we do that here, it should all work.
+
+We can either create a pipe, or more simply use a function to route the app to the details page and do it programmatically.  Now refresh one's memory as to how that's done. 
+
+```
+import { Router } from '@angular/router';
+...
+constructor(private router: Router) { 
+...
+navigateAction(item: string) {
+  this.router.navigate(['detail/'+itemRoute]);
+}
+
+Now ab out that item route, looking at the curator code, the subject is modified like this:
+```
+let subject = pageName.replace(/\s+/g, '_').toLowerCase();
+```
+
+That worked for our offline hard-wired click event.  But then it fails using the actual link.  What?!  Taking the blank routing info out of the page modules results in this error:
+```
+core.js:1671 ERROR RangeError: Maximum call stack size exceeded
+```
+
+So going back to the ```path: '',``` idea from above and the route works!
+
+
+
+
 ## Creating the Angular Service
 
 Create a service with the CLI command ```ng g s services/backendApi```.
@@ -44,7 +175,7 @@ Still, some might prefer how this looks:
 The next problem then is the port used to develop using ng serve is 4200, but the server is using 5000, so we get this error:
 ```GET http://localhost:4200/api/list 404 (Not Found)```
 
-To see if the code works first, we can build the project and restart the server.  It does work, but this is not a great work flow.  What we need is to specify the port for http calls when running on localhost.
+To see if the code works first, we can build the project and restart the server.  It does work, but this is not a great work flow.  What we need is to specify the port for http calls when running on localhost.  But since the build is pretty quick, putting up with this for now.  The service works as expected so moving on to routing for the detail page now.
 
 
 ## The Beginning

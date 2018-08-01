@@ -1,4 +1,2 @@
-<h2>{{itemName}}</h2>
-<p *ngFor="let desc of descriptions">
-  <span>{{desc}}</span>
-</p>
+<h2 class="title">{{title}}</h2>
+<p [innerHTML]="descriptions"></p>

@@ -18,7 +18,6 @@ export class ListPage implements OnInit  {
   ngOnInit() {
     this.backendApiService.getList().subscribe(
       data => {
-        console.log('data',data);
         this.list = data['list'];
       },
       error => {
@@ -32,14 +31,4 @@ export class ListPage implements OnInit  {
     this.router.navigate(['detail/'+itemRoute]);
   }
   
-  clickEvent(cognitive_biasLabel: string) {
-    this.backendApiService.getDetail(cognitive_biasLabel).subscribe(
-      data => {
-        console.log('data',data);
-      },
-      error => {
-        console.error('error',error);
-      }
-    );
-  }
 }

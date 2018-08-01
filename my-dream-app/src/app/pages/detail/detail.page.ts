@@ -9,18 +9,19 @@ import { BackendApiService } from '../../services/backend-api.service';
 })
 export class DetailPage implements OnInit {
   itemName: string;
+  title: string;
   descriptions:any = [];
   wikiMediaCategory: string;
 
   constructor(private route: ActivatedRoute,
     private backendApiService: BackendApiService) { }
 
-    ngOnInit() {
+  ngOnInit() {
     this.itemName = this.route.snapshot.paramMap.get('id');
+    this.title = this.itemName.split('_').join(' ');
     this.backendApiService.getDetail(this.itemName).subscribe(
       data => {
-        console.log('data',data);
-        this.descriptions = data;
+        this.descriptions = data['description'];
       },
       error => {
         console.error('error',error);
