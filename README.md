@@ -1,4 +1,4 @@
-# radiant-springs-38893
+# Conchifolia
 
 A NodeJS server app with a combined Angular client.
 
