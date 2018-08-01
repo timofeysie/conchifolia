@@ -4,10 +4,83 @@ A NodeJS server app with a combined Angular client.
 
 The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
+This the pure Angular version of the WikiData parsing project that has identical implementations is Ionic 4, React Native, and now Angular 6.  Next will be a pure React 16 version of the app.
+
+[React Native version](https://github.com/timofeysie/teretifolia)
+
+
+[Ionic 4 version](https://github.com/timofeysie/loranthifolia)
+
+
+This is the Angular 6 version
+
+All of these apps rely on the [Curator](https://github.com/timofeysie/curator), a [npm library](https://npms.io/search?q=art-curator) that provides shared tools for working with WikiData and WikiMedia content.
+
+
+
+
+#
+
+## Table of Contents
+
+#### Workflow
+#### Planned features
+#### Creating full links
+#### Implementing detail page routing
+#### Creating the Angular Service
+#### The Beginning
+#### Previous Floating Fjord
+#### Deploying to Heroku
+#### Documentation
+
+#
+
+## Workflow
+
+Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
+
+
+## Planned features
+
+Planned features include:
+
+* settings page
+* language change option
+* bookmark the last viewed item
+* let the user build a short description
+* swipe right to see short description
+* swipe up/down on the short description to send the item to the top/bottom of the list
+* swipe right to remove it from the list
+* save named list changes in local storage
+* metrics for the list (number of removed items out of total items)
+* detail page metrics (number of preambles, expand/contract preambles, footnotes)
+* create a new category
+* Component style library shared by all the app
+
+
+## Creating full links
+
+The goal is to turn links in the WikiData content into functional external links.
+
+We want to go from something like this:
+```
+<a href="/wiki/Emotional_bias" title="Emotional bias">emotional bias</a>
+```
+
+To this:
+```
+<a href="https://en.wikipedia.org/wiki/Emotional_bias" title="Emotional bias">emotional bias</a>
+```
+
+This will require the language info which is captured in the list data.  It would be easy to just pass this to the detail page with the subject, but we would like the user to be able to change the language setting, so it should be a global setting.  The UX department has said a gear or some icon at the upper right hand of the screen is their first idea about creating this.  This will link to a settings page where it can be changed.  It will default to English.
+
+
 ## Implementing detail page routing
 
 Using the CLI to create the routing module like this: 
-```ng generate module app-routing --flat --module=app```.
+```
+ng generate module app-routing --flat --module=app
+```
 
 Then create two pages:
 ```
@@ -119,6 +192,7 @@ constructor(private router: Router) {
 navigateAction(item: string) {
   this.router.navigate(['detail/'+itemRoute]);
 }
+```
 
 Now ab out that item route, looking at the curator code, the subject is modified like this:
 ```

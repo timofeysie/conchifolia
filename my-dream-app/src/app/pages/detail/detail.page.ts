@@ -22,6 +22,7 @@ export class DetailPage implements OnInit {
     this.backendApiService.getDetail(this.itemName).subscribe(
       data => {
         this.descriptions = data['description'];
+        console.log('this.descriptions',this.descriptions);
       },
       error => {
         console.error('error',error);

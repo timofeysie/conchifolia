@@ -108,6 +108,7 @@ var DetailPage = /** @class */ (function () {
         this.title = this.itemName.split('_').join(' ');
         this.backendApiService.getDetail(this.itemName).subscribe(function (data) {
             _this.descriptions = data['description'];
+            console.log('this.descriptions', _this.descriptions);
         }, function (error) {
             console.error('error', error);
         });
