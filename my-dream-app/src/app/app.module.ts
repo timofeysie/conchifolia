@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BackendApiService } from './services/backend-api.service';
 import { HttpClientModule } from '@angular/common/http';
+import { AppRoutingModule } from './/app-routing.module';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [BackendApiService],
   bootstrap: [AppComponent]

@@ -1,14 +1,4 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h2>
-    {{ title }}
-  </h2>
-</div>
-<ul>
-  <div *ngFor="let item of list">
-    <li *ngIf="item.cognitive_biasLabel">
-      <h3 (click)="clickEvent(item.cognitive_biasLabel)">{{ item.cognitive_biasLabel }}</h3>
-    </li>
-  </div>
-</ul>
+
+<router-outlet></router-outlet>
 
