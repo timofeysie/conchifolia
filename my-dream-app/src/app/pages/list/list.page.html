@@ -1,11 +1,9 @@
-<div style="text-align:center">
-  <h2>{{ title }}</h2>
-</div>
-<ul>
+<h2 class="header">{{ title }}</h2>
+<ul class="list">
   <div *ngFor="let item of list">
     <li *ngIf="item.cognitive_biasLabel">
       <h3 (click)="navigateAction(item.cognitive_biasLabel)"
-        class="list">
+        class="list__text">
         {{ item.cognitive_biasLabel }}</h3>
     </li>
   </div>

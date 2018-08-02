@@ -1,3 +1,7 @@
+.header {
+    text-align:center;
+    border-bottom: 1px solid #a2a9b1;
+}
 .small_arrow {
     font-size: 1em;
 }
@@ -9,4 +13,9 @@ ion-item-options {
 }
 .list::first-letter {
     text-transform: capitalize;
+}
+.list {
+    li {
+        list-style-type: none;
+    }
 }

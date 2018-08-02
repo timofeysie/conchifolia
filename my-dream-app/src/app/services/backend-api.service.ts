@@ -9,13 +9,18 @@ import { DetailModel } from '../models/detail.model';
 export class BackendApiService {
   private backendListUrl = '/api/list';
   private backendDetailUrl = '/api/detail';
+  private listData;
 
   constructor (private  httpClient:  HttpClient) {}
 
   // get("/api/contacts")
   getList() {
-    return this.httpClient.get<ListModel>(this.backendListUrl)
-      .pipe(data => data);
+    if (this.listData) {
+      return this.listData;
+    } else {
+      return this.httpClient.get<ListModel>(this.backendListUrl)
+      .pipe(data => this.listData = data);
+    }
   }
 
   getDetail(detailId: String){

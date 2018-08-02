@@ -55,7 +55,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div style=\"text-align:center\">\n  <h2>{{ title }}</h2>\n</div>\n<ul>\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel\">\n      <h3 (click)=\"navigateAction(item.cognitive_biasLabel)\"\n        class=\"list\">\n        {{ item.cognitive_biasLabel }}</h3>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<h2 class=\"header\">{{ title }}</h2>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel\">\n      <h3 (click)=\"navigateAction(item.cognitive_biasLabel)\"\n        class=\"list__text\">\n        {{ item.cognitive_biasLabel }}</h3>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -66,7 +66,7 @@ module.exports = "<div style=\"text-align:center\">\n  <h2>{{ title }}</h2>\n</d
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list::first-letter {\n  text-transform: capitalize; }\n"
+module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid #a2a9b1; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list::first-letter {\n  text-transform: capitalize; }\n\n.list li {\n  list-style-type: none; }\n"
 
 /***/ }),
 

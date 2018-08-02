@@ -23,15 +23,15 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 ## Table of Contents
 
-#### Workflow
-#### Planned features
-#### Creating full links
-#### Implementing detail page routing
-#### Creating the Angular Service
-#### The Beginning
-#### Previous Floating Fjord
-#### Deploying to Heroku
-#### Documentation
+#### [Workflow](#Workflow)
+#### [Planned features](#)
+#### [Creating full links](#)
+#### [Implementing detail page routing](#)
+#### [Creating the Angular Service](#)
+#### [The Beginning](#)
+#### [Previous Floating Fjord](#)
+#### [Deploying to Heroku](#)
+#### [Documentation](#)
 
 #
 
@@ -60,7 +60,11 @@ Planned features include:
 
 ## Creating full links
 
-The goal is to turn links in the WikiData content into functional external links.
+On the detail page we display the html contents of a description from the WikiMedia (aka Wikipedia) API result.  It therefore has all the notes (which we have called preambles), footnotes and other errata that we want to hide.
+
+We have some functions to remove preambles from the content in the Curator lib, but that was based on parsing using the DOM.  Since this causes problems for non-NodeJS environments, we are going to migrate these functions to reg-ex parsing.
+
+The goal now is to turn links in the WikiData content into functional external links.
 
 We want to go from something like this:
 ```
@@ -73,6 +77,28 @@ To this:
 ```
 
 This will require the language info which is captured in the list data.  It would be easy to just pass this to the detail page with the subject, but we would like the user to be able to change the language setting, so it should be a global setting.  The UX department has said a gear or some icon at the upper right hand of the screen is their first idea about creating this.  This will link to a settings page where it can be changed.  It will default to English.
+
+We might also want to remove this at the end of the description.
+```
+<!-- NewPP limit report
+...
+--!>
+```
+
+We should also look more into sanitizing the result as this message suggests:
+```
+core.js:7327 WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+```
+
+Currently we just do this:
+```
+<p [innerHTML]="descriptions"></p>
+```
+
+If we are sure about the content we could use this solution from our most popular StackOverflow [question](https://stackoverflow.com/questions/43035989/how-to-use-bypasssecuritytruststyle-correctly):
+```
+sanitizer.bypassSecurityTrustStyle(value);
+```
 
 
 ## Implementing detail page routing
@@ -411,7 +437,7 @@ $ npm start
 
 Your app should now be running on [localhost:5000](http://localhost:5000/).
 
-## Deploying to Heroku
+## Deploying to Heroku (#Deploying-to-Heroku)
 
 ```
 $ heroku create
