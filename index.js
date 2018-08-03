@@ -61,6 +61,33 @@ express()
             }
         });
   })
+  .get("/api/wiki-list/:id", function(req, res) {
+    const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id);
+    console.log('wikiMediaUrl',wikiMediaUrl);
+    let newUrl = wikiMediaUrl.replace('http','https');
+    https.get(newUrl, (wikiRes) => {
+      const statusCode = wikiRes.statusCode;
+      let error;
+      if (statusCode !== 200) {
+          error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
+      }
+      if (error) {
+          console.error(error.message);
+          wikiRes.resume();
+          return;
+      }
+      let rawData = '';
+      wikiRes.on('data', (chunk) => { rawData += chunk; });
+      wikiRes.on('end', () => {
+        res.status(200).send(rawData);
+      });
+    }).on('error', (e) => {
+        console.error(`Got error: ${e.message}`);
+        if (typeof e.status !== 'undefined') {
+          res.status(e.status).send(e.message);
+        }
+    });
+  })
   .get("/api/detail/:id", function(req, res) {
     console.log('id',req.params.id);
     let singlePageUrl = curator.createSingleWikiMediaPageUrl(req.params.id);
@@ -69,14 +96,20 @@ express()
             let rawData = '';
             wikiRes.on('data', (chunk) => { rawData += chunk; });
             wikiRes.on('end', () => {
-                console.log('raw data',rawData);
+              try {
                 let result = JSON.parse(rawData)['parse']['text']['*'];
                 let preamblesRemoved = curator.removeWikiDataPreambles(result);
                 const desc = { description: preamblesRemoved }
                 res.status(200).json(desc);
+              } catch (err) {
+                console.log('wikiRes.headers',wikiRes.headers);
+                console.log('Url:',newUrl);
+                res.status(500).send('No data in response:'+wikiRes);
+              }
             });
         }).on('error', (e) => {
             console.error(`Got error: ${e.message}`);
+            res.status(e.status).send('server error',e.message);
         });
   })
   .get('*', (req, res) => {
@@ -92,4 +125,12 @@ express()
 function handleError(res, reason, message, code) {
   console.log("ERROR: " + reason);
   res.status(code || 500).json({"error": message});
+}
+
+var getKeys = function(obj){
+  var keys = [];
+  for(var key in obj){
+     keys.push(key);
+  }
+  return keys;
 }

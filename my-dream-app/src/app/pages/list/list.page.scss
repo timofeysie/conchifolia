@@ -11,11 +11,18 @@ ion-item-options {
 .version_text {
     font-size: 0.4em;
 }
-.list::first-letter {
+.list__text::first-letter {
     text-transform: capitalize;
 }
 .list {
     li {
         list-style-type: none;
+        color: green;
     }
+}
+.list__both {
+    color: black;
+}
+.list__text-wikimedia {
+    color: teal;
 }

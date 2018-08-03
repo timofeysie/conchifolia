@@ -23,8 +23,10 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 ## Table of Contents
 
-#### [Workflow](#Workflow)
+#### [Setup and Workflow](#Workflow)
 #### [Planned features](#)
+#### [Adding WikiMedia Items to the list](#)
+#### [Detail page issues](#)
 #### [Creating full links](#)
 #### [Implementing detail page routing](#)
 #### [Creating the Angular Service](#)
@@ -35,7 +37,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 #
 
-## Workflow
+## Setup and Workflow
 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
@@ -55,7 +57,61 @@ Planned features include:
 * metrics for the list (number of removed items out of total items)
 * detail page metrics (number of preambles, expand/contract preambles, footnotes)
 * create a new category
-* Component style library shared by all the app
+* component style library shared by all the app
+
+
+## Adding WikiMedia Items to the list
+
+Since the WikiData result for cognitive biases only returns 90, and there are almost 300 on Wikipedia, we know we have a problem.
+
+Usually the name of item can be got this way:
+```
+itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+```
+
+A few however, like 'frequency illusion' are not links, so are just the contents of the <td> tag.
+Some, such as 'regression bias' have a <span> inside the tag.
+
+Now, checking if a WikiMedia item is already on the WikiData list and then sorting the list needs to be done so as not to shed the DOM as the results for those section calls come back.
+
+It's straightforward enough to look thru the list on each WikiMedia item, and then sort at the end of each merge.  But this will hang the browser during those 17,000 or so iterations on the UI thread.
+
+
+
+## Detail page issues
+
+http://localhost:5000/detail/denomination_effect
+This has a "Part of a series on Psychology" preamble with a long list of categories before the description.
+
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page="women_are_wonderful"_effect
+Should be:
+https://en.wikipedia.org/wiki/Women_are_wonderful_effect
+
+Another problem:
+```
+id dunning–kruger_effect
+raw data 
+undefined:1
+SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at IncomingMessage.wikiRes.on (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/index.js:100:35)
+    at emitNone (events.js:111:20)
+```
+
+This will crash the server, so we need a error handler for this case.
+
+The error returned from the url in the browser is:
+```
+{"error":{"code":"missingtitle","info":"The page you specified doesn't exist.","*":"See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/mailman/listinfo/mediawiki-api-announce&gt; for notice of API deprecations and breaking changes."},"servedby":"mw1315"}
+```
+
+The name Wikipedia expects is: https://en.wikipedia.org/wiki/Dunning%E2%80%93Kruger_effect
+Dunning–Kruger_effect
+
+Is it just a matter of capitals?  It is, because this url will work:
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=Dunning%E2%80%93Kruger_effect
+```
 
 
 ## Creating full links

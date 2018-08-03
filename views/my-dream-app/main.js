@@ -220,6 +220,7 @@ var BackendApiService = /** @class */ (function () {
     function BackendApiService(httpClient) {
         this.httpClient = httpClient;
         this.backendListUrl = '/api/list';
+        this.backendWikiListUrl = '/api/wiki-list';
         this.backendDetailUrl = '/api/detail';
     }
     // get("/api/contacts")
@@ -237,10 +238,15 @@ var BackendApiService = /** @class */ (function () {
         return this.httpClient.get(this.backendDetailUrl + '/' + detailId)
             .pipe(function (data) { return data; });
     };
-    BackendApiService.prototype.handleError = function (error) {
-        var errMsg = (error.message) ? error.message :
-            error.status ? error.status + " - " + error.statusText : 'Server error';
-        console.error(errMsg);
+    BackendApiService.prototype.loadWikiMedia = function (sectionNum) {
+        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum)
+            .pipe(function (data) { return data; });
+    };
+    BackendApiService.prototype.createElementFromHTML = function (htmlString) {
+        var div = document.createElement('div');
+        var page = '<div>' + htmlString + '</div>';
+        div.innerHTML = page.trim();
+        return div;
     };
     BackendApiService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
@@ -315,7 +321,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/tim/angular/ng6/heroku-node-angular/my-dream-app/src/main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! /Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/my-dream-app/src/main.ts */"./src/main.ts");
 
 
 /***/ })

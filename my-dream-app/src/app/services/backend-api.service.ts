@@ -8,6 +8,7 @@ import { DetailModel } from '../models/detail.model';
 })
 export class BackendApiService {
   private backendListUrl = '/api/list';
+  private backendWikiListUrl = '/api/wiki-list';
   private backendDetailUrl = '/api/detail';
   private listData;
 
@@ -28,10 +29,16 @@ export class BackendApiService {
       .pipe(data => data);
   }
 
-  private handleError (error: any) {
-    let errMsg = (error.message) ? error.message :
-    error.status ? `${error.status} - ${error.statusText}` : 'Server error';
-    console.error(errMsg);
+  loadWikiMedia(sectionNum) {
+    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum)
+      .pipe(data => data)
+  }
+
+  createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    let page = '<div>'+htmlString+'</div>';
+    div.innerHTML = page.trim();
+    return div; 
   }
 
 }
