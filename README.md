@@ -76,6 +76,14 @@ Now, checking if a WikiMedia item is already on the WikiData list and then sorti
 
 It's straightforward enough to look thru the list on each WikiMedia item, and then sort at the end of each merge.  But this will hang the browser during those 17,000 or so iterations on the UI thread.
 
+Sometimes there is even an error when the list seems like it's undefined.  Maybe when it's being accessed when it's being modified?
+
+Anyhow, this processing is all needed, so maybe using a spinner would be the best way to show the content but also indicate that some items are still pending.
+
+There is an item at the top of the list: "Women are wonderful" effect.  Obviously this is true because the item comes first!
+
+Also, the sort mostly works, except at the bottom of the list, Zero-sum bias
+ is followed by affect heuristic.
 
 
 ## Detail page issues

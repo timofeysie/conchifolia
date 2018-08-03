@@ -12,6 +12,7 @@ export class ListPage implements OnInit  {
   title = 'List of Cognitive Bias';
   list: DetailModel[];
   repeats: number = 0;
+  media: number = 0;
   constructor(
     private backendApiService: BackendApiService,
     private router: Router) { }
@@ -87,23 +88,24 @@ export class ListPage implements OnInit  {
       let itemName = section[i].name;
       let found = false;
       for(var j = 0; j < this.list.length; j++) {
-        if ((typeof this.list[i].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[i].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
+        if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
           found = true;
           this.list[j].wikiMedia_label = itemName;
           this.list[j].wikiMedia_description = section[i].description;
           this.list[j].wikiMedia_category = section[i].category;
           this.list[j].sortName = itemName;
+          this.repeats++;
           break;
         }
-        this.repeats++;
       }
       if (!found) {
         let wikiMediaObj = new DetailModel();
         wikiMediaObj.wikiMedia_label = itemName;
         wikiMediaObj.wikiMedia_description = section[i].description;
         wikiMediaObj.wikiMedia_category = section[i].category;
-        wikiMediaObj.sortName = itemName;
+        wikiMediaObj.sortName = itemName.split('"').join('');;
         this.list.push(wikiMediaObj);
+        this.media++;
       }
     }
   }

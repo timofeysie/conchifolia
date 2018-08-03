@@ -101,19 +101,15 @@ var DetailPage = /** @class */ (function () {
         this.route = route;
         this.backendApiService = backendApiService;
         this.description = [];
-        console.log('constructed');
     }
     DetailPage.prototype.ngOnInit = function () {
         var _this = this;
-        console.log('ngOnInit');
         this.itemName = this.route.snapshot.paramMap.get('id');
         this.title = this.itemName.split('_').join(' ');
         this.backendApiService.getDetail(this.itemName).subscribe(function (data) {
             _this.description = data['description'].toString();
-            console.log('this.descriptions', _this.description.length);
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
-            console.log('this.descriptions', _this.description.length);
         }, function (error) {
             console.error('error', error);
         });

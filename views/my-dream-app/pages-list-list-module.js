@@ -86,7 +86,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h2 class=\"header\">{{ title }} <span *ngIf=\"list\">{{list.length}}</span></h2>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{list_both: item.cognitive_biasLabel && item.wikiMedia_label}\"\n        >{{ item.cognitive_biasLabel }}</h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<h2 class=\"header\">{{ title }} \n  <span *ngIf=\"list\"> {{ list.length }}</span>\n</h2>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -134,6 +134,7 @@ var ListPage = /** @class */ (function () {
         this.router = router;
         this.title = 'List of Cognitive Bias';
         this.repeats = 0;
+        this.media = 0;
     }
     ListPage.prototype.ngOnInit = function () {
         var _this = this;
@@ -196,23 +197,25 @@ var ListPage = /** @class */ (function () {
             var itemName = section[i].name;
             var found = false;
             for (var j = 0; j < this.list.length; j++) {
-                if ((typeof this.list[i].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[i].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
+                if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
                     found = true;
                     this.list[j].wikiMedia_label = itemName;
                     this.list[j].wikiMedia_description = section[i].description;
                     this.list[j].wikiMedia_category = section[i].category;
                     this.list[j].sortName = itemName;
+                    this.repeats++;
                     break;
                 }
-                this.repeats++;
             }
             if (!found) {
                 var wikiMediaObj = new _models_detail_model__WEBPACK_IMPORTED_MODULE_2__["DetailModel"]();
                 wikiMediaObj.wikiMedia_label = itemName;
                 wikiMediaObj.wikiMedia_description = section[i].description;
                 wikiMediaObj.wikiMedia_category = section[i].category;
-                wikiMediaObj.sortName = itemName;
+                wikiMediaObj.sortName = itemName.split('"').join('');
+                ;
                 this.list.push(wikiMediaObj);
+                this.media++;
             }
         }
     };

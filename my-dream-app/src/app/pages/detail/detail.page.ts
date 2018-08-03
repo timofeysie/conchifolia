@@ -15,21 +15,16 @@ export class DetailPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private backendApiService: BackendApiService) {
-      console.log('constructed');  
-     }
+    private backendApiService: BackendApiService) { }
 
   ngOnInit() {
-    console.log('ngOnInit');
     this.itemName = this.route.snapshot.paramMap.get('id');
     this.title = this.itemName.split('_').join(' ');
     this.backendApiService.getDetail(this.itemName).subscribe(
       data => {
         this.description = data['description'].toString();
-        console.log('this.descriptions',this.description.length);
         this.description = this.description.split('href="/wiki/')
           .join('href="https://en.wikipedia.org/wiki/');
-        console.log('this.descriptions',this.description.length);
       },
       error => {
         console.error('error',error);

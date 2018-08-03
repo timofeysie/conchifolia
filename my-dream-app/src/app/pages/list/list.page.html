@@ -1,10 +1,15 @@
-<h2 class="header">{{ title }} <span *ngIf="list">{{list.length}}</span></h2>
+<h2 class="header">{{ title }} 
+  <span *ngIf="list"> {{ list.length }}</span>
+</h2>
 <ul class="list">
   <div *ngFor="let item of list">
     <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
       <h4 (click)="navigateAction(item.sortName)"
-        [ngClass]="{list_both: item.cognitive_biasLabel && item.wikiMedia_label}"
-        >{{ item.cognitive_biasLabel }}</h4>
+        [ngClass]="{
+          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
+          'list__text-wikimedia': !item.cognitive_biasLabel}">
+        {{ item.sortName }}
+      </h4>
     </li>
   </div>
 </ul>
