@@ -9,54 +9,68 @@ import { Router } from '@angular/router';
   styleUrls: ['list.page.scss'],
 })
 export class ListPage implements OnInit  {
-  title = 'List of Cognitive Bias';
+  title = 'List of Cognitive Biases';
   list: DetailModel[];
   repeats: number = 0;
   media: number = 0;
   constructor(
     private backendApiService: BackendApiService,
-    private router: Router) { }
+    private router: Router) {
+     }
   
   ngOnInit() {
-    this.backendApiService.getList().subscribe(
+    if (!this.list) {
+      this.backendApiService.getList().subscribe(
+        data => {
+          this.list = data['list'];
+          this.list.forEach((item) => {
+            item.sortName = item.cognitive_biasLabel;
+          })
+        },
+        error => {
+          console.error('error',error);
+        }
+      );
+      // get WikiMedia sections
+      this.getWikiSection();
+    }
+  }
+
+  /**
+   * Fetch the section list from the server, parse its and add
+   * it to the list then re-sort.
+   * The three calls and adding items should all complete before the add
+   * TODO: use async/await here.  This is just a temporary test to see
+   * if it will indeed fix the occasional (list.page.ts:85) error.
+   * @param sectionNum Number of section to get
+   */
+  getWikiSection() {
+    this.backendApiService.loadWikiMedia(1).subscribe(
       data => {
-        this.list = data['list'];
-        this.list.forEach((item) => {
-          item.sortName = item.cognitive_biasLabel;
-        })
-      },
+        const section = this.parseList(data);
+        this.addItems(section);
+        this.backendApiService.loadWikiMedia(2).subscribe(
+          data => {
+            const section = this.parseList(data);
+            this.addItems(section);
+            this.backendApiService.loadWikiMedia(3).subscribe(
+              data => {
+                const section = this.parseList(data);
+                this.addItems(section);
+                // finally sort the list
+                this.list.sort(this.dynamicSort('sortName'));
+            },
+              error => {
+                console.error('error in 3',error);
+            });
+        },
+          error => {
+            console.error('error in 2',error);
+        });
+    },
       error => {
-        console.error('error',error);
-      }
-    );
-    // get WikiMedia sections
-    this.backendApiService.loadWikiMedia('1').subscribe(
-      data => {
-        const section1 = this.parseList(data);
-        this.addItems(section1);
-        this.list.sort(this.dynamicSort('sortName'));
-      },
-      error => {
-        console.error('error',error);
-      });
-    this.backendApiService.loadWikiMedia('2').subscribe(
-      data => {
-        const section2 = this.parseList(data);
-        this.addItems(section2);
-        this.list.sort(this.dynamicSort('sortName'));
-      },
-      error => {
-        console.error('error',error);
-      });
-    this.backendApiService.loadWikiMedia('3').subscribe(
-      data => {
-        const section3 = this.parseList(data);
-        this.addItems(section3);
-        this.list.sort(this.dynamicSort('sortName'));
-      },
-      error => {
-        console.error('error',error);
-      });
+        console.error('error in 1',error);
+    });
   }
 
   /**
@@ -129,7 +143,6 @@ export class ListPage implements OnInit  {
     // } else {
     //   console.log(desc[1]);
     // }
-    
     const allDesc = desc[2];
     const tableRows = allDesc.getElementsByTagName('tr');
     for (let i = 0; i < tableRows.length;i++) {

@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { BackendApiService } from './services/backend-api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './/app-routing.module';
+import { ListPageModule } from './pages/list/list.module';
+
 
 @NgModule({
   declarations: [
@@ -12,7 +14,8 @@ import { AppRoutingModule } from './/app-routing.module';
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ListPageModule
   ],
   providers: [BackendApiService],
   bootstrap: [AppComponent]
