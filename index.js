@@ -20,18 +20,6 @@ const allowedExt = [
 express()
   .use(express.static(path.join(__dirname, 'public')))
   .use(bodyParser.json())
-  .use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', false);
-    // Pass to next layer of middleware
-    next();})
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs')
   .get("/api/list", function(req, res) {
@@ -74,6 +62,9 @@ express()
         });
   })
   .get("/api/wiki-list/:id", function(req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	  res.setHeader('Content-Type', 'application/json');
     const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id);
     console.log('wikiMediaUrl',wikiMediaUrl);
     let newUrl = wikiMediaUrl.replace('http','https');
