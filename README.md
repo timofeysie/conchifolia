@@ -25,6 +25,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 #### [Setup and Workflow](#Workflow)
 #### [Planned features](#)
+#### [Local storage options](#)
 #### [Adding WikiMedia Items to the list](#)
 #### [Detail page issues](#)
 #### [Creating full links](#)
@@ -60,6 +61,40 @@ Planned features include:
 * component style library shared by all the app
 
 
+## Local storage options
+
+Right now, the list is reloaded each time the user navigates back to the list page.  There are ways to cache this, such as another service which holds the complete list, but since we will need to persist the state of each item as part of planned features, it would be better to address this need now.
+
+The first option to consider is [Async local storage for Angular](https://github.com/cyrilletuzi/angular-async-local-storage) 
+
+The author of this repo,  puts the situation well:
+
+*The localStorage API is simple to use but synchronous, so if you use it too often, your app will soon begin to freeze.*
+
+*The IndexedDB API is asynchronous and efficient, but it's a mess to use: you'll soon be caught by the callback hell, as it does not support Promises yet.*
+
+In Ionic, we could use PouchDB, SQLites or a native plugin, but that's not going to work in React.  Since we want to implement the same features in React Native, a pure JavaScript approach is needed.
+
+One problem with these dbs is the lack of a get all or query functionality.  We would have to store the whole list each time something changes.  Not sure how costly this would be.  Since we only have 191 objects that is only likely to grow very slowly, it may not be that bad.
+
+We will also want to store the app preferences in the db, so there will be at least two tables to worry about.
+
+We should at least have a list of options before jumping in however.
+```
+PouchDB (no SQL option with sync)
+SQLite (Local storage; you supply the sync and backup, but will in work on a website?)
+Async Storage ("built-in" to React Native)
+Firebase (JSON document store beside the real-time database)
+Realm (devices handle sporadic or lossy network connectivity)
+MongoDB (Local only NoSQL solution)
+PWA (still needs to use a storage options)
+Use the NodeJS server (won't scale, or rather we don't want to handle scale)
+```
+
+Since we don't need to sync anything (at least it's not part of any foreseeable feature for now), SQLite with it's query abilities might be a good option.  But so far, I think this requires native functionality.  If this was an Electron app of used via a plugin with Ionic, it would be OK, but it's not.
+
+
+
 ## Adding WikiMedia Items to the list
 
 Since the WikiData result for cognitive biases only returns 90, and there are almost 300 on Wikipedia, we know we have a problem.
@@ -77,13 +112,40 @@ Now, checking if a WikiMedia item is already on the WikiData list and then sorti
 It's straightforward enough to look thru the list on each WikiMedia item, and then sort at the end of each merge.  But this will hang the browser during those 17,000 or so iterations on the UI thread.
 
 Sometimes there is even an error when the list seems like it's undefined.  Maybe when it's being accessed when it's being modified?
+```
+core.js:1671 ERROR TypeError: Cannot read property 'length' of undefined
+    at ListPage.push../src/app/pages/list/list.page.ts.ListPage.addItems (list.page.ts:85)
+    at SafeSubscriber._next (list.page.ts:49)
+    at SafeSubscriber.push../node_modules/rxjs/_esm5/internal/Subscriber.js.SafeSubscriber.__tryOrUnsub (Subscriber.js:195)
+    at 
+```
+
+Line 85 is in the addItems function.
+
+WIP
 
 Anyhow, this processing is all needed, so maybe using a spinner would be the best way to show the content but also indicate that some items are still pending.
 
 There is an item at the top of the list: "Women are wonderful" effect.  Obviously this is true because the item comes first!
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%22women_are_wonderful%22_effect
+```
 
-Also, the sort mostly works, except at the bottom of the list, Zero-sum bias
+That link won't work, but this link does:
+```
+https://en.wikipedia.org/wiki/Women_are_wonderful_effect
+```
+
+So removing the quotes from the search string property lets that item be sorted normally and it loses its special spot at the top of the list.
+
+Also, the sort function mostly works, except at the bottom of the list, Zero-sum bias
  is followed by affect heuristic.
+
+Not sure what's going on there.
+
+Each time the user goes back to the list from a detail, the list is re-loaded, which is costly.  It seems the lazy loading feature is not working as described in [the docs](https://angular.io/guide/router):
+*The lazy loading and re-configuration happen just once, when the route is first requested; the module and routes are available immediately for subsequent requests.*
+
 
 
 ## Detail page issues
