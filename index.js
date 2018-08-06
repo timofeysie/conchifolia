@@ -62,37 +62,45 @@ express()
         });
   })
   .get("/api/wiki-list/:id", function(req, res) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Access-Control-Allow-Credentials: true');
-    res.header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); 
-    res.header('Access-Control-Max-Age: 86400');
-	  res.setHeader('Content-Type', 'application/json');
-    const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id);
-    console.log('wikiMediaUrl',wikiMediaUrl);
-    let newUrl = wikiMediaUrl.replace('http','https');
-    https.get(newUrl, (wikiRes) => {
-      const statusCode = wikiRes.statusCode;
-      let error;
-      if (statusCode !== 200) {
-          error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
-      }
-      if (error) {
-          console.error(error.message);
-          wikiRes.resume();
-          return;
-      }
-      let rawData = '';
-      wikiRes.on('data', (chunk) => { rawData += chunk; });
-      wikiRes.on('end', () => {
-        res.status(200).send(rawData);
-      });
-    }).on('error', (e) => {
-        console.error(`Got error: ${e.message}`);
-        if (typeof e.status !== 'undefined') {
-          res.status(e.status).send(e.message);
+    if (req.method === 'OPTIONS') {
+      console.log('!OPTIONS');
+      var headers = {};
+      // IE8 does not allow domains to be specified, just the *
+      // headers["Access-Control-Allow-Origin"] = req.headers.origin;
+      headers["Access-Control-Allow-Origin"] = "*";
+      headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+      headers["Access-Control-Allow-Credentials"] = false;
+      headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+      headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      res.writeHead(200, headers);
+      res.end();
+    } else {
+      const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id);
+      console.log('wikiMediaUrl',wikiMediaUrl);
+      let newUrl = wikiMediaUrl.replace('http','https');
+      https.get(newUrl, (wikiRes) => {
+        const statusCode = wikiRes.statusCode;
+        let error;
+        if (statusCode !== 200) {
+            error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
         }
-    });
+        if (error) {
+            console.error(error.message);
+            wikiRes.resume();
+            return;
+        }
+        let rawData = '';
+        wikiRes.on('data', (chunk) => { rawData += chunk; });
+        wikiRes.on('end', () => {
+          res.status(200).send(rawData);
+        });
+      }).on('error', (e) => {
+          console.error(`Got error: ${e.message}`);
+          if (typeof e.status !== 'undefined') {
+            res.status(e.status).send(e.message);
+          }
+      });
+    }
   })
   .get("/api/detail/:id", function(req, res) {
     console.log('id',req.params.id);
