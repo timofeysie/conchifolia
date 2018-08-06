@@ -93,6 +93,19 @@ Use the NodeJS server (won't scale, or rather we don't want to handle scale)
 
 Since we don't need to sync anything (at least it's not part of any foreseeable feature for now), SQLite with it's query abilities might be a good option.  But so far, I think this requires native functionality.  If this was an Electron app of used via a plugin with Ionic, it would be OK, but it's not.
 
+It's worth noting that with Ionic 4 the docs recommend Ionic Storage which is built on top of the LocalForage library. will run through SQLite for native, IndexedDB (if available), WebSql, or Local Storage.  That sounds a lot like our Async local storage for Angular lib.  Still, if it's only for Angular, then that doesn't fit our needs.  What is the best local storage that can be shared across multiple projects?
+
+```
+PouchDB (no SQL option with sync)
+SQLite (Local storage; you supply the sync and backup, but will in work on a website?)
+Async Storage ("built-in" to React Native)
+Firebase (JSON document store beside the real-time database)
+Realm (devices handle sporadic or lossy network connectivity)
+MongoDB (Local only NoSQL solution)
+PWA (still needs to use a storage options)
+Use the NodeJS server (won't scale, or rather we don't want to handle scale)
+```
+
 
 
 ## Adding WikiMedia Items to the list
@@ -122,7 +135,24 @@ core.js:1671 ERROR TypeError: Cannot read property 'length' of undefined
 
 Line 85 is in the addItems function.
 
-WIP
+TODO: WIP - A solution for this is being tested that involves nested subscriptions.  One solution for this would be a chain of Promises that use a 'then' statement to make sure the sequence.  But will a series of API calls, it is faster to make all the calls at once, and only do the sort and/or the add function(s) after all the lists have returned.
+
+What is the rxjs solution for this.  I have use ```Promise.all()``` before.  That looks something like this:
+```
+function requestAsync(url) {
+    return new Promise(function(resolve, reject) {
+        request(url, function(err, res, body) {
+            if (err) { return reject(err); }
+            return resolve([res, body]);
+        });
+    });
+}
+Promise.all([requestAsync('url1'), requestAsync('url2')])
+    .then(function(allData) {
+        // All data available here in the order it was called.
+    });
+```
+The method right now works to solve the issue, and local storage will make sure that we only have to wait for it to load once per user.  After that, we should only show alerts if something has changed.  So this is not a pressing issue, just something to think about for now.
 
 Anyhow, this processing is all needed, so maybe using a spinner would be the best way to show the content but also indicate that some items are still pending.
 
