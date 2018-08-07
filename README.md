@@ -23,18 +23,19 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 ## Table of Contents
 
-#### [Setup and Workflow](#Workflow)
-#### [Planned features](#)
-#### [Local storage options](#)
-#### [Adding WikiMedia Items to the list](#)
-#### [Detail page issues](#)
-#### [Creating full links](#)
-#### [Implementing detail page routing](#)
-#### [Creating the Angular Service](#)
-#### [The Beginning](#)
-#### [Previous Floating Fjord](#)
-#### [Deploying to Heroku](#)
-#### [Documentation](#)
+1. [Setup and Workflow](#setup-and-sorkflow)
+1. [Planned features](#planned-features)
+1. [Handling CORS preflight options](#handling-cors-preflight-options)
+1. [Local storage options](#local-storage-options)
+1. [Adding WikiMedia Items to the list](#adding-wikimedia-items-to-the-list)
+1. [Detail page issues](#detail-page-issues)
+1. [Creating full links](#ceating-full-links)
+1. [Implementing detail page routing](#implementing-detail-page-routing)
+1. [Creating the Angular Service](#creating-the-angular-service)
+1. [The Beginning](#the-beginning)
+1. [Previous Floating Fjord](#previous-floating-fjord)
+1. [Deploying to Heroku](#deploying-to-heroku)
+1. [Documentation](#documentation)
 
 #
 
@@ -60,6 +61,29 @@ Planned features include:
 * create a new category
 * component style library shared by all the app
 
+
+## Handling CORS preflight options
+
+The Longifolia project is still having problems with CORS because we are not handling the preflight OPTIONS request properly.
+
+In the [Serene Brushlands project](https://github.com/timofeysie/serene-brushlands/blob/master/index.js), we start off with this:
+```
+var http = require('http');
+http.createServer(function (req, res) {
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+}).listen(80);
+var ssl = {
+	cert: fs.readFileSync('/etc/letsencrypt/live/trineura.cf/fullchain.pem'),
+	key: fs.readFileSync('/etc/letsencrypt/live/trineura.cf/privkey.pem')
+};
+https.createServer(ssl, app).listen(443);
+```
+
+However, on Heroku this may not be necessary.  See [this answer](https://stackoverflow.com/questions/25148507/https-ssl-on-heroku-node-express):
+*on your dyno you don't need to "mess" with certs etc, and you will be seeing only incoming http traffic: whether directly from http clients, or from Heroku servers who talk https to clients and http to you.*
+
+Trying [this solution](https://stackoverflow.com/questions/11001817/allow-cors-rest-request-to-a-express-node-js-application-on-heroku) which has a ```allowCrossDomain``` function.
 
 ## Local storage options
 
@@ -176,6 +200,13 @@ Not sure what's going on there.
 Each time the user goes back to the list from a detail, the list is re-loaded, which is costly.  It seems the lazy loading feature is not working as described in [the docs](https://angular.io/guide/router):
 *The lazy loading and re-configuration happen just once, when the route is first requested; the module and routes are available immediately for subsequent requests.*
 
+In the Ionic app, we used the RxJS Behavior Subject class to load the list and provide it to the list page.  This will return the cached list but also get a new version and return that if it's different.  There are a [few different subjects](https://github.com/Reactive-Extensions/RxJS/tree/master/doc/api/subjects) in RxJS.
+
+The Reactive Extensions provide Angular, NodeJS and other bindings, but there is no mention of ReactJS.  I think in React, state is so strong, that an observable taking over the job of say a click event could be considered sacrilegious.  How will the component know when to update?  You would have to invoke this.setState().  Also, with React Native we wouldn’t be able to select elements in the same way.  Or maybe not.  Maybe this lib would work there also.
+
+There are [libraries like this](https://github.com/recyclejs/recycle) that try to bridge this gap, but we would rather use a standard JavaScript land approach.  Since we want to use a local storage solution, really that is the starting point for caching and providing the list and the state of the items in it.  Since our lists right now aren't too long, just putting the entire list in local storage under one name isn't a big deal.  But what if someone wanted to use the list of cities in Asia?  This is a page itself of lists.  Say a list of cities in China only goes up to 668.  That might not be a big problem.  If someone wanted to learn a list of 10,000 words, that would be a problem.  But it looks like we could get around this by using sub-categories which will always be more manageable.
+
+So, for now we will move on to using a storage solution that will also provide a solution for this issue.
 
 
 ## Detail page issues
