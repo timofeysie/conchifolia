@@ -85,6 +85,13 @@ However, on Heroku this may not be necessary.  See [this answer](https://stackov
 
 Trying [this solution](https://stackoverflow.com/questions/11001817/allow-cors-rest-request-to-a-express-node-js-application-on-heroku) which has a ```allowCrossDomain``` function.
 
+However, this still does not allow the OPTIONS call to complete.  Saw this in the logs:
+```
+ Tue, 07 Aug 2018 01:06:16 GMT express deprecated res.send(status): Use res.sendStatus(status) instead at index.js:25:9
+```
+
+Worth ficing.
+
 ## Local storage options
 
 Right now, the list is reloaded each time the user navigates back to the list page.  There are ways to cache this, such as another service which holds the complete list, but since we will need to persist the state of each item as part of planned features, it would be better to address this need now.
