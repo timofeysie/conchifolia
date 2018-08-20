@@ -11,6 +11,7 @@ export class BackendApiService {
   private backendWikiListUrl = '/api/wiki-list';
   private backendDetailUrl = '/api/detail';
   private listData;
+  private lang = 'kr'
 
   constructor (private  httpClient:  HttpClient) {}
 
@@ -19,18 +20,18 @@ export class BackendApiService {
     if (this.listData) {
       return this.listData;
     } else {
-      return this.httpClient.get<ListModel>(this.backendListUrl)
+      return this.httpClient.get<ListModel>(this.backendListUrl+'/'+this.lang)
       .pipe(data => this.listData = data);
     }
   }
 
   getDetail(detailId: String){
-    return this.httpClient.get<DetailModel>(this.backendDetailUrl + '/' + detailId)
+    return this.httpClient.get<DetailModel>(this.backendDetailUrl + '/' + detailId + '/' + this.lang)
       .pipe(data => data);
   }
 
   loadWikiMedia(sectionNum) {
-    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum)
+    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + this.lang)
       .pipe(data => data)
   }
 

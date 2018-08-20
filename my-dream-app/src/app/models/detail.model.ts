@@ -8,6 +8,9 @@
  * type:"literal"
  * value:"Hawthorne effect"
  * xml:lang :"en"
+ * 
+ * wikiMedia label & description.
+ * the sortName is a label from either
  */
 export class DetailModel {
     cognitive_biasLabel: string;

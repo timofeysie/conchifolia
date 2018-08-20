@@ -35,8 +35,9 @@ express()
   .use(allowCrossDomain)
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs')
-  .get("/api/list", function(req, res) {
-    const wikiUrl = curator.createWikiDataUrl();
+  .get('/api/list/:lang', function(req, res) {
+    const lang = req.params.lang;
+    const wikiUrl = curator.createWikiDataUrl(lang);
         console.log('bias',wikiUrl);
         https.get(wikiUrl, (wikiRes) => {
             const statusCode = wikiRes.statusCode;
@@ -74,7 +75,7 @@ express()
             }
         });
   })
-  .get("/api/wiki-list/:id", function(req, res) {
+  .get('/api/wiki-list/:id/:lang', function(req, res) {
     if (req.method === 'OPTIONS') {
       console.log('!OPTIONS');
       var headers = {};
@@ -88,7 +89,7 @@ express()
       res.writeHead(200, headers);
       res.end();
     } else {
-      const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id);
+      const wikiMediaUrl = curator.createWikiMediaUrl(req.params.id, req.params.lang);
       console.log('wikiMediaUrl',wikiMediaUrl);
       let newUrl = wikiMediaUrl.replace('http','https');
       https.get(newUrl, (wikiRes) => {
@@ -115,9 +116,9 @@ express()
       });
     }
   })
-  .get("/api/detail/:id", function(req, res) {
+  .get('/api/detail/:id/:lang', function(req, res) {
     console.log('id',req.params.id);
-    let singlePageUrl = curator.createSingleWikiMediaPageUrl(req.params.id);
+    let singlePageUrl = curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang);
         let newUrl = singlePageUrl.replace('http','https');
         https.get(newUrl, (wikiRes) => {
             let rawData = '';

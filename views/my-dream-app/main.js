@@ -210,6 +210,9 @@ __webpack_require__.r(__webpack_exports__);
  * type:"literal"
  * value:"Hawthorne effect"
  * xml:lang :"en"
+ *
+ * wikiMedia label & description.
+ * the sortName is a label from either
  */
 var DetailModel = /** @class */ (function () {
     function DetailModel() {
@@ -545,6 +548,7 @@ var BackendApiService = /** @class */ (function () {
         this.backendListUrl = '/api/list';
         this.backendWikiListUrl = '/api/wiki-list';
         this.backendDetailUrl = '/api/detail';
+        this.lang = 'kr';
     }
     // get("/api/contacts")
     BackendApiService.prototype.getList = function () {
@@ -553,16 +557,16 @@ var BackendApiService = /** @class */ (function () {
             return this.listData;
         }
         else {
-            return this.httpClient.get(this.backendListUrl)
+            return this.httpClient.get(this.backendListUrl + '/' + this.lang)
                 .pipe(function (data) { return _this.listData = data; });
         }
     };
     BackendApiService.prototype.getDetail = function (detailId) {
-        return this.httpClient.get(this.backendDetailUrl + '/' + detailId)
+        return this.httpClient.get(this.backendDetailUrl + '/' + detailId + '/' + this.lang)
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.loadWikiMedia = function (sectionNum) {
-        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum)
+        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + this.lang)
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.createElementFromHTML = function (htmlString) {

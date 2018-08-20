@@ -62,6 +62,51 @@ Planned features include:
 * component style library shared by all the app
 
 
+## Updating server calls with language settings
+
+Since the client decided to add language settings to the API calls, these functions have been modified in the curator package:
+```
+createWikiDataUrl(lang)
+createWikiMediaUrl(sectionNum, lang)
+createSingleWikiMediaPageUrl(pageName, lang)
+```
+
+We therefore need to allow the client to pass this extra arg in via the NodeJS app.  That means modifying theses API calls in the index.js file:
+```
+get('/api/list/:lang')
+get('/api/wiki-list/:id/:lang')
+get('/api/detail/:id/:lang')
+```
+
+And then pass the lang arg on to the curator calls.  Then, to test it out, in the dream app backend-api.service.ts file:
+```
+  private backendListUrl = '/api/list';
+  private backendWikiListUrl = '/api/wiki-list';
+  private backendDetailUrl = '/api/detail';
+```
+
+We can add the arg like this:
+```
+return this.httpClient.get<DetailModel>(this.backendDetailUrl+'/'+detailId+'/'+this.lang).pipe(data => data);
+```      
+
+Next, the problems.  Our list looks like this:
+```
+Q18570
+Q29598
+Q136783
+...
+```
+
+Can fix that with encodings.  Next, a console error:
+```
+core.js:1671 ERROR TypeError: Cannot read property 'text' of undefined
+    at ListPage.push../src/app/pages/list/list.page.ts.ListPage.parseList (list.page.ts:135)
+    at SafeSubscriber._next (list.page.ts:50)
+    at 
+```
+
+
 ## Handling CORS preflight options
 
 The Longifolia project is still having problems with CORS because we are not handling the preflight OPTIONS request properly.
@@ -90,7 +135,15 @@ However, this still does not allow the OPTIONS call to complete.  Saw this in th
  Tue, 07 Aug 2018 01:06:16 GMT express deprecated res.send(status): Use res.sendStatus(status) instead at index.js:25:9
 ```
 
-Worth ficing.
+Worth fixing.  But that will not solve this issue.  However, in the Ionic 4 app, we are now getting a new error:
+```
+http.js:1082 Refused to set unsafe header "Access-Control-Request-Method"
+...
+detail/magical%20thinking:1 Failed to load https://radiant-springs-38893.herokuapp.com/api/detail/magical%20thinking: Request header field Access-Control-Allow-Origin is not allowed by Access-Control-Allow-Headers in preflight response.
+```
+
+After removing the CORS headers from the service in that project, the detail API calls are permitted and this saga can end!
+
 
 ## Local storage options
 
