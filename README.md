@@ -98,13 +98,107 @@ Q136783
 ...
 ```
 
-Can fix that with encodings.  Next, a console error:
+Can fix that with encodings.  Or can we?  Those look more like Wikipedia item codes...
+
+It gets worse when we look at the url provided us from the curator for this page:
+```
+https://kr.wikipedia.org/w/api.php?action=parse&section=1&prop=text&format=json&page=List_of_cognitive_biases
+```
+
+The response being:
+```
+{"error":{"code":"missingtitle","info":"The page you specified doesn't exist.","*":"See https://kr.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/mailman/listinfo/mediawiki-api-announce&gt; for notice of API deprecations and breaking changes."},"servedby":"mw1344"}
+```
+
+The fact that there is no list of cognitive bias in Korean on Wikipedia should have been the first thing checked before this feature was begun.  There are 11 languages supported, so it wont be wasted.  Also, it will be good to plug these points of failure in the app and move towards more generic user generated categories.
+
+But being Korean is the only other language we wanted to test, it's a bit of a disappointment.  The encoding for Korean is kr, but changing [the url](https://kr.wikipedia.org/wiki/List_of_cognitive_biases) in the browser from en to kr points to a closed page that shows what it was a Kanuri page which is a language in Northern Nigeria.  So it's actually ko!
+
+The first bias on the list, Ambiguity effect lists nine languages:
+```
+bn	এম্বিগিউইটি প্রভাব
+cs	Ambiguity effect
+en	Ambiguity effect
+fa	اثر فرار از ابهام
+fr	Effet d'ambiguité
+nl	Ambiguïteitseffect
+pt	Efeito de ambiguidade
+ru	Эффект неоднозначности
+uk	Ефект неоднозначності
+```
+
+The main list of biases supports 12:
+```
+az	Təhrif
+ca	Llista de biaixos cognitius
+de	Liste von kognitiven Verzerrungen
+en	List of cognitive biases
+es	Anexo:Sesgos cognitivos
+fa	فهرست سوگیری‌های شناختی
+pl	Lista błędów poznawczych
+pt	Lista de vieses cognitivos
+ru	Список когнитивных искажений
+th	รายชื่อความเอนเอียงทางประชาน
+uk	Перелік когнітивних упереджень
+zh	認知偏誤列表
+```
+
+So this would be the main problem with even trying to support one setting for languages.  The full list would lead to dead ends for a lot of languages.
+
+Possibly we could let the user choose an available language on the detail page.  We should see about getting the list back and deal with the main list translations later.
+
+Anyhow, it we back up and use the correct indicator for Korean (ko not kr), we get a partial list like this:
+```
+호손 효과
+현상유지편향
+주술적 사고
+Q177603
+Q178647
+Q182490
+```
+
+Choosing the first item, the app will use this url:
+https://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=호손_효과
+
+This page does exist, but the category is encoded and would look like this:
+https://ko.wikipedia.org/wiki/%ED%98%B8%EC%86%90_%ED%9A%A8%EA%B3%BC
+
+We're still getting the text error:
 ```
 core.js:1671 ERROR TypeError: Cannot read property 'text' of undefined
     at ListPage.push../src/app/pages/list/list.page.ts.ListPage.parseList (list.page.ts:135)
     at SafeSubscriber._next (list.page.ts:50)
-    at 
 ```
+
+So we should start with that, and then encode our subject, then get rid of the Q... items, and then we can deal with separating the language option to more locations, such as the list and individual pages.  If we could get that list of available languages, we could automatically generate a select on the detail page for easy use.
+
+The error is for the WikiMedia sections which don't exist.  We can catch the error, but how should the app report to the user that there are no WikiMedia lists to merge with the WikiData list?  To be decided.
+
+Next, the codes instead of labels.  The data for one item looks like this:
+```
+{
+      "cognitive_bias" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q177603"
+      },
+      "cognitive_biasLabel" : {
+        "type" : "literal",
+        "value" : "Q177603"
+      }
+    }
+```
+
+This is the social perception bias.  Following that link shows among other things, this:
+*Korean	No label defined  No description defined*
+
+Compare that with what we get for our first item:
+```
+"호손 효과" : "http://www.wikidata.org/entity/Q18570"
+```
+
+This page has *Korean 호손 효과 No description defined*
+
+So we can safely exclude items that have a label with Q and a number.
 
 
 ## Handling CORS preflight options

@@ -56,7 +56,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 var routes = [
-    { path: 'detail/:id', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+    { path: 'detail/:id/:listLanguage', loadChildren: './pages/detail/detail.module#DetailPageModule' },
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
@@ -279,7 +279,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<h2 class=\"header\">{{ title }} \n  <span *ngIf=\"list\"> {{ list.length }}</span>\n</h2>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> {{ title }}\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\">English</option>\n    <option value=\"ko\">Korean</option>\n  </select>\n</div>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -290,7 +290,7 @@ module.exports = "<h2 class=\"header\">{{ title }} \n  <span *ngIf=\"list\"> {{ 
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid #a2a9b1; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list li {\n  list-style-type: none;\n  color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: teal; }\n"
+module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid white;\n  padding-bottom: 10px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list li {\n  list-style-type: none;\n  color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: teal; }\n\n.left {\n  position: absolute;\n  left: 0; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px; }\n\n.right:focus, select:focus {\n  outline: none; }\n"
 
 /***/ }),
 
@@ -325,23 +325,52 @@ var ListPage = /** @class */ (function () {
     function ListPage(backendApiService, router) {
         this.backendApiService = backendApiService;
         this.router = router;
-        this.title = 'List of Cognitive Biases';
+        this.title = 'Cognitive Biases';
         this.repeats = 0;
         this.media = 0;
+        this.listLanguage = 'en';
     }
     ListPage.prototype.ngOnInit = function () {
         var _this = this;
         if (!this.list) {
-            this.backendApiService.getList().subscribe(function (data) {
+            this.list = [];
+            this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
                 _this.list = data['list'];
-                _this.list.forEach(function (item) {
-                    item.sortName = item.cognitive_biasLabel;
+                _this.list.slice().reverse().forEach(function (item, index, object) {
+                    if (!_this.languagePageDoesNotExist(item, index)) {
+                        _this.list.splice(object.length - 1 - index, 1);
+                    }
+                    else {
+                        item.sortName = item.cognitive_biasLabel;
+                    }
                 });
             }, function (error) {
                 console.error('error', error);
             });
             // get WikiMedia sections
             this.getWikiSection();
+        }
+    };
+    /**
+     * If a page only has a Q-code, it does not have data for that item in the language requested.
+     * Example:
+     * "cognitive_biasLabel" : {
+     *     "type" : "literal",
+     *     "value" : "Q177603"
+     * }
+     * @param item WikiData item to check if a language page exists
+     */
+    ListPage.prototype.languagePageDoesNotExist = function (item, index) {
+        var label = item.cognitive_biasLabel;
+        var first = label.substr(0, 1);
+        var second = label.substr(1, 2);
+        if (first === 'Q' && !isNaN(second) || typeof label === 'undefined') {
+            // no page exists
+            return false;
+        }
+        else {
+            // page exists
+            return true;
         }
     };
     /**
@@ -354,23 +383,25 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.getWikiSection = function () {
         var _this = this;
-        this.backendApiService.loadWikiMedia(1).subscribe(function (data) {
+        this.backendApiService.loadWikiMedia(1, this.listLanguage).subscribe(function (data) {
             var section = _this.parseList(data);
-            _this.addItems(section);
-            _this.backendApiService.loadWikiMedia(2).subscribe(function (data) {
-                var section = _this.parseList(data);
+            if (section) {
                 _this.addItems(section);
-                _this.backendApiService.loadWikiMedia(3).subscribe(function (data) {
+                _this.backendApiService.loadWikiMedia(2, _this.listLanguage).subscribe(function (data) {
                     var section = _this.parseList(data);
                     _this.addItems(section);
-                    // finally sort the list
-                    _this.list.sort(_this.dynamicSort('sortName'));
+                    _this.backendApiService.loadWikiMedia(3, _this.listLanguage).subscribe(function (data) {
+                        var section = _this.parseList(data);
+                        _this.addItems(section);
+                        // finally sort the list
+                        _this.list.sort(_this.dynamicSort('sortName'));
+                    }, function (error) {
+                        console.error('error in 3', error);
+                    });
                 }, function (error) {
-                    console.error('error in 3', error);
+                    console.error('error in 2', error);
                 });
-            }, function (error) {
-                console.error('error in 2', error);
-            });
+            }
         }, function (error) {
             console.error('error in 1', error);
         });
@@ -433,48 +464,63 @@ var ListPage = /** @class */ (function () {
      * @returns Array of name/desc objects
      */
     ListPage.prototype.parseList = function (data) {
-        var content = data['parse']['text']['*'];
-        var one = this.createElementFromHTML(content);
-        var desc = one.getElementsByClassName('mw-parser-output')[0].children;
-        var descriptions = [];
-        var category = desc[0].getElementsByClassName('mw-headline')[0].innerText;
-        // might use category descriptions later
-        // if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
-        //   console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
-        // } else {
-        //   console.log(desc[1]);
-        // }
-        var allDesc = desc[2];
-        var tableRows = allDesc.getElementsByTagName('tr');
-        for (var i = 0; i < tableRows.length; i++) {
-            var tableDiv = tableRows[i].getElementsByTagName('td');
-            if (typeof tableDiv[0] !== 'undefined') {
-                var itemDesc = void 0;
-                if (typeof tableDiv[1] !== 'undefined') {
-                    itemDesc = tableDiv[1].innerText;
+        try {
+            var content = data['parse']['text']['*'];
+            var one = this.createElementFromHTML(content);
+            var desc = one.getElementsByClassName('mw-parser-output')[0].children;
+            var descriptions = [];
+            var category = desc[0].getElementsByClassName('mw-headline')[0].innerText;
+            // might use category descriptions later
+            // if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
+            //   console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
+            // } else {
+            //   console.log(desc[1]);
+            // }
+            var allDesc = desc[2];
+            var tableRows = allDesc.getElementsByTagName('tr');
+            for (var i = 0; i < tableRows.length; i++) {
+                var tableDiv = tableRows[i].getElementsByTagName('td');
+                if (typeof tableDiv[0] !== 'undefined') {
+                    var itemDesc = void 0;
+                    if (typeof tableDiv[1] !== 'undefined') {
+                        itemDesc = tableDiv[1].innerText;
+                    }
+                    var itemName = void 0;
+                    if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
+                        itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+                    }
+                    else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
+                        itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
+                    }
+                    else if (typeof tableDiv[0].innerText !== 'undefined') {
+                        itemName = tableDiv[0].innerText;
+                    }
+                    else {
+                        console.log('failed to get', tableDiv[0]);
+                    }
+                    var newItem = {
+                        'name': itemName,
+                        'desc': itemDesc,
+                        'category': category
+                    };
+                    descriptions.push(newItem);
                 }
-                var itemName = void 0;
-                if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
-                    itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-                }
-                else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
-                    itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
-                }
-                else if (typeof tableDiv[0].innerText !== 'undefined') {
-                    itemName = tableDiv[0].innerText;
-                }
-                else {
-                    console.log('failed to get', tableDiv[0]);
-                }
-                var newItem = {
-                    'name': itemName,
-                    'desc': itemDesc,
-                    'category': category
-                };
-                descriptions.push(newItem);
             }
+            return descriptions;
         }
-        return descriptions;
+        catch (err) {
+            console.log(data['error']['info']);
+        }
+    };
+    /**
+     * Set the lang, delete the list and call on init again.
+     * This will have to change for local storage.
+     * @param value event from the lang select
+     */
+    ListPage.prototype.onLanguageChange = function (value) {
+        this.listLanguage = value;
+        this.list = null;
+        this.ngOnInit();
     };
     /**
      * Convert the result content to an html node for easy access to the content.
@@ -501,7 +547,7 @@ var ListPage = /** @class */ (function () {
     };
     ListPage.prototype.navigateAction = function (item) {
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-        this.router.navigate(['detail/' + itemRoute]);
+        this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage]);
     };
     ListPage = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -548,25 +594,19 @@ var BackendApiService = /** @class */ (function () {
         this.backendListUrl = '/api/list';
         this.backendWikiListUrl = '/api/wiki-list';
         this.backendDetailUrl = '/api/detail';
-        this.lang = 'kr';
     }
     // get("/api/contacts")
-    BackendApiService.prototype.getList = function () {
+    BackendApiService.prototype.getList = function (lang) {
         var _this = this;
-        if (this.listData) {
-            return this.listData;
-        }
-        else {
-            return this.httpClient.get(this.backendListUrl + '/' + this.lang)
-                .pipe(function (data) { return _this.listData = data; });
-        }
+        return this.httpClient.get(this.backendListUrl + '/' + lang)
+            .pipe(function (data) { return _this.listData = data; });
     };
-    BackendApiService.prototype.getDetail = function (detailId) {
-        return this.httpClient.get(this.backendDetailUrl + '/' + detailId + '/' + this.lang)
+    BackendApiService.prototype.getDetail = function (detailId, lang) {
+        return this.httpClient.get(this.backendDetailUrl + '/' + detailId + '/' + lang)
             .pipe(function (data) { return data; });
     };
-    BackendApiService.prototype.loadWikiMedia = function (sectionNum) {
-        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + this.lang)
+    BackendApiService.prototype.loadWikiMedia = function (sectionNum, lang) {
+        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + lang)
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.createElementFromHTML = function (htmlString) {

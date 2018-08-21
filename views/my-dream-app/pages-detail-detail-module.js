@@ -105,8 +105,9 @@ var DetailPage = /** @class */ (function () {
     DetailPage.prototype.ngOnInit = function () {
         var _this = this;
         this.itemName = this.route.snapshot.paramMap.get('id');
+        var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         this.title = this.itemName.split('_').join(' ');
-        this.backendApiService.getDetail(this.itemName).subscribe(function (data) {
+        this.backendApiService.getDetail(this.itemName, listLanguage).subscribe(function (data) {
             _this.description = data['description'].toString();
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
