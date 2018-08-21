@@ -19,8 +19,9 @@ export class DetailPage implements OnInit {
 
   ngOnInit() {
     this.itemName = this.route.snapshot.paramMap.get('id');
+    const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     this.title = this.itemName.split('_').join(' ');
-    this.backendApiService.getDetail(this.itemName).subscribe(
+    this.backendApiService.getDetail(this.itemName,listLanguage).subscribe(
       data => {
         this.description = data['description'].toString();
         this.description = this.description.split('href="/wiki/')

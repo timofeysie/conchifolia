@@ -11,27 +11,22 @@ export class BackendApiService {
   private backendWikiListUrl = '/api/wiki-list';
   private backendDetailUrl = '/api/detail';
   private listData;
-  private lang = 'kr'
 
   constructor (private  httpClient:  HttpClient) {}
 
   // get("/api/contacts")
-  getList() {
-    if (this.listData) {
-      return this.listData;
-    } else {
-      return this.httpClient.get<ListModel>(this.backendListUrl+'/'+this.lang)
+  getList(lang) {
+      return this.httpClient.get<ListModel>(this.backendListUrl+'/'+lang)
       .pipe(data => this.listData = data);
-    }
   }
 
-  getDetail(detailId: String){
-    return this.httpClient.get<DetailModel>(this.backendDetailUrl + '/' + detailId + '/' + this.lang)
+  getDetail(detailId: string, lang: string){
+    return this.httpClient.get<DetailModel>(this.backendDetailUrl + '/' + detailId + '/' + lang)
       .pipe(data => data);
   }
 
-  loadWikiMedia(sectionNum) {
-    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + this.lang)
+  loadWikiMedia(sectionNum, lang: string) {
+    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + lang)
       .pipe(data => data)
   }
 

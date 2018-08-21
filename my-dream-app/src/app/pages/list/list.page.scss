@@ -1,6 +1,7 @@
 .header {
     text-align:center;
-    border-bottom: 1px solid #a2a9b1;
+    border-bottom: 1px solid white;
+    padding-bottom: 10px;
 }
 .small_arrow {
     font-size: 1em;
@@ -25,4 +26,17 @@ ion-item-options {
 }
 .list__text-wikimedia {
     color: teal;
+}
+.left {
+    position: absolute;
+    left: 0;
+}
+.right {
+    position: absolute;
+    right: 0;
+    border:0px;
+   outline:0px;
+}
+.right:focus, select:focus{
+    outline: none;
 }

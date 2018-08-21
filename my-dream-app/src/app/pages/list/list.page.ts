@@ -9,10 +9,11 @@ import { Router } from '@angular/router';
   styleUrls: ['list.page.scss'],
 })
 export class ListPage implements OnInit  {
-  title = 'List of Cognitive Biases';
+  title = 'Cognitive Biases';
   list: DetailModel[];
   repeats: number = 0;
   media: number = 0;
+  listLanguage: string = 'en';
   constructor(
     private backendApiService: BackendApiService,
     private router: Router) {
@@ -20,19 +21,47 @@ export class ListPage implements OnInit  {
   
   ngOnInit() {
     if (!this.list) {
-      this.backendApiService.getList().subscribe(
+      this.list = [];
+      this.backendApiService.getList(this.listLanguage).subscribe(
         data => {
           this.list = data['list'];
-          this.list.forEach((item) => {
-            item.sortName = item.cognitive_biasLabel;
-          })
+          this.list.slice().reverse().forEach((item, index, object) => {
+            if (!this.languagePageDoesNotExist(item, index)) {
+              this.list.splice(object.length - 1 - index, 1);
+            } else {
+              item.sortName = item.cognitive_biasLabel;
+            }
+          });
         },
         error => {
           console.error('error',error);
         }
+        
       );
       // get WikiMedia sections
       this.getWikiSection();
+    }
+  }
+
+  /**
+   * If a page only has a Q-code, it does not have data for that item in the language requested.
+   * Example:
+   * "cognitive_biasLabel" : {
+   *     "type" : "literal",
+   *     "value" : "Q177603"
+   * }
+   * @param item WikiData item to check if a language page exists
+   */
+  languagePageDoesNotExist(item, index) {
+    let label = item.cognitive_biasLabel;
+    let first = label.substr(0,1);
+    let second = label.substr(1,2);
+    if (first === 'Q' && !isNaN(second) || typeof label === 'undefined') {
+        // no page exists
+        return false;
+    } else {
+      // page exists
+      return true;
     }
   }
 
@@ -45,20 +74,21 @@ export class ListPage implements OnInit  {
    * @param sectionNum Number of section to get
    */
   getWikiSection() {
-    this.backendApiService.loadWikiMedia(1).subscribe(
+    this.backendApiService.loadWikiMedia(1,this.listLanguage).subscribe(
       data => {
         const section = this.parseList(data);
-        this.addItems(section);
-        this.backendApiService.loadWikiMedia(2).subscribe(
-          data => {
-            const section = this.parseList(data);
-            this.addItems(section);
-            this.backendApiService.loadWikiMedia(3).subscribe(
-              data => {
-                const section = this.parseList(data);
-                this.addItems(section);
-                // finally sort the list
-                this.list.sort(this.dynamicSort('sortName'));
+          if (section) {
+          this.addItems(section);
+          this.backendApiService.loadWikiMedia(2,this.listLanguage).subscribe(
+            data => {
+              const section = this.parseList(data);
+              this.addItems(section);
+              this.backendApiService.loadWikiMedia(3,this.listLanguage).subscribe(
+                data => {
+                  const section = this.parseList(data);
+                  this.addItems(section);
+                  // finally sort the list
+                  this.list.sort(this.dynamicSort('sortName'));
             },
               error => {
                 console.error('error in 3',error);
@@ -67,6 +97,7 @@ export class ListPage implements OnInit  {
           error => {
             console.error('error in 2',error);
         });
+      }
     },
       error => {
         console.error('error in 1',error);
@@ -132,6 +163,7 @@ export class ListPage implements OnInit  {
    * @returns Array of name/desc objects
    */
   parseList(data: any) {
+    try {
     const content = data['parse']['text']['*'];
     let one = this.createElementFromHTML(content);
     const desc:any = one.getElementsByClassName('mw-parser-output')[0].children;
@@ -171,6 +203,20 @@ export class ListPage implements OnInit  {
       }
     }
     return descriptions;
+    } catch (err) {
+      console.log(data['error']['info']);
+    }
+  }
+
+  /**
+   * Set the lang, delete the list and call on init again.
+   * This will have to change for local storage.
+   * @param value event from the lang select
+   */
+  onLanguageChange(value) {
+    this.listLanguage = value;
+    this.list = null;
+    this.ngOnInit();
   }
 
   /**
@@ -200,7 +246,7 @@ export class ListPage implements OnInit  {
 
   navigateAction(item: string) {
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-    this.router.navigate(['detail/'+itemRoute]);
+    this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);
   }
   
 }

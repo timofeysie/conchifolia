@@ -1,8 +1,16 @@
-<h2 class="header">{{ title }} 
-  <span *ngIf="list"> {{ list.length }}</span>
-</h2>
+<div class="header">
+  <div class="left">
+    <span *ngIf="list"> {{ list.length }}</span> {{ title }}
+  </div>
+  <select name="listLang" 
+    class="right"
+    (change)="onLanguageChange($event.target.value)">
+    <option value="en">English</option>
+    <option value="ko">Korean</option>
+  </select>
+</div>
 <ul class="list">
-  <div *ngFor="let item of list">
+  <div *ngFor="let item of list; let i = index">
     <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
       <h4 (click)="navigateAction(item.sortName)"
         [ngClass]="{
