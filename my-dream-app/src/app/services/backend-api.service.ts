@@ -26,7 +26,9 @@ export class BackendApiService {
   }
 
   loadWikiMedia(sectionNum, lang: string) {
-    return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + lang)
+    return this.httpClient.get(
+      encodeURI(
+        this.backendWikiListUrl + '/' + sectionNum + '/' + lang))
       .pipe(data => data)
   }
 
