@@ -602,11 +602,11 @@ var BackendApiService = /** @class */ (function () {
             .pipe(function (data) { return _this.listData = data; });
     };
     BackendApiService.prototype.getDetail = function (detailId, lang) {
-        return this.httpClient.get(this.backendDetailUrl + '/' + detailId + '/' + lang)
+        return this.httpClient.get(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang))
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.loadWikiMedia = function (sectionNum, lang) {
-        return this.httpClient.get(this.backendWikiListUrl + '/' + sectionNum + '/' + lang)
+        return this.httpClient.get(encodeURI(this.backendWikiListUrl + '/' + sectionNum + '/' + lang))
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.createElementFromHTML = function (htmlString) {

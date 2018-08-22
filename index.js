@@ -118,7 +118,7 @@ express()
   })
   .get('/api/detail/:id/:lang', function(req, res) {
     console.log('id',req.params.id);
-    let singlePageUrl = curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang);
+    let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang));
         let newUrl = singlePageUrl.replace('http','https');
         https.get(newUrl, (wikiRes) => {
             let rawData = '';

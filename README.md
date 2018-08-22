@@ -198,7 +198,49 @@ Compare that with what we get for our first item:
 
 This page has *Korean 호손 효과 No description defined*
 
-So we can safely exclude items that have a label with Q and a number.
+So we can safely exclude items that have a label with Q and a number.  After this we add a select to the list page and we have i18n on the list.  However, the detail pages give a
+```
+"Http failure response for https://radiant-springs-38893.herokuapp.com/api/detail/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/ko: 500 Internal Server Error"
+```
+
+In the server console, we are seeing:
+```
+id 호손_효과
+wikiRes.headers { date: 'Wed, 22 Aug 2018 00:54:12 GMT',
+  'content-type': 'application/json; charset=utf-8',
+  'content-length': '573',
+  connection: 'close',
+  server: 'mw1233.eqiad.wmnet',
+  'x-powered-by': 'HHVM/3.18.6-dev',
+  'mediawiki-api-error': 'missingtitle',
+  p3p: 'CP="This is not a P3P policy! See https://ko.wikipedia.org/wiki/%ED%8A%B9%EC%88%98:CentralAutoLogin/P3P for more info."',
+  'cache-control': 'private, must-revalidate, max-age=0',
+  vary: 'Accept-Encoding',
+  'content-disposition': 'inline; filename=api-result.json',
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+  'backend-timing': 'D=28540 t=1534899252332751',
+  'x-varnish': '556411686, 676824251, 248249759, 722088521',
+  via: '1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1)',
+  'accept-ranges': 'bytes',
+  age: '0',
+  'x-cache': 'cp1085 pass, cp2013 pass, cp5009 pass, cp5010 pass',
+  'x-cache-status': 'pass',
+  'strict-transport-security': 'max-age=106384710; includeSubDomains; preload',
+  'set-cookie': 
+   [ 'WMF-Last-Access=22-Aug-2018;Path=/;HttpOnly;secure;Expires=Sun, 23 Sep 2018 00:00:00 GMT',
+     'WMF-Last-Access-Global=22-Aug-2018;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Sun, 23 Sep 2018 00:00:00 GMT',
+     'GeoIP=AU:NSW:Yagoona:-33.90:151.02:v4; Path=/; secure; Domain=.wikipedia.org' ],
+  'x-analytics': 'https=1;nocookies=1',
+  'x-client-ip': '49.195.85.96' }
+Url: https://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=호손_효과
+```
+
+But after encoding the URL for the detail page, the 28 links are working as well as the English version.  There are still a lot of redirects and a few missing pages, just like the English version.  These issues will all be addressed soon.
+
+Right now we don't have local storage working for the Angular website.  When the user goes back, the list is reloaded and the default English list is shown even if you had just been viewing the Korean list and gone to a detail page.
+
+It works locally, but on Heroku, we are getting a 500 error.
 
 
 ## Handling CORS preflight options

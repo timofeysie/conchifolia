@@ -21,7 +21,7 @@ export class BackendApiService {
   }
 
   getDetail(detailId: string, lang: string){
-    return this.httpClient.get<DetailModel>(this.backendDetailUrl + '/' + detailId + '/' + lang)
+    return this.httpClient.get<DetailModel>(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang))
       .pipe(data => data);
   }
 
