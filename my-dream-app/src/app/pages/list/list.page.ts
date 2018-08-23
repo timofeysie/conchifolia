@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BackendApiService } from '../../services/backend-api.service';
 import { DetailModel } from '../../models/detail.model';
 import { Router } from '@angular/router';
-
+import { DataService } from '../../services/data.service';
 @Component({
   selector: 'app-page-list',
   templateUrl: 'list.page.html',
@@ -13,15 +13,47 @@ export class ListPage implements OnInit  {
   list: DetailModel[];
   repeats: number = 0;
   media: number = 0;
-  listLanguage: string = 'en';
+  listLanguage: string;
+  listName = 'list';
+  optionsName = 'options';
   constructor(
     private backendApiService: BackendApiService,
-    private router: Router) {
+    private router: Router,
+    private dataService: DataService) {
      }
   
   ngOnInit() {
-    if (!this.list) {
-      this.list = [];
+    this.getOptionsViaStorage().then(() => {
+      this.getListViaStorage();
+    });
+  }
+
+  getOptionsViaStorage() {
+    return new Promise((resolve, reject) => {
+      this.dataService.getItemViaStorage(this.optionsName).then((result:any) => {
+        if (result) {
+          this.listLanguage = result;
+          resolve();
+        }
+      }).catch(() => {
+        this.listLanguage = 'en';
+        resolve();
+      });
+    })
+  }
+
+  getListViaStorage() {
+    this.dataService.getItemViaStorage(this.listLanguage+'-'+this.listName).then((result:any) => {
+      if (result) {
+        this.list = result;
+      }
+    }).catch(() => {
+      this.getListViaHttp();
+    }) 
+  }
+
+  getListViaHttp() {
+    this.list = [];
       this.backendApiService.getList(this.listLanguage).subscribe(
         data => {
           this.list = data['list'];
@@ -32,15 +64,12 @@ export class ListPage implements OnInit  {
               item.sortName = item.cognitive_biasLabel;
             }
           });
-        },
-        error => {
-          console.error('error',error);
-        }
-        
-      );
-      // get WikiMedia sections
-      this.getWikiSection();
-    }
+          this.getWikiSection();
+      },
+      error => {
+        console.error('error',error);
+      }
+    );
   }
 
   /**
@@ -87,8 +116,9 @@ export class ListPage implements OnInit  {
                 data => {
                   const section = this.parseList(data);
                   this.addItems(section);
-                  // finally sort the list
+                  // finally sort the list and store it
                   this.list.sort(this.dynamicSort('sortName'));
+                  this.dataService.setItem(this.listLanguage+'-'+this.listName,this.list);
             },
               error => {
                 console.error('error in 3',error);
@@ -216,6 +246,7 @@ export class ListPage implements OnInit  {
   onLanguageChange(value) {
     this.listLanguage = value;
     this.list = null;
+    this.dataService.setItem(this.optionsName,this.listLanguage);
     this.ngOnInit();
   }
 

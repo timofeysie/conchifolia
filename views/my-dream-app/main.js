@@ -149,15 +149,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _services_backend_api_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/backend-api.service */ "./src/app/services/backend-api.service.ts");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
-/* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! .//app-routing.module */ "./src/app/app-routing.module.ts");
-/* harmony import */ var _pages_list_list_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pages/list/list.module */ "./src/app/pages/list/list.module.ts");
+/* harmony import */ var _services_data_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/data.service */ "./src/app/services/data.service.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! .//app-routing.module */ "./src/app/app-routing.module.ts");
+/* harmony import */ var _pages_list_list_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/list/list.module */ "./src/app/pages/list/list.module.ts");
+/* harmony import */ var angular_webstorage_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! angular-webstorage-service */ "./node_modules/angular-webstorage-service/bundles/angular-webstorage-service.es5.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -175,11 +179,12 @@ var AppModule = /** @class */ (function () {
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
-                _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClientModule"],
-                _app_routing_module__WEBPACK_IMPORTED_MODULE_5__["AppRoutingModule"],
-                _pages_list_list_module__WEBPACK_IMPORTED_MODULE_6__["ListPageModule"]
+                _angular_common_http__WEBPACK_IMPORTED_MODULE_5__["HttpClientModule"],
+                _app_routing_module__WEBPACK_IMPORTED_MODULE_6__["AppRoutingModule"],
+                _pages_list_list_module__WEBPACK_IMPORTED_MODULE_7__["ListPageModule"],
+                angular_webstorage_service__WEBPACK_IMPORTED_MODULE_8__["StorageServiceModule"]
             ],
-            providers: [_services_backend_api_service__WEBPACK_IMPORTED_MODULE_3__["BackendApiService"]],
+            providers: [_services_backend_api_service__WEBPACK_IMPORTED_MODULE_3__["BackendApiService"], _services_data_service__WEBPACK_IMPORTED_MODULE_4__["DataService"]],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"]]
         })
     ], AppModule);
@@ -279,7 +284,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> {{ title }}\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\">English</option>\n    <option value=\"ko\">Korean</option>\n  </select>\n</div>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> {{ title }}\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -308,6 +313,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_backend_api_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/backend-api.service */ "./src/app/services/backend-api.service.ts");
 /* harmony import */ var _models_detail_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../models/detail.model */ "./src/app/models/detail.model.ts");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var _services_data_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../services/data.service */ "./src/app/services/data.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -321,35 +327,66 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var ListPage = /** @class */ (function () {
-    function ListPage(backendApiService, router) {
+    function ListPage(backendApiService, router, dataService) {
         this.backendApiService = backendApiService;
         this.router = router;
+        this.dataService = dataService;
         this.title = 'Cognitive Biases';
         this.repeats = 0;
         this.media = 0;
-        this.listLanguage = 'en';
+        this.listName = 'list';
+        this.optionsName = 'options';
     }
     ListPage.prototype.ngOnInit = function () {
         var _this = this;
-        if (!this.list) {
-            this.list = [];
-            this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
-                _this.list = data['list'];
-                _this.list.slice().reverse().forEach(function (item, index, object) {
-                    if (!_this.languagePageDoesNotExist(item, index)) {
-                        _this.list.splice(object.length - 1 - index, 1);
-                    }
-                    else {
-                        item.sortName = item.cognitive_biasLabel;
-                    }
-                });
-            }, function (error) {
-                console.error('error', error);
+        this.getOptionsViaStorage().then(function () {
+            _this.getListViaStorage();
+        });
+    };
+    ListPage.prototype.getOptionsViaStorage = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.dataService.getItemViaStorage(_this.optionsName).then(function (result) {
+                if (result) {
+                    console.log('result', result);
+                    _this.listLanguage = result;
+                    resolve();
+                }
+            }).catch(function () {
+                _this.listLanguage = 'en';
+                resolve();
             });
-            // get WikiMedia sections
-            this.getWikiSection();
-        }
+        });
+    };
+    ListPage.prototype.getListViaStorage = function () {
+        var _this = this;
+        this.dataService.getItemViaStorage(this.listLanguage + '-' + this.listName).then(function (result) {
+            if (result) {
+                _this.list = result;
+            }
+        }).catch(function () {
+            _this.getListViaHttp();
+        });
+    };
+    ListPage.prototype.getListViaHttp = function () {
+        var _this = this;
+        this.list = [];
+        this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
+            _this.list = data['list'];
+            _this.list.slice().reverse().forEach(function (item, index, object) {
+                if (!_this.languagePageDoesNotExist(item, index)) {
+                    _this.list.splice(object.length - 1 - index, 1);
+                }
+                else {
+                    item.sortName = item.cognitive_biasLabel;
+                }
+            });
+            _this.getWikiSection();
+        }, function (error) {
+            console.error('error', error);
+        });
     };
     /**
      * If a page only has a Q-code, it does not have data for that item in the language requested.
@@ -393,8 +430,9 @@ var ListPage = /** @class */ (function () {
                     _this.backendApiService.loadWikiMedia(3, _this.listLanguage).subscribe(function (data) {
                         var section = _this.parseList(data);
                         _this.addItems(section);
-                        // finally sort the list
+                        // finally sort the list and store it
                         _this.list.sort(_this.dynamicSort('sortName'));
+                        _this.dataService.setItem(_this.listLanguage + '-' + _this.listName, _this.list);
                     }, function (error) {
                         console.error('error in 3', error);
                     });
@@ -520,6 +558,7 @@ var ListPage = /** @class */ (function () {
     ListPage.prototype.onLanguageChange = function (value) {
         this.listLanguage = value;
         this.list = null;
+        this.dataService.setItem(this.optionsName, this.listLanguage);
         this.ngOnInit();
     };
     /**
@@ -556,7 +595,8 @@ var ListPage = /** @class */ (function () {
             styles: [__webpack_require__(/*! ./list.page.scss */ "./src/app/pages/list/list.page.scss")],
         }),
         __metadata("design:paramtypes", [_services_backend_api_service__WEBPACK_IMPORTED_MODULE_1__["BackendApiService"],
-            _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"]])
+            _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"],
+            _services_data_service__WEBPACK_IMPORTED_MODULE_4__["DataService"]])
     ], ListPage);
     return ListPage;
 }());
@@ -622,6 +662,62 @@ var BackendApiService = /** @class */ (function () {
         __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]])
     ], BackendApiService);
     return BackendApiService;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/services/data.service.ts":
+/*!******************************************!*\
+  !*** ./src/app/services/data.service.ts ***!
+  \******************************************/
+/*! exports provided: DataService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DataService", function() { return DataService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var angular_webstorage_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! angular-webstorage-service */ "./node_modules/angular-webstorage-service/bundles/angular-webstorage-service.es5.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+var DataService = /** @class */ (function () {
+    function DataService(storage) {
+        this.storage = storage;
+    }
+    DataService.prototype.setItem = function (itemName, item) {
+        return this.storage.set(itemName, item);
+    };
+    DataService.prototype.getItemViaStorage = function (itemName) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this.storage.get(itemName)) {
+                resolve((_this.storage.get(itemName)));
+            }
+            else {
+                reject();
+            }
+        });
+    };
+    DataService = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
+        __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(angular_webstorage_service__WEBPACK_IMPORTED_MODULE_1__["SESSION_STORAGE"])),
+        __metadata("design:paramtypes", [Object])
+    ], DataService);
+    return DataService;
 }());
 
 

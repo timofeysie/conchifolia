@@ -240,7 +240,51 @@ But after encoding the URL for the detail page, the 28 links are working as well
 
 Right now we don't have local storage working for the Angular website.  When the user goes back, the list is reloaded and the default English list is shown even if you had just been viewing the Korean list and gone to a detail page.
 
-It works locally, but on Heroku, we are getting a 500 error.
+Quickly adding a somewhat popular local storage option called [Angular Web Storage Service](https://www.npmjs.com/package/angular-webstorage-service).  But this option seems to be not as simple to use as the Ionic Storage that was using in Conchifolia.
+
+The basic get example:
+```
+this.storage.get(itemName).then((val) => {
+            resolve(val);
+          });
+```
+
+Fails with an error that says cannot read 'then' of undefined.  So the get() function, if the list has not been stored yet, returns an error, not a promise catch block as was expected?  Anyhow, it seems strange to have to do this:
+```
+if (this.storage.get(itemName)) {
+  this.storage.get(itemName).then((val) => {
+    resolve(val);
+  });
+} else {
+    reject();
+}
+```
+
+But that seems to work.  However, there seems to be no way to check if the set function is completing.  Right now, the http method gets called each time, which would indicate that the storage is not working at all.  So maybe the above code is just masking a setup issue with the storage lib?  If we put some console logs there:
+```
+if (this.storage.get(itemName)) {
+  console.log('1');
+  this.storage.get(itemName).then((val) => {
+    console.log('2');
+    resolve(val);
+  });
+} else {
+    reject();
+}
+```
+
+We can get to '1', but not '2'.  But if 1 is OK, then we should get to 2.  We are getting the result, but there *is* no then needed.  That get function just returns the result like this:
+```
+if (this.storage.get(itemName)) {
+    resolve(Object.values((this.storage.get(itemName))));
+} else {
+    reject();
+}
+```
+
+Not sure if this is how it should go down, but this web app is just a try out for the Ionic version, which already has local storage working.  We have to save the language choice option for now so that when the user goes back from a detail page in Korean, they land back on the Korean list.
+
+It was simple then to re-use the data service for storing a single language option.  We can add a list of options later, such as the sort order or whatever.  Now it's back to the Ionic app to implement i18n there.
 
 
 ## Handling CORS preflight options

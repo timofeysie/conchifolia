@@ -5,8 +5,8 @@
   <select name="listLang" 
     class="right"
     (change)="onLanguageChange($event.target.value)">
-    <option value="en">English</option>
-    <option value="ko">Korean</option>
+    <option value="en" selected="{{listLanguage === 'en'}}">English</option>
+    <option value="ko" selected="{{listLanguage === 'ko'}}">Korean</option>
   </select>
 </div>
 <ul class="list">

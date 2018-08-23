@@ -2,10 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BackendApiService } from './services/backend-api.service';
+import { DataService } from './services/data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './/app-routing.module';
 import { ListPageModule } from './pages/list/list.module';
-
+import { StorageServiceModule } from 'angular-webstorage-service';
 
 @NgModule({
   declarations: [
@@ -15,9 +16,10 @@ import { ListPageModule } from './pages/list/list.module';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    ListPageModule
+    ListPageModule,
+    StorageServiceModule
   ],
-  providers: [BackendApiService],
+  providers: [BackendApiService,DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
