@@ -44,7 +44,8 @@ ion-item-options {
     position: absolute;
     right: 0;
     border:0px;
-   outline:0px;
+    outline:0px;
+    background-color: beige;
 }
 .right:focus, select:focus{
     outline: none;
