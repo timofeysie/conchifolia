@@ -62,6 +62,18 @@ Planned features include:
 * component style library shared by all the app
 
 
+## Scroll position restoration
+
+Since reading about a new feature in Angular 6.1 called scrollPositionRestoration, we have been holding off in creating out own bookmarking feature.  So now, bumping the versions in the package.json file for Angular from "^6.0.3", to 6.1.4, trying it out at fist nothing has changed.  Of course we have done an npm i, then threw away the node_modules and did it again after that didn't work.
+
+Not sure if we are experiencing [this open issue](https://github.com/angular/angular/issues/24547).  That's for scroll positioning when the DOM is first rendered and before the async fetch function returns and populates the list, the scroll adjustment is made.  If it were static content this might not happen.  Only three days ago the last comment.  Have to watch this conversation and come back to this.
+
+Also took a moment up upgrade npm: *Update available 5.6.0 → 6.4.0*:
+```
+npm i -g npm
+```
+
+
 ## Updating server calls with language settings
 
 Since the client decided to add language settings to the API calls, these functions have been modified in the curator package:

@@ -1,3 +1,16 @@
+.header {
+    text-align: center;
+    border-bottom: 1px solid white;
+    padding-bottom: 6px;
+    position: fixed;
+    top: -5px;
+    left: 0px;
+    width: 100%;
+    margin-top: 5px;
+    background-color: beige;
+    opacity: 4.5;
+    height: 33px;
+}
 .back_arrow {
     font-size: 1.5em !important;
 }
@@ -6,11 +19,15 @@
     position: relative;
     top: 2px;
 }
+.title {
+    margin-top: -5px;
+}
 .title::first-letter {
     text-transform: capitalize;
 }
 .description {
     line-height: 1.7em;
+    padding-top: 35px;
 }
 .mw-cite-backlink,.cite-accessibility-label {
     -moz-user-select: none;
@@ -780,7 +797,6 @@ ol.references li:target,sup.reference:target {
 
     .mw-small-spinner {
         padding: 10px !important;
-        margin-right: 0.6em;
         background-image: url(/w/resources/src/mediawiki.legacy/images/spinner.gif?ca65b);
         background-position: center center;
         background-repeat: no-repeat
@@ -1432,7 +1448,6 @@ ol.references li:target,sup.reference:target {
     }
 
     html,body {
-        height: 100%;
         margin: 0;
         padding: 0;
         font-family: sans-serif
@@ -1703,7 +1718,6 @@ ol.references li:target,sup.reference:target {
         top: 0;
         right: 0;
         width: 1.65em;
-        height: 100%;
         cursor: pointer;
         text-indent: -99999px;
         direction: ltr;
@@ -1738,7 +1752,6 @@ ol.references li:target,sup.reference:target {
 
     .vectorTabs ul {
         float: left;
-        height: 100%;
         list-style-type: none;
         list-style-image: none;
         margin: 0;
@@ -1753,7 +1766,6 @@ ol.references li:target,sup.reference:target {
         float: left;
         line-height: 1.125em;
         display: block;
-        height: 100%;
         margin: 0;
         padding: 0;
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAABkCAIAAADITs03AAAAO0lEQVR4AeSKhREAMQzDdN5/5uixuEKDpqgBjl2f78wd2DVj1+26/h///PfteVMN7zoGebcg1/Y/ZQQAlAUtQCujIJMAAAAASUVORK5CYII=);
@@ -1798,7 +1810,6 @@ ol.references li:target,sup.reference:target {
         background-image: url(/w/skins/Vector/images/tab-break.png?09d4b);
         background-position: bottom right;
         background-repeat: no-repeat;
-        height: 100%
     }
 
     .vectorTabs span a {
@@ -1937,7 +1948,6 @@ ol.references li:target,sup.reference:target {
         z-index: 1;
         opacity: 0;
         width: 100%;
-        height: 100%;
         margin: 0;
         padding: 0;
         display: none

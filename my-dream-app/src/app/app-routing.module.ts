@@ -5,7 +5,7 @@ const routes: Routes = [
   { path: 'detail/:id/:listLanguage', loadChildren: './pages/detail/detail.module#DetailPageModule' },
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {scrollPositionRestoration: 'enabled'})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

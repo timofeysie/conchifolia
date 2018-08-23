@@ -1,7 +1,15 @@
 .header {
     text-align:center;
     border-bottom: 1px solid white;
-    padding-bottom: 10px;
+    padding-bottom: 25px;
+    position: fixed;
+    top: -5;
+    left: -1px;
+    width: 100%;
+    margin-top: 5px;
+    margin-top: -16px;
+    padding-top: 5px;
+    background-color: beige;
 }
 .small_arrow {
     font-size: 1em;
@@ -16,6 +24,7 @@ ion-item-options {
     text-transform: capitalize;
 }
 .list {
+    padding-top: 7px;
     li {
         list-style-type: none;
         color: green;
@@ -29,7 +38,7 @@ ion-item-options {
 }
 .left {
     position: absolute;
-    left: 0;
+    margin-left: 5px;
 }
 .right {
     position: absolute;
