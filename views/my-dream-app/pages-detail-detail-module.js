@@ -119,7 +119,7 @@ var DetailPage = /** @class */ (function () {
         }, function (error) {
             console.error('error', error);
             _this.showSpinner = false;
-            _this.message = error;
+            _this.message = error.status + ' Error ' + error.statusText;
         });
     };
     DetailPage = __decorate([
