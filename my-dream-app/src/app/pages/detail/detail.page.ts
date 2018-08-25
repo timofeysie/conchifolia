@@ -32,7 +32,7 @@ export class DetailPage implements OnInit {
       error => {
         console.error('error',error);
         this.showSpinner = false;
-        this.message = error;
+        this.message = error.status+' Error '+error.statusText;
       }
     );
   }

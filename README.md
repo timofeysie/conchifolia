@@ -25,6 +25,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Item State](#item-atate)
 1. [Implementing a spinner](#implementing-a-spinner)
 1. [Scroll position restoration](#Scroll-position-restoration)
 1. [Handling CORS preflight options](#handling-cors-preflight-options)
@@ -62,6 +63,49 @@ Planned features include:
 * detail page metrics (number of preambles, expand/contract preambles, footnotes)
 * create a new category
 * component style library shared by all the app
+
+
+## Detail errors
+
+
+Choosing zero-sum_bias causes a 500 error on the server.  The server logs show:
+```
+wikiRes.headers { date: 'Sat, 25 Aug 2018 21:26:00 GMT',
+  'content-type': 'application/json; charset=utf-8',
+  'content-length': '345',
+  connection: 'close',
+  server: 'mw1316.eqiad.wmnet',
+  'x-powered-by': 'HHVM/3.18.6-dev',
+  'mediawiki-api-error': 'missingtitle',
+  p3p: 'CP="This is not a P3P policy! See https://en.wikipedia.org/wiki/Special:CentralAutoLogin/P3P for more info."',
+  'cache-control': 'private, must-revalidate, max-age=0',
+  vary: 'Accept-Encoding',
+  'content-disposition': 'inline; filename=api-result.json',
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'SAMEORIGIN',
+  'backend-timing': 'D=37194 t=1535232360022838',
+  'x-varnish': '153898556, 471160060, 750619118, 957749309',
+  via: '1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1), 1.1 varnish (Varnish/5.1)',
+  'accept-ranges': 'bytes',
+  age: '0',
+  'x-cache': 'cp1083 pass, cp2013 pass, cp5010 pass, cp5010 pass',
+  'x-cache-status': 'pass',
+  'strict-transport-security': 'max-age=106384710; includeSubDomains; preload',
+  'set-cookie': 
+   [ 'WMF-Last-Access=25-Aug-2018;Path=/;HttpOnly;secure;Expires=Wed, 26 Sep 2018 12:00:00 GMT',
+     'WMF-Last-Access-Global=25-Aug-2018;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Wed, 26 Sep 2018 12:00:00 GMT',
+     'GeoIP=AU:NSW:Yagoona:-33.90:151.02:v4; Path=/; secure; Domain=.wikipedia.org' ],
+  'x-analytics': 'https=1;nocookies=1',
+  'x-client-ip': '49.195.85.96' }
+Url: https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=zero-sum_bias
+```
+
+The list will redirect to this link:
+```
+https://en.wikipedia.org/wiki/Zero-sum_thinking
+```
+
+This kind of thing needs to be handled on the server.  It should follow re-directs, or at least provide the re-direct page.  No one has decided yet how to handle all these missing pages.
 
 
 ## Item State
