@@ -3,6 +3,7 @@ import { BackendApiService } from '../../services/backend-api.service';
 import { DetailModel } from '../../models/detail.model';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/data.service';
+
 @Component({
   selector: 'app-page-list',
   templateUrl: 'list.page.html',

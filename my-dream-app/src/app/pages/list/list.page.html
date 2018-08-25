@@ -9,6 +9,7 @@
     <option value="ko" selected="{{listLanguage === 'ko'}}">Korean</option>
   </select>
 </div>
+<app-spinner *ngIf="!list"></app-spinner>
 <ul class="list">
   <div *ngFor="let item of list; let i = index">
     <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">

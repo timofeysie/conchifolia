@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './/app-routing.module';
 import { ListPageModule } from './pages/list/list.module';
 import { StorageServiceModule } from 'angular-webstorage-service';
+import { SharedModule } from './components/shared-module';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { StorageServiceModule } from 'angular-webstorage-service';
     HttpClientModule,
     AppRoutingModule,
     ListPageModule,
-    StorageServiceModule
+    StorageServiceModule,
+    SharedModule
   ],
   providers: [BackendApiService,DataService],
   bootstrap: [AppComponent]

@@ -25,6 +25,8 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Implementing a spinner](#implementing-a-spinner)
+1. [Scroll position restoration](#Scroll-position-restoration)
 1. [Handling CORS preflight options](#handling-cors-preflight-options)
 1. [Local storage options](#local-storage-options)
 1. [Adding WikiMedia Items to the list](#adding-wikimedia-items-to-the-list)
@@ -62,6 +64,40 @@ Planned features include:
 * component style library shared by all the app
 
 
+
+## Implementing a spinner
+
+Found a nice css only spinner to use.  Since we want to use this in multiple situations,  lets create a component for it instead of trying to share styles or create a global stylesheet which is considered an anti-pattern these days.
+
+Start off using the CLI:
+```
+$ ng generate component components/spinner
+```
+
+By default, the CLI will add the component to the declarations array in the app modules.  But this is not what we want.  We can only use that in one module, which you would think is the app.module class.  But then trying to use the spinner in a child module, like one of our pages will result in the usual error saying something like: *if spinner is an Angular component, then verify that it is part of this module.* or *the spinner angular component "is not a known element"*.
+
+You cannot import it into multiple child modules either, as Angular will complain.  I guess there are a lot of people out there creating a custom component for just one place in your app, but if you want to share the love, you could create a shared module to hold things like that.
+
+It looks something like this:
+```
+@NgModule({
+    imports: [ ],
+    declarations: [ SpinnerComponent ],
+    exports: [ SpinnerComponent ]
+})
+export class SharedModule {}
+```
+
+Then we import that in the app.module, as well as the other child modules, and we are good to go.  We will let each page handle showing or hiding the spinner like this:
+```
+<app-spinner *ngIf="showSpinner"></app-spinner>
+```
+
+With the spinner chosen, a more fitting name might be the 'pulsator'.
+
+
+
+
 ## Scroll position restoration
 
 Since reading about a new feature in Angular 6.1 called scrollPositionRestoration, we have been holding off in creating out own bookmarking feature.  So now, bumping the versions in the package.json file for Angular from "^6.0.3", to 6.1.4, trying it out at fist nothing has changed.  Of course we have done an npm i, then threw away the node_modules and did it again after that didn't work.
@@ -72,6 +108,8 @@ Also took a moment up upgrade npm: *Update available 5.6.0 → 6.4.0*:
 ```
 npm i -g npm
 ```
+
+Still, it's not doing what we expected it to do.  Will have to come back to this later, after issue 24547 has been closed and a new version with a fix is available.  If that doesn't happen then we can create our own list bookmarking.
 
 
 ## Updating server calls with language settings

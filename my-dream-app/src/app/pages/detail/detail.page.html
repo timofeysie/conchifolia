@@ -1,4 +1,6 @@
 <div class="header">
     <h2 class="title">{{title}}</h2>
 </div>
+<app-spinner *ngIf="showSpinner"></app-spinner>
 <p class="description" [innerHTML]="description"></p>
+<p *ngIf="message">{{message}}</p>

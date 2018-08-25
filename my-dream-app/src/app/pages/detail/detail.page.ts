@@ -12,7 +12,8 @@ export class DetailPage implements OnInit {
   title: string;
   description:any = [];
   wikiMediaCategory: string;
-
+  showSpinner: boolean = true;
+  message: any;
   constructor(
     private route: ActivatedRoute,
     private backendApiService: BackendApiService) { }
@@ -26,9 +27,12 @@ export class DetailPage implements OnInit {
         this.description = data['description'].toString();
         this.description = this.description.split('href="/wiki/')
           .join('href="https://en.wikipedia.org/wiki/');
+        this.showSpinner = false;
       },
       error => {
         console.error('error',error);
+        this.showSpinner = false;
+        this.message = error;
       }
     );
   }

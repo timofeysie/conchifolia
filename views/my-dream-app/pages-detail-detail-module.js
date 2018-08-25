@@ -14,12 +14,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/fesm5/common.js");
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _detail_page__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./detail.page */ "./src/app/pages/detail/detail.page.ts");
+/* harmony import */ var _components_shared_module__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/shared-module */ "./src/app/components/shared-module.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -37,6 +39,7 @@ var DetailPageModule = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             imports: [
                 _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"],
+                _components_shared_module__WEBPACK_IMPORTED_MODULE_4__["SharedModule"],
                 _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterModule"].forChild(routes)
             ],
             declarations: [_detail_page__WEBPACK_IMPORTED_MODULE_3__["DetailPage"]]
@@ -56,7 +59,7 @@ var DetailPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n    <h2 class=\"title\">{{title}}</h2>\n</div>\n<p class=\"description\" [innerHTML]=\"description\"></p>"
+module.exports = "<div class=\"header\">\n    <h2 class=\"title\">{{title}}</h2>\n</div>\n<app-spinner *ngIf=\"showSpinner\"></app-spinner>\n<p class=\"description\" [innerHTML]=\"description\"></p>\n<p *ngIf=\"message\">{{message}}</p>"
 
 /***/ }),
 
@@ -101,6 +104,7 @@ var DetailPage = /** @class */ (function () {
         this.route = route;
         this.backendApiService = backendApiService;
         this.description = [];
+        this.showSpinner = true;
     }
     DetailPage.prototype.ngOnInit = function () {
         var _this = this;
@@ -111,8 +115,11 @@ var DetailPage = /** @class */ (function () {
             _this.description = data['description'].toString();
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
+            _this.showSpinner = false;
         }, function (error) {
             console.error('error', error);
+            _this.showSpinner = false;
+            _this.message = error;
         });
     };
     DetailPage = __decorate([
