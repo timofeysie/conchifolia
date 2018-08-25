@@ -1,9 +1,8 @@
 .header {
     text-align:center;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
     padding-bottom: 25px;
     position: fixed;
-    top: -5;
     left: -1px;
     width: 100%;
     margin-top: 5px;
@@ -35,6 +34,9 @@ ion-item-options {
 }
 .list__text-wikimedia {
     color: LightSalmon;
+}
+.list__item--viewed {
+    opacity: 0.3;
 }
 .left {
     position: absolute;

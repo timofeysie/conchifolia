@@ -64,17 +64,61 @@ Planned features include:
 * component style library shared by all the app
 
 
+## Item State
+
+When a user chooses an item from the list, or slides it to show the short description (not implemented here yet), or any other action on the item changes its state.  In the Loranthifolia Ionic app, something like this is done when the user selects an item:
+```
+    this.list[i].detailState = 'viewed';
+    this.dataService.setItem(this.itemName, this.list);
+```
+
+This is what needs to be added to our detail.model class:
+```
+    detailState:  string; // un-viewed/viewed
+    descriptionState:  string; // un-viewed/viewed
+    itemState:  string; // show/removed
+    itemOrder:  string; // itemOrderNumber
+    listSortingProperty:  string; // property name (default sortName)
+```
+
+Combine that with the styles that get added or removed based on the change:
+```
+<span class="ion-list__defaultItem"
+    [ngClass]="{
+        'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
+        'list__text-wikimedia': !item.cognitive_biasLabel,
+        'list__item--viewed': item.detailState ==='viewed'}">
+```
+
+And the style:
+```
+.list__item--viewed {
+    opacity: 0.5;
+}
+```
+
+All this stuff works together to create the item state, JS, data model, conditional styles.  It almost seems like it could be a state component that could be used across all the apps.  Can't see how that would work right now since would operate on data model outside each item.  
+
+I suppose it would have to be a mix of components.  An item with state styles, a shared data model, and the calling page having to take care of changing the state.
+
 
 ## Implementing a spinner
 
-Found a nice css only spinner to use.  Since we want to use this in multiple situations,  lets create a component for it instead of trying to share styles or create a global stylesheet which is considered an anti-pattern these days.
+In the Ionic app, we can use the out of the box framework spinner like this"
+```
+<ion-spinner name="bubbles"></ion-spinner>
+```
+
+However, since this Angular app has no UI framework (by design), we need to create our own.
+
+With a quick search found a nice css only spinner to use.  Since we want to use this in multiple situations,  lets create a component for it instead of trying to share styles or create a global stylesheet which is considered an anti-pattern these days.
 
 Start off using the CLI:
 ```
 $ ng generate component components/spinner
 ```
 
-By default, the CLI will add the component to the declarations array in the app modules.  But this is not what we want.  We can only use that in one module, which you would think is the app.module class.  But then trying to use the spinner in a child module, like one of our pages will result in the usual error saying something like: *if spinner is an Angular component, then verify that it is part of this module.* or *the spinner angular component "is not a known element"*.
+By default, the CLI will add the component to the declarations array in the app modules.  But this is not what we want.  We can only use that in one module, which you would think is the app.module class.  But then trying to use the spinner in a child module, like one of our pages will result in the usual error saying something like: *if spinner is an Angular component, then verify that it is part of this module.* or *the spinner angular component is not a known element*.
 
 You cannot import it into multiple child modules either, as Angular will complain.  I guess there are a lot of people out there creating a custom component for just one place in your app, but if you want to share the love, you could create a shared module to hold things like that.
 
@@ -93,7 +137,7 @@ Then we import that in the app.module, as well as the other child modules, and w
 <app-spinner *ngIf="showSpinner"></app-spinner>
 ```
 
-With the spinner chosen, a more fitting name might be the 'pulsator'.
+With the spinner chosen, a more fitting name might be the 'pulsator'. 
 
 
 

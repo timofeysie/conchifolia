@@ -13,10 +13,11 @@
 <ul class="list">
   <div *ngFor="let item of list; let i = index">
     <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
-      <h4 (click)="navigateAction(item.sortName)"
+      <h4 (click)="navigateAction(item.sortName, i)"
         [ngClass]="{
           'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
-          'list__text-wikimedia': !item.cognitive_biasLabel}">
+          'list__text-wikimedia': !item.cognitive_biasLabel,
+          'list__item--viewed': item.detailState ==='viewed'}">
         {{ item.sortName }}
       </h4>
     </li>

@@ -20,4 +20,10 @@ export class DetailModel {
     wikiMedia_category: string;
     sortName: string;
     lang: string;
+    // item state
+    detailState:  string; // un-viewed/viewed
+    descriptionState:  string; // un-viewed/viewed
+    itemState:  string; // show/removed
+    itemOrder:  string; // itemOrderNumber
+    listSortingProperty:  string; // property name (default sortName)
 }

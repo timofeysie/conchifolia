@@ -276,7 +276,9 @@ export class ListPage implements OnInit  {
     return title;
   }
 
-  navigateAction(item: string) {
+  navigateAction(item: string, i: number) {
+    this.list[i].detailState = 'viewed';
+    this.dataService.setItem(this.listLanguage+'-'+this.listName, this.list);
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
     this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);
   }
