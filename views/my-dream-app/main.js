@@ -199,6 +199,69 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/components/icon/icon.component.css":
+/*!****************************************************!*\
+  !*** ./src/app/components/icon/icon.component.css ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = ""
+
+/***/ }),
+
+/***/ "./src/app/components/icon/icon.component.html":
+/*!*****************************************************!*\
+  !*** ./src/app/components/icon/icon.component.html ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div>\n  <svg height=\"16px\" \n    id=\"Layer_1\" \n    style=\"enable-background:new 0 0 16 16;\" \n    version=\"1.1\" \n    viewBox=\"0 0 16 16\" \n    width=\"16px\" \n    xml:space=\"preserve\" \n    xmlns=\"http://www.w3.org/2000/svg\" \n    xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n    <path d=\"M14,8c-0.609,0-0.898,0.43-1,0.883C12.635,10.516,11.084,13,8,13c-0.757,0-1.473-0.172-2.114-0.474L6.414,12  C6.773,11.656,7,11.445,7,11c0-0.523-0.438-1-1-1H3c-0.609,0-1,0.492-1,1v3c0,0.541,0.428,1,1,1c0.484,0,0.688-0.273,1-0.594  l0.408-0.407C5.458,14.632,6.685,15,8,15c4.99,0,7-4.75,7-5.938C15,8.336,14.469,8,14,8z M3,7.117C3.365,5.485,4.916,3,8,3  c0.757,0,1.473,0.171,2.114,0.473L9.586,4C9.227,4.344,9,4.555,9,5c0,0.523,0.438,1,1,1h3c0.609,0,1-0.492,1-1V2  c0-0.541-0.428-1-1-1c-0.484,0-0.688,0.273-1,0.594l-0.408,0.407C10.542,1.368,9.315,1,8,1C3.01,1,1,5.75,1,6.938  C1,7.664,1.531,8,2,8C2.609,8,2.898,7.57,3,7.117z\"/></svg>\n</div>\n"
+
+/***/ }),
+
+/***/ "./src/app/components/icon/icon.component.ts":
+/*!***************************************************!*\
+  !*** ./src/app/components/icon/icon.component.ts ***!
+  \***************************************************/
+/*! exports provided: IconComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IconComponent", function() { return IconComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+var IconComponent = /** @class */ (function () {
+    function IconComponent() {
+    }
+    IconComponent.prototype.ngOnInit = function () {
+    };
+    IconComponent = __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
+            selector: 'app-icon',
+            template: __webpack_require__(/*! ./icon.component.html */ "./src/app/components/icon/icon.component.html"),
+            styles: [__webpack_require__(/*! ./icon.component.css */ "./src/app/components/icon/icon.component.css")]
+        }),
+        __metadata("design:paramtypes", [])
+    ], IconComponent);
+    return IconComponent;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/components/shared-module.ts":
 /*!*********************************************!*\
   !*** ./src/app/components/shared-module.ts ***!
@@ -211,12 +274,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SharedModule", function() { return SharedModule; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _spinner_spinner_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./spinner/spinner.component */ "./src/app/components/spinner/spinner.component.ts");
+/* harmony import */ var _icon_icon_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./icon/icon.component */ "./src/app/components/icon/icon.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 var SharedModule = /** @class */ (function () {
@@ -226,10 +291,12 @@ var SharedModule = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             imports: [],
             declarations: [
-                _spinner_spinner_component__WEBPACK_IMPORTED_MODULE_1__["SpinnerComponent"]
+                _spinner_spinner_component__WEBPACK_IMPORTED_MODULE_1__["SpinnerComponent"],
+                _icon_icon_component__WEBPACK_IMPORTED_MODULE_2__["IconComponent"]
             ],
             exports: [
-                _spinner_spinner_component__WEBPACK_IMPORTED_MODULE_1__["SpinnerComponent"]
+                _spinner_spinner_component__WEBPACK_IMPORTED_MODULE_1__["SpinnerComponent"],
+                _icon_icon_component__WEBPACK_IMPORTED_MODULE_2__["IconComponent"]
             ]
         })
     ], SharedModule);
@@ -393,7 +460,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> {{ title }}\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName, i)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel,\n          'list__item--viewed': item.detailState ==='viewed'}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName, i)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel,\n          'list__item--viewed': item.detailState ==='viewed'}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -404,7 +471,7 @@ module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngI
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  padding-top: 7px; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n"
+module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  padding-top: 7px; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n"
 
 /***/ }),
 
@@ -457,6 +524,10 @@ var ListPage = /** @class */ (function () {
             _this.getListViaStorage();
         });
     };
+    ListPage.prototype.refreshList = function () {
+        console.log('this.getListViaHttp()');
+        this.getListViaHttp();
+    };
     /**
      * Get the options from local storage.
      */
@@ -478,20 +549,24 @@ var ListPage = /** @class */ (function () {
      * Get the list from local storage or if it doesn't exist, from the http service.
      */
     ListPage.prototype.getListViaStorage = function () {
-        this.getListViaHttp();
-        // this.dataService.getItemViaStorage(this.listLanguage+'-'+this.listName).then((result:any) => {
-        //   if (result) {
-        //     this.list = result;
-        //   }
-        // }).catch(() => {
-        //   this.getListViaHttp();
-        // }) 
+        var _this = this;
+        this.dataService.getItemViaStorage(this.listLanguage + '-' + this.listName).then(function (result) {
+            if (result) {
+                _this.list = result;
+            }
+        }).catch(function () {
+            _this.getListViaHttp();
+        });
     };
+    /**
+     * Get a list of items from the server using the language settings.
+     */
     ListPage.prototype.getListViaHttp = function () {
         var _this = this;
         this.list = [];
         this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
             _this.list = data['list'];
+            // remove items that do not have a page in the requested language
             _this.list.slice().reverse().forEach(function (item, index, object) {
                 if (!_this.languagePageDoesNotExist(item, index)) {
                     _this.list.splice(object.length - 1 - index, 1);
@@ -598,7 +673,7 @@ var ListPage = /** @class */ (function () {
                     this.list[j].wikiMedia_label = itemName;
                     this.list[j].wikiMedia_description = section[i].description;
                     this.list[j].wikiMedia_category = section[i].category;
-                    this.list[j].sortName = itemName;
+                    this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
                     if (backupTitle) {
                         this.list[j].backupTitle = backupTitle;
                     }
@@ -612,6 +687,7 @@ var ListPage = /** @class */ (function () {
                 wikiMediaObj.wikiMedia_description = section[i].description;
                 wikiMediaObj.wikiMedia_category = section[i].category;
                 wikiMediaObj.sortName = itemName.split('"').join('');
+                wikiMediaObj.sortName.charAt(0).toUpperCase() + wikiMediaObj.sortName.substr(1);
                 if (backupTitle) {
                     wikiMediaObj.backupTitle = backupTitle;
                 }
@@ -653,9 +729,15 @@ var ListPage = /** @class */ (function () {
                     var backupTitle = void 0; // used as a potential link when the name link returns a 500 error
                     if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
                         itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-                        var title = tableDiv[0].getElementsByTagName('a')[0].title;
-                        if (itemName !== title) {
-                            backupTitle = title;
+                        var titleProp = tableDiv[0].getElementsByTagName('a')[0].title;
+                        var backupLink = void 0;
+                        var href = tableDiv[0].getElementsByTagName('a')[0].href;
+                        if (href) {
+                            var slash = href.lastIndexOf('/');
+                            backupLink = href.substr(slash + 1, href.length);
+                        }
+                        if (itemName !== titleProp) {
+                            backupTitle = backupLink;
                         }
                     }
                     else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
@@ -720,17 +802,17 @@ var ListPage = /** @class */ (function () {
         return title;
     };
     /**
-     *
+     * Go to the detail page.  If an item has a backup title, add that to the route.
      * @param item Set state as viewed, get language setting, create list name, and/or title
      * And pass on to the detail page.
-     * @param i
+     * @param i item index
      */
     ListPage.prototype.navigateAction = function (item, i) {
         this.list[i].detailState = 'viewed';
         this.dataService.setItem(this.listLanguage + '-' + this.listName, this.list);
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
         if (typeof this.list[i]['backupTitle'] !== 'undefined') {
-            var backupTitle = this.list[i]['backupTitle'].replace(/\s+/g, '_').toLowerCase();
+            var backupTitle = this.list[i]['backupTitle'];
             this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
         }
         else {

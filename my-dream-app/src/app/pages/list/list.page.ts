@@ -32,6 +32,11 @@ export class ListPage implements OnInit  {
     });
   }
 
+  refreshList() {
+    console.log('this.getListViaHttp()');
+    this.getListViaHttp();
+  }
+
   /**
    * Get the options from local storage.
    */
@@ -186,7 +191,7 @@ export class ListPage implements OnInit  {
           this.list[j].wikiMedia_label = itemName;
           this.list[j].wikiMedia_description = section[i].description;
           this.list[j].wikiMedia_category = section[i].category;
-          this.list[j].sortName = itemName;
+          this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
           if (backupTitle) {
            this.list[j].backupTitle = backupTitle;
           }
@@ -200,6 +205,7 @@ export class ListPage implements OnInit  {
         wikiMediaObj.wikiMedia_description = section[i].description;
         wikiMediaObj.wikiMedia_category = section[i].category;
         wikiMediaObj.sortName = itemName.split('"').join('');
+        wikiMediaObj.sortName.charAt(0).toUpperCase() + wikiMediaObj.sortName.substr(1);
         if (backupTitle) {
           wikiMediaObj.backupTitle = backupTitle;
         }
@@ -242,9 +248,15 @@ export class ListPage implements OnInit  {
         let backupTitle; // used as a potential link when the name link returns a 500 error
         if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
           itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-          let title = tableDiv[0].getElementsByTagName('a')[0].title;
-          if (itemName !== title) {
-            backupTitle = title;
+          let titleProp = tableDiv[0].getElementsByTagName('a')[0].title;
+          let backupLink;
+          let href:string = tableDiv[0].getElementsByTagName('a')[0].href;
+          if (href) {
+            let slash = href.lastIndexOf('/');
+            backupLink = href.substr(slash+1,href.length);
+          }
+          if (itemName !== titleProp) {
+            backupTitle = backupLink;
           }
         } else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
           itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
@@ -319,7 +331,7 @@ export class ListPage implements OnInit  {
     this.dataService.setItem(this.listLanguage+'-'+this.listName, this.list);
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
     if (typeof this.list[i]['backupTitle'] !== 'undefined') {
-      let backupTitle = this.list[i]['backupTitle'].replace(/\s+/g, '_').toLowerCase();
+      let backupTitle = this.list[i]['backupTitle'];
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);
     } else {
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);    

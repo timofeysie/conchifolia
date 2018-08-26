@@ -162,6 +162,32 @@ A note about the routing here, we need to add a second route to pass a condition
     loadChildren: './pages/detail/detail.module#DetailPageModule' }
 ```
 
+Another catch here, is that once the app loads a list, it wont load it again and instead use the list from local storage.  So to start to address this (before the UX department can think of a better solution), we will put a refresh icon next to the list name in the header to force the app to load the list again.  Really, we need an options page for this app like we did for the Ionic app.  
+
+Instead of just adding the icon in line, we will make a component to hold the svg.  Is this a good idea?  Since we have no UI framework like Bootstrap or Material Design to use the icons from, seems like a new an improved way to handle icons needed by the app.  There could be multiple places where we want a refresh icon.
+
+Another feature would be to create one component for all the icons, and pass in the required icon name as a component input.  This is purely an Angular thing, but I'm guessing with the rise of Web Components, there will be a lot of options in the future that will do this kind of things without the overhead of any framework.
+
+Anyhow, after finish this part of our task and going thru the list above to confirm that the redirects are working, right off the bat there is another issue:
+```
+GET http://localhost:5000/api/detail/shy_tory_factor/en 500 (Internal Server Error)
+```
+
+But if we look at the actual link, it will be:
+```
+https://en.wikipedia.org/wiki/Shy_Tory_Factor
+```
+
+So in this case the title and the link text are also different.  Great.  Now we will have to parse the title from the href.  Not a big deal I guess, but we have to remember not to convert the underscore later.  Or it will have no affect anyhow.
+
+
+After all that however, we still get:
+```
+redirect error HttpErrorResponse {headers: HttpHeaders, status: 500, statusText: "Internal Server Error", url: "http://localhost:5000/api/detail/Shy_Tory_Factor/en", ok: false, …}
+```
+
+We have a feeling that the curator is lower-casing our urls, which is OK for most, but not all.
+
 
 ## Item State
 

@@ -1,6 +1,10 @@
 <div class="header">
   <div class="left">
-    <span *ngIf="list"> {{ list.length }}</span> {{ title }}
+    <span *ngIf="list"> {{ list.length }}</span> 
+      {{ title }} 
+    <span class="header__refreshIcon">
+      <app-icon (click)="refreshList()"></app-icon>
+    </span>
   </div>
   <select name="listLang" 
     class="right"

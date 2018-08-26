@@ -1,13 +1,16 @@
 import { NgModule } from '@angular/core';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { IconComponent } from './icon/icon.component';
 
 @NgModule({
     imports: [ ],
     declarations: [
-        SpinnerComponent
+        SpinnerComponent,
+        IconComponent
     ],
     exports: [
-        SpinnerComponent
+        SpinnerComponent,
+        IconComponent
     ]
 })
 export class SharedModule {}
