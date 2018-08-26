@@ -116,9 +116,11 @@ express()
       });
     }
   })
-  .get('/api/detail/:id/:lang', function(req, res) {
+  .get('/api/detail/:id/:lang/:leaveCaseAlone', function(req, res) {
     console.log('id',req.params.id);
-    let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang));
+    console.log('leaveCaseAlone',req.params.leaveCaseAlone);
+    let leaveCaseAlone = req.params.leaveCaseAlone;
+    let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang,leaveCaseAlone));
         let newUrl = singlePageUrl.replace('http','https');
         https.get(newUrl, (wikiRes) => {
             let rawData = '';

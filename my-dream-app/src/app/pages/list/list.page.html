@@ -22,7 +22,7 @@
           'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
           'list__text-wikimedia': !item.cognitive_biasLabel,
           'list__item--viewed': item.detailState ==='viewed'}">
-        {{ item.sortName }}
+        {{ item.sortName }} <span *ngIf="item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1">({{ item.backupTitle }})</span>
       </h4>
     </li>
   </div>

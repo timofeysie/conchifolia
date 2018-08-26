@@ -24,7 +24,7 @@ export class DetailPage implements OnInit {
     const backupTitle = this.route.snapshot.paramMap.get('title');
     console.log('backupTitle',backupTitle);
     this.title = this.itemName.split('_').join(' ');
-    this.backendApiService.getDetail(this.itemName,listLanguage).subscribe(
+    this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
       data => {
         this.description = data['description'].toString();
         this.description = this.description.split('href="/wiki/')
@@ -34,9 +34,9 @@ export class DetailPage implements OnInit {
       error => {
         console.error('error',error);
         this.showSpinner = false;
-        this.message = error.status+' Error '+error.statusText;
+        this.message = error.status+': trying to redirect to';
         if (backupTitle) {
-          this.message += ': trying redirect to '+backupTitle;
+          this.message += backupTitle;
           this.getAlternateTitle(listLanguage, backupTitle);
         }
       }
@@ -45,7 +45,7 @@ export class DetailPage implements OnInit {
 
   getAlternateTitle(listLanguage: string, backupTitle: string) {
     this.showSpinner = true;
-    this.backendApiService.getDetail(backupTitle,listLanguage).subscribe(
+    this.backendApiService.getDetail(backupTitle,listLanguage,true).subscribe(
       data => {
         this.description = data['description'].toString();
         this.description = this.description.split('href="/wiki/')

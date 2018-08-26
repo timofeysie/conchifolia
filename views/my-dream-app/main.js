@@ -460,7 +460,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName, i)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel,\n          'list__item--viewed': item.detailState ==='viewed'}\">\n        {{ item.sortName }}\n      </h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName, i)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel,\n          'list__item--viewed': item.detailState ==='viewed'}\">\n        {{ item.sortName }} <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">({{ item.backupTitle }})</span>\n      </h4>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -524,8 +524,10 @@ var ListPage = /** @class */ (function () {
             _this.getListViaStorage();
         });
     };
+    /**
+     * Load the list again via http which will overwrite the current list including options.
+     */
     ListPage.prototype.refreshList = function () {
-        console.log('this.getListViaHttp()');
         this.getListViaHttp();
     };
     /**
@@ -575,7 +577,7 @@ var ListPage = /** @class */ (function () {
                     item.sortName = item.cognitive_biasLabel;
                 }
             });
-            _this.getWikiSection();
+            _this.getWikiSections();
         }, function (error) {
             console.error('error', error);
         });
@@ -610,7 +612,7 @@ var ListPage = /** @class */ (function () {
      * if it will indeed fix the occasional (list.page.ts:85) error.
      * @param sectionNum Number of section to get
      */
-    ListPage.prototype.getWikiSection = function () {
+    ListPage.prototype.getWikiSections = function () {
         var _this = this;
         this.backendApiService.loadWikiMedia(1, this.listLanguage).subscribe(function (data) {
             var section = _this.parseSectionList(data);
@@ -872,8 +874,8 @@ var BackendApiService = /** @class */ (function () {
         return this.httpClient.get(this.backendListUrl + '/' + lang)
             .pipe(function (data) { return _this.listData = data; });
     };
-    BackendApiService.prototype.getDetail = function (detailId, lang) {
-        return this.httpClient.get(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang))
+    BackendApiService.prototype.getDetail = function (detailId, lang, leaveCaseAlone) {
+        return this.httpClient.get(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang + '/' + leaveCaseAlone))
             .pipe(function (data) { return data; });
     };
     BackendApiService.prototype.loadWikiMedia = function (sectionNum, lang) {

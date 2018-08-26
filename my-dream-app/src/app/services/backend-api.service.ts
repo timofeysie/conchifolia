@@ -20,8 +20,9 @@ export class BackendApiService {
       .pipe(data => this.listData = data);
   }
 
-  getDetail(detailId: string, lang: string){
-    return this.httpClient.get<DetailModel>(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang))
+  getDetail(detailId: string, lang: string, leaveCaseAlone: boolean) {
+    
+    return this.httpClient.get<DetailModel>(encodeURI(this.backendDetailUrl+'/'+detailId+'/'+lang+'/'+leaveCaseAlone))
       .pipe(data => data);
   }
 

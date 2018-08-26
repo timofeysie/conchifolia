@@ -32,8 +32,10 @@ export class ListPage implements OnInit  {
     });
   }
 
+  /**
+   * Load the list again via http which will overwrite the current list including options.
+   */
   refreshList() {
-    console.log('this.getListViaHttp()');
     this.getListViaHttp();
   }
 
@@ -83,7 +85,7 @@ export class ListPage implements OnInit  {
               item.sortName = item.cognitive_biasLabel;
             }
           });
-          this.getWikiSection();
+          this.getWikiSections();
       },
       error => {
         console.error('error',error);
@@ -121,7 +123,7 @@ export class ListPage implements OnInit  {
    * if it will indeed fix the occasional (list.page.ts:85) error.
    * @param sectionNum Number of section to get
    */
-  getWikiSection() {
+  getWikiSections() {
     this.backendApiService.loadWikiMedia(1,this.listLanguage).subscribe(
       data => {
         const section = this.parseSectionList(data);

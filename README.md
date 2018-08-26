@@ -186,8 +186,40 @@ After all that however, we still get:
 redirect error HttpErrorResponse {headers: HttpHeaders, status: 500, statusText: "Internal Server Error", url: "http://localhost:5000/api/detail/Shy_Tory_Factor/en", ok: false, …}
 ```
 
-We have a feeling that the curator is lower-casing our urls, which is OK for most, but not all.
+We have a feeling that the curator is lower-casing our urls, which is OK for most, but not all.  This is the call in question:
+```
+curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang)
+```
 
+And yes, it does lower case all the letters.  So, we either need a flag or a new API.  Since we have a strong suspicion that no one actually uses this lib except us, let's break it!  See you back here after adding a flag.
+
+Bumped curator to version 2.1.0.  The flag is not optional without creating another API endpoint.  Anyone using 2.1 will have to use it.  We should have gone to 3.0, but since no one is using this package, there are only our apps to worry about.  
+
+If the third param to that function is true, then the case is left alone.  Now we have to change the back-end API service and then the server app to pass that preference along.
+
+Now the first item on our naughty list, 
+
+The second item however is bad news again.
+*Experimenter'* appears on the list with the backup title of *Experimenter's bias*
+```500 Experimenter%27s_bias redirect error Internal Server Error```
+
+Some of us here were wondering if that was a typo in the readme or not.
+The actual Wikipedia page is a redirect:
+```
+Observer-expectancy effect (Redirected from Experimenter's bias)
+```
+
+This one shows an actual redirect link from the WikiMedia response.  Why doesn't that happen for the former?
+```
+Framing effect (Framing_effect_(psychology))
+```
+
+Another problem is this one:
+```
+Form function attribution bias (index.php?title=Form_function_attribution_bias&action=edit&redlink=1)
+```
+
+There are a few different types of re-directs.  But, since they are not actually broken, we don't need to worry about them yet.
 
 ## Item State
 

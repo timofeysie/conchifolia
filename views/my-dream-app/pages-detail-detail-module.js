@@ -113,7 +113,7 @@ var DetailPage = /** @class */ (function () {
         var backupTitle = this.route.snapshot.paramMap.get('title');
         console.log('backupTitle', backupTitle);
         this.title = this.itemName.split('_').join(' ');
-        this.backendApiService.getDetail(this.itemName, listLanguage).subscribe(function (data) {
+        this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
             _this.description = data['description'].toString();
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
@@ -121,9 +121,9 @@ var DetailPage = /** @class */ (function () {
         }, function (error) {
             console.error('error', error);
             _this.showSpinner = false;
-            _this.message = error.status + ' Error ' + error.statusText;
+            _this.message = error.status + ': trying to redirect to';
             if (backupTitle) {
-                _this.message += ': trying redirect to ' + backupTitle;
+                _this.message += backupTitle;
                 _this.getAlternateTitle(listLanguage, backupTitle);
             }
         });
@@ -131,7 +131,7 @@ var DetailPage = /** @class */ (function () {
     DetailPage.prototype.getAlternateTitle = function (listLanguage, backupTitle) {
         var _this = this;
         this.showSpinner = true;
-        this.backendApiService.getDetail(backupTitle, listLanguage).subscribe(function (data) {
+        this.backendApiService.getDetail(backupTitle, listLanguage, true).subscribe(function (data) {
             _this.description = data['description'].toString();
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
