@@ -26,4 +26,6 @@ export class DetailModel {
     itemState:  string; // show/removed
     itemOrder:  string; // itemOrderNumber
     listSortingProperty:  string; // property name (default sortName)
+    //
+    backupTitle: string; // used when the link title is different from the item name
 }

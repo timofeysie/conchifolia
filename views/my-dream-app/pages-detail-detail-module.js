@@ -110,6 +110,8 @@ var DetailPage = /** @class */ (function () {
         var _this = this;
         this.itemName = this.route.snapshot.paramMap.get('id');
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
+        var backupTitle = this.route.snapshot.paramMap.get('title');
+        console.log('backupTitle', backupTitle);
         this.title = this.itemName.split('_').join(' ');
         this.backendApiService.getDetail(this.itemName, listLanguage).subscribe(function (data) {
             _this.description = data['description'].toString();
@@ -120,6 +122,24 @@ var DetailPage = /** @class */ (function () {
             console.error('error', error);
             _this.showSpinner = false;
             _this.message = error.status + ' Error ' + error.statusText;
+            if (backupTitle) {
+                _this.message += ': trying redirect to ' + backupTitle;
+                _this.getAlternateTitle(listLanguage, backupTitle);
+            }
+        });
+    };
+    DetailPage.prototype.getAlternateTitle = function (listLanguage, backupTitle) {
+        var _this = this;
+        this.showSpinner = true;
+        this.backendApiService.getDetail(backupTitle, listLanguage).subscribe(function (data) {
+            _this.description = data['description'].toString();
+            _this.description = _this.description.split('href="/wiki/')
+                .join('href="https://en.wikipedia.org/wiki/');
+            _this.showSpinner = false;
+        }, function (error) {
+            console.error('redirect error', error);
+            _this.showSpinner = false;
+            _this.message = error.status + ' ' + backupTitle + ' redirect error ' + error.statusText;
         });
     };
     DetailPage = __decorate([

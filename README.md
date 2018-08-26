@@ -25,6 +25,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Detail page errors](#detail-page-errors)
 1. [Item State](#item-atate)
 1. [Implementing a spinner](#implementing-a-spinner)
 1. [Scroll position restoration](#Scroll-position-restoration)
@@ -63,10 +64,11 @@ Planned features include:
 * detail page metrics (number of preambles, expand/contract preambles, footnotes)
 * create a new category
 * component style library shared by all the app
+* capture link title and create an 'also known as' section from other sources.
+* allow user to clear the local storage
 
 
-## Detail errors
-
+## Detail page errors
 
 Choosing zero-sum_bias causes a 500 error on the server.  The server logs show:
 ```
@@ -106,6 +108,59 @@ https://en.wikipedia.org/wiki/Zero-sum_thinking
 ```
 
 This kind of thing needs to be handled on the server.  It should follow re-directs, or at least provide the re-direct page.  No one has decided yet how to handle all these missing pages.
+
+However, I don't see what we can do programmatically here.  There is no Zero-sum_thinking in the response from the server.  If we look at that url in the browser, we get:
+```
+{"error":{"code":"missingtitle","info":"The page you specified doesn't exist.","*":"See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/mailman/listinfo/mediawiki-api-announce&gt; for notice of API deprecations and breaking changes."},"servedby":"mw1280"}
+```
+
+The only hack that comes to mind is a specific mapping table.  But then what do we do for generic user generated lists?  It's fine to have herdwired solutions if this is just going to be a list of cognitive biases forever, but we would like to use this app for all kinds of Wikipedia and WikiData content.
+
+One half-hacked solution would be to let the user create their own lookup table.  The user would have to do their own search and provide an alternative name.
+
+But wait, the Wikipedia list has a link which points directly to the altername name page, so there must be something in the list which creates the correct link.  The zero sum bias is part of the *Decision-making, belief, and behavioral biases* category which is section 1.  Let's look at that response on the server.
+
+The raw data from the server shows the link:
+```
+<tr>
+    <td>
+        <a href=\"/wiki/Zero-sum_thinking\" 
+            title=\"Zero-sum thinking\">Zero-sum bias</a>
+    </td>
+</tr>
+```
+
+This data is parsed on the client, so actually, it is there that the URLs should be captured and used instead of just replacing spaces with _ and adding the Wikipedia base URL.  This might solve a lot of the missing pages.
+
+We could capture the title of the link and if that is different than the text in the anchor element, show it in a 'also known as' section.  Some learners might be interested in seeing a list of a.k.a.s.  However, that is not on our feature list for now.  We will add it there and deal with just fixing this issue for now.
+
+We can get the title, and if it's different from the name, add a 'title' property to the item.  There turn out to be nine of these situations.
+
+Unfortunately, we will have to make the bad request and then use the title to create a new url and try that one.  Also, the user might think the app is malfunctioning if they choose one bias from the list and get sent the detail page for something called the *Shy Tory Factor*.  It turns out this is another name for the Courtesy bias.  Most of the other ones look something like this: Naïve realism -> Naïve realism (psychology).
+
+It's worth checking all these after we are done here:
+```
+
+list.page.ts:234 Courtesy bias -> Shy Tory Factor
+list.page.ts:234 Experimenter's -> Experimenter's bias
+list.page.ts:234 Form function attribution bias -> Form function attribution bias (page does not exist)
+list.page.ts:234 Framing effect -> Framing effect (psychology)
+list.page.ts:234 Information bias -> Information bias (psychology)
+list.page.ts:234 Moral credential effect -> Moral credential
+list.page.ts:234 Reactance -> Reactance (psychology)
+list.page.ts:234 Zero-sum bias -> Zero-sum thinking
+list.page.ts:234 Naïve realism -> Naïve realism (psychology)
+```
+
+A note about the routing here, we need to add a second route to pass a conditional parameter.  It looks like this:
+```
+{ 
+    path: 'detail/:id/:listLanguage', 
+    loadChildren: './pages/detail/detail.module#DetailPageModule' },
+{ 
+    path: 'detail/:id/:listLanguage/:title', 
+    loadChildren: './pages/detail/detail.module#DetailPageModule' }
+```
 
 
 ## Item State

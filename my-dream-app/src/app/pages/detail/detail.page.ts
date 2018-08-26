@@ -21,6 +21,8 @@ export class DetailPage implements OnInit {
   ngOnInit() {
     this.itemName = this.route.snapshot.paramMap.get('id');
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
+    const backupTitle = this.route.snapshot.paramMap.get('title');
+    console.log('backupTitle',backupTitle);
     this.title = this.itemName.split('_').join(' ');
     this.backendApiService.getDetail(this.itemName,listLanguage).subscribe(
       data => {
@@ -33,6 +35,27 @@ export class DetailPage implements OnInit {
         console.error('error',error);
         this.showSpinner = false;
         this.message = error.status+' Error '+error.statusText;
+        if (backupTitle) {
+          this.message += ': trying redirect to '+backupTitle;
+          this.getAlternateTitle(listLanguage, backupTitle);
+        }
+      }
+    );
+  }
+
+  getAlternateTitle(listLanguage: string, backupTitle: string) {
+    this.showSpinner = true;
+    this.backendApiService.getDetail(backupTitle,listLanguage).subscribe(
+      data => {
+        this.description = data['description'].toString();
+        this.description = this.description.split('href="/wiki/')
+          .join('href="https://en.wikipedia.org/wiki/');
+        this.showSpinner = false;
+      },
+      error => {
+        console.error('redirect error',error);
+        this.showSpinner = false;
+        this.message = error.status+' '+backupTitle+' redirect error '+error.statusText;
       }
     );
   }

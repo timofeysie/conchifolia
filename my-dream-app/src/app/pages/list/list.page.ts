@@ -23,12 +23,18 @@ export class ListPage implements OnInit  {
     private dataService: DataService) {
      }
   
+  /**
+   *  Get the options find the current language settings, then get the list from storage.
+   */   
   ngOnInit() {
     this.getOptionsViaStorage().then(() => {
       this.getListViaStorage();
     });
   }
 
+  /**
+   * Get the options from local storage.
+   */
   getOptionsViaStorage() {
     return new Promise((resolve, reject) => {
       this.dataService.getItemViaStorage(this.optionsName).then((result:any) => {
@@ -43,6 +49,9 @@ export class ListPage implements OnInit  {
     })
   }
 
+  /**
+   * Get the list from local storage or if it doesn't exist, from the http service.
+   */
   getListViaStorage() {
     this.dataService.getItemViaStorage(this.listLanguage+'-'+this.listName).then((result:any) => {
       if (result) {
@@ -50,14 +59,18 @@ export class ListPage implements OnInit  {
       }
     }).catch(() => {
       this.getListViaHttp();
-    }) 
+    }); 
   }
 
+  /**
+   * Get a list of items from the server using the language settings.
+   */
   getListViaHttp() {
     this.list = [];
       this.backendApiService.getList(this.listLanguage).subscribe(
         data => {
           this.list = data['list'];
+          // remove items that do not have a page in the requested language
           this.list.slice().reverse().forEach((item, index, object) => {
             if (!this.languagePageDoesNotExist(item, index)) {
               this.list.splice(object.length - 1 - index, 1);
@@ -106,16 +119,16 @@ export class ListPage implements OnInit  {
   getWikiSection() {
     this.backendApiService.loadWikiMedia(1,this.listLanguage).subscribe(
       data => {
-        const section = this.parseList(data);
+        const section = this.parseSectionList(data);
           if (section) {
           this.addItems(section);
           this.backendApiService.loadWikiMedia(2,this.listLanguage).subscribe(
             data => {
-              const section = this.parseList(data);
+              const section = this.parseSectionList(data);
               this.addItems(section);
               this.backendApiService.loadWikiMedia(3,this.listLanguage).subscribe(
                 data => {
-                  const section = this.parseList(data);
+                  const section = this.parseSectionList(data);
                   this.addItems(section);
                   // finally sort the list and store it
                   this.list.sort(this.dynamicSort('sortName'));
@@ -162,6 +175,10 @@ export class ListPage implements OnInit  {
     for (let i = 0; i < section.length; i++) {
       //console.log('item:'+i+' ',section[i]);
       let itemName = section[i].name;
+      let backupTitle;
+      if (typeof section[i]['backupTitle'] !== 'undefined') {
+        backupTitle = section[i]['backupTitle'];
+      }
       let found = false;
       for(var j = 0; j < this.list.length; j++) {
         if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
@@ -170,6 +187,9 @@ export class ListPage implements OnInit  {
           this.list[j].wikiMedia_description = section[i].description;
           this.list[j].wikiMedia_category = section[i].category;
           this.list[j].sortName = itemName;
+          if (backupTitle) {
+           this.list[j].backupTitle = backupTitle;
+          }
           this.repeats++;
           break;
         }
@@ -179,7 +199,10 @@ export class ListPage implements OnInit  {
         wikiMediaObj.wikiMedia_label = itemName;
         wikiMediaObj.wikiMedia_description = section[i].description;
         wikiMediaObj.wikiMedia_category = section[i].category;
-        wikiMediaObj.sortName = itemName.split('"').join('');;
+        wikiMediaObj.sortName = itemName.split('"').join('');
+        if (backupTitle) {
+          wikiMediaObj.backupTitle = backupTitle;
+        }
         this.list.push(wikiMediaObj);
         this.media++;
       }
@@ -193,7 +216,7 @@ export class ListPage implements OnInit  {
    * @param data result of a WikiMedia section API call
    * @returns Array of name/desc objects
    */
-  parseList(data: any) {
+  parseSectionList(data: any) {
     try {
     const content = data['parse']['text']['*'];
     let one = this.createElementFromHTML(content);
@@ -216,8 +239,13 @@ export class ListPage implements OnInit  {
           itemDesc = tableDiv[1].innerText;
         }
         let itemName;
+        let backupTitle; // used as a potential link when the name link returns a 500 error
         if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
           itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+          let title = tableDiv[0].getElementsByTagName('a')[0].title;
+          if (itemName !== title) {
+            backupTitle = title;
+          }
         } else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
           itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
         } else if (typeof tableDiv[0].innerText !== 'undefined') {
@@ -229,6 +257,10 @@ export class ListPage implements OnInit  {
           'name': itemName,
           'desc': itemDesc,
           'category': category
+        }
+        if (backupTitle) {
+          newItem['backupTitle'] = backupTitle;
+          console.log(itemName+' -> '+backupTitle);
         }
         descriptions.push(newItem);
       }
@@ -276,11 +308,22 @@ export class ListPage implements OnInit  {
     return title;
   }
 
+  /**
+   * Go to the detail page.  If an item has a backup title, add that to the route.
+   * @param item Set state as viewed, get language setting, create list name, and/or title
+   * And pass on to the detail page.
+   * @param i item index
+   */
   navigateAction(item: string, i: number) {
     this.list[i].detailState = 'viewed';
     this.dataService.setItem(this.listLanguage+'-'+this.listName, this.list);
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-    this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);
+    if (typeof this.list[i]['backupTitle'] !== 'undefined') {
+      let backupTitle = this.list[i]['backupTitle'].replace(/\s+/g, '_').toLowerCase();
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);
+    } else {
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);    
+    }
   }
   
 }

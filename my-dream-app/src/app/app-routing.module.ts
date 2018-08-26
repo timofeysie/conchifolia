@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   { path: 'detail/:id/:listLanguage', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+  { path: 'detail/:id/:listLanguage/:title', loadChildren: './pages/detail/detail.module#DetailPageModule' },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes, {scrollPositionRestoration: 'enabled'})],

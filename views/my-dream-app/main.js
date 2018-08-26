@@ -57,6 +57,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 var routes = [
     { path: 'detail/:id/:listLanguage', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+    { path: 'detail/:id/:listLanguage/:title', loadChildren: './pages/detail/detail.module#DetailPageModule' },
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
@@ -447,12 +448,18 @@ var ListPage = /** @class */ (function () {
         this.listName = 'list';
         this.optionsName = 'options';
     }
+    /**
+     *  Get the options find the current language settings, then get the list from storage.
+     */
     ListPage.prototype.ngOnInit = function () {
         var _this = this;
         this.getOptionsViaStorage().then(function () {
             _this.getListViaStorage();
         });
     };
+    /**
+     * Get the options from local storage.
+     */
     ListPage.prototype.getOptionsViaStorage = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -467,15 +474,18 @@ var ListPage = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Get the list from local storage or if it doesn't exist, from the http service.
+     */
     ListPage.prototype.getListViaStorage = function () {
-        var _this = this;
-        this.dataService.getItemViaStorage(this.listLanguage + '-' + this.listName).then(function (result) {
-            if (result) {
-                _this.list = result;
-            }
-        }).catch(function () {
-            _this.getListViaHttp();
-        });
+        this.getListViaHttp();
+        // this.dataService.getItemViaStorage(this.listLanguage+'-'+this.listName).then((result:any) => {
+        //   if (result) {
+        //     this.list = result;
+        //   }
+        // }).catch(() => {
+        //   this.getListViaHttp();
+        // }) 
     };
     ListPage.prototype.getListViaHttp = function () {
         var _this = this;
@@ -528,14 +538,14 @@ var ListPage = /** @class */ (function () {
     ListPage.prototype.getWikiSection = function () {
         var _this = this;
         this.backendApiService.loadWikiMedia(1, this.listLanguage).subscribe(function (data) {
-            var section = _this.parseList(data);
+            var section = _this.parseSectionList(data);
             if (section) {
                 _this.addItems(section);
                 _this.backendApiService.loadWikiMedia(2, _this.listLanguage).subscribe(function (data) {
-                    var section = _this.parseList(data);
+                    var section = _this.parseSectionList(data);
                     _this.addItems(section);
                     _this.backendApiService.loadWikiMedia(3, _this.listLanguage).subscribe(function (data) {
-                        var section = _this.parseList(data);
+                        var section = _this.parseSectionList(data);
                         _this.addItems(section);
                         // finally sort the list and store it
                         _this.list.sort(_this.dynamicSort('sortName'));
@@ -577,6 +587,10 @@ var ListPage = /** @class */ (function () {
         for (var i = 0; i < section.length; i++) {
             //console.log('item:'+i+' ',section[i]);
             var itemName = section[i].name;
+            var backupTitle = void 0;
+            if (typeof section[i]['backupTitle'] !== 'undefined') {
+                backupTitle = section[i]['backupTitle'];
+            }
             var found = false;
             for (var j = 0; j < this.list.length; j++) {
                 if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
@@ -585,6 +599,9 @@ var ListPage = /** @class */ (function () {
                     this.list[j].wikiMedia_description = section[i].description;
                     this.list[j].wikiMedia_category = section[i].category;
                     this.list[j].sortName = itemName;
+                    if (backupTitle) {
+                        this.list[j].backupTitle = backupTitle;
+                    }
                     this.repeats++;
                     break;
                 }
@@ -595,7 +612,9 @@ var ListPage = /** @class */ (function () {
                 wikiMediaObj.wikiMedia_description = section[i].description;
                 wikiMediaObj.wikiMedia_category = section[i].category;
                 wikiMediaObj.sortName = itemName.split('"').join('');
-                ;
+                if (backupTitle) {
+                    wikiMediaObj.backupTitle = backupTitle;
+                }
                 this.list.push(wikiMediaObj);
                 this.media++;
             }
@@ -608,7 +627,7 @@ var ListPage = /** @class */ (function () {
      * @param data result of a WikiMedia section API call
      * @returns Array of name/desc objects
      */
-    ListPage.prototype.parseList = function (data) {
+    ListPage.prototype.parseSectionList = function (data) {
         try {
             var content = data['parse']['text']['*'];
             var one = this.createElementFromHTML(content);
@@ -631,8 +650,13 @@ var ListPage = /** @class */ (function () {
                         itemDesc = tableDiv[1].innerText;
                     }
                     var itemName = void 0;
+                    var backupTitle = void 0; // used as a potential link when the name link returns a 500 error
                     if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
                         itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+                        var title = tableDiv[0].getElementsByTagName('a')[0].title;
+                        if (itemName !== title) {
+                            backupTitle = title;
+                        }
                     }
                     else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
                         itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
@@ -648,6 +672,10 @@ var ListPage = /** @class */ (function () {
                         'desc': itemDesc,
                         'category': category
                     };
+                    if (backupTitle) {
+                        newItem['backupTitle'] = backupTitle;
+                        console.log(itemName + ' -> ' + backupTitle);
+                    }
                     descriptions.push(newItem);
                 }
             }
@@ -691,11 +719,23 @@ var ListPage = /** @class */ (function () {
         }
         return title;
     };
+    /**
+     *
+     * @param item Set state as viewed, get language setting, create list name, and/or title
+     * And pass on to the detail page.
+     * @param i
+     */
     ListPage.prototype.navigateAction = function (item, i) {
         this.list[i].detailState = 'viewed';
         this.dataService.setItem(this.listLanguage + '-' + this.listName, this.list);
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-        this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage]);
+        if (typeof this.list[i]['backupTitle'] !== 'undefined') {
+            var backupTitle = this.list[i]['backupTitle'].replace(/\s+/g, '_').toLowerCase();
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
+        }
+        else {
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage]);
+        }
     };
     ListPage = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
