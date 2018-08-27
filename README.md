@@ -221,6 +221,57 @@ Form function attribution bias (index.php?title=Form_function_attribution_bias&a
 
 There are a few different types of re-directs.  But, since they are not actually broken, we don't need to worry about them yet.
 
+Two things to work on right now, the Experimenter's bias, and either removing the underscores from the backup titles, or capturing the title string and adding that to the data model.  The latter is the more mature way to go.  Less hidden business login in the code.  If it's in the data model, then it's part of the easy to understand business logic.
+
+It would also be good to refactor the parseSectionList() function.  It's over 100 loc (lines of code in case anyone doesn't know).  The craftsman programmer would say a function should be short enough to be viewed in one screen in your editor.  This editor will show 30 loc a screen without scrolling.  Anyhow, it's a good indication that code should be broken up into meaningfully named function calls to increase readability for a function that is easy to reason about.
+
+Since this is where we will be adding code, let's refactor that now.
+
+Taking out the backup title and link functions helps a bit.  The current problem is the  
+```
+title = Form function attribution bias (page does not exist)
+```
+
+The new function returns a backup link of 
+```
+index.php?title=Form_function_attribution_bias&action=edit&redlink=1
+```
+
+Going to the link in the Wikipedia list page goes to this:
+```
+https://en.wikipedia.org/wiki/Form_function_attribution_bias
+```
+
+Where it says: *Wikipedia does not have an article with this exact name. Please search for Form function attribution bias in Wikipedia to check for alternative titles or spellings.*
+
+If the text is red we know that it has no page.  This would be the ```a.new { color: #ba0000; }``` class
+
+The next question is, how do we let the user know that there is no page?  Maybe have a red style of our own?  It's not a very semantic class name.  Just because an entry is new doesn't mean it can't have it's own page.
+
+So whatever we do that depends on that keyword might change in the future if for example a designer renames the class *pageless* or something.  Well, that's what we should call ours.
+
+Just had a thought, rather than destructuring this anchor tag, maybe we should just be handing that around and letting the system do what it want's with the properties?  Nice idea. Let's stick with the plan for now.
+
+For now, forget about adding a missing page style.  When the redirection fails, there will still be the short description and other planned features like ready made links to other content.
+
+So if the link contains 'index.php', we know the link didn't work out.
+
+Next up, the underscore, and other escaped characters:
+```
+Naïve realism (Na%C3%AFve_realism_(psychology))
+```
+
+If we just use the title and not the link, then everything seems to work.  Underscores are added to the backup title, which, if it exists, will not be lower-cased by the curator package on the server.
+
+Next problem: Regressive bias also causes an error:"No data in response:[object Object]"
+
+The server shows it using this link:
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=regressive_bias
+```
+
+On the Wikipedia 'list of biases' page, the name is text only, not an anchor, and unlike *Form function attribution bias*, there is no 'new' class to indicate this.
+
 ## Item State
 
 When a user chooses an item from the list, or slides it to show the short description (not implemented here yet), or any other action on the item changes its state.  In the Loranthifolia Ionic app, something like this is done when the user selects an item:

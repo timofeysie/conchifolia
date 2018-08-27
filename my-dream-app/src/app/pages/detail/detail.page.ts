@@ -22,7 +22,6 @@ export class DetailPage implements OnInit {
     this.itemName = this.route.snapshot.paramMap.get('id');
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     const backupTitle = this.route.snapshot.paramMap.get('title');
-    console.log('backupTitle',backupTitle);
     this.title = this.itemName.split('_').join(' ');
     this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
       data => {

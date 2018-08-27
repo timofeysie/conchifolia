@@ -221,67 +221,120 @@ export class ListPage implements OnInit  {
    * Usually the name of item can be gotten from the inner text of an <a> tag inside the table cell.
    * A few however, like 'frequency illusion' are not links, so are just the contents of the <td> tag.
    * Some, such as 'regression bias' have a <span> inside the tag.
+   * The category descriptions can be had like this:
+   * if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
+   *    console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
+   * } 
    * @param data result of a WikiMedia section API call
    * @returns Array of name/desc objects
    */
   parseSectionList(data: any) {
-    try {
-    const content = data['parse']['text']['*'];
-    let one = this.createElementFromHTML(content);
-    const desc:any = one.getElementsByClassName('mw-parser-output')[0].children;
-    let descriptions: any [] = [];
-    let category = desc[0].getElementsByClassName('mw-headline')[0].innerText;
-    // might use category descriptions later
-    // if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
-    //   console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
-    // } else {
-    //   console.log(desc[1]);
-    // }
-    const allDesc = desc[2];
-    const tableRows = allDesc.getElementsByTagName('tr');
-    for (let i = 0; i < tableRows.length;i++) {
-      let tableDiv = tableRows[i].getElementsByTagName('td');
-      if (typeof tableDiv[0] !== 'undefined') {
-        let itemDesc;
-        if (typeof tableDiv[1] !== 'undefined') {
-          itemDesc = tableDiv[1].innerText;
-        }
-        let itemName;
-        let backupTitle; // used as a potential link when the name link returns a 500 error
-        if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
-          itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-          let titleProp = tableDiv[0].getElementsByTagName('a')[0].title;
-          let backupLink;
-          let href:string = tableDiv[0].getElementsByTagName('a')[0].href;
-          if (href) {
-            let slash = href.lastIndexOf('/');
-            backupLink = href.substr(slash+1,href.length);
+    if (data['parse']) {
+      const content = data['parse']['text']['*'];
+      let one = this.createElementFromHTML(content);
+      const desc:any = one.getElementsByClassName('mw-parser-output')[0].children;
+      let descriptions: any [] = [];
+      let category = desc[0].getElementsByClassName('mw-headline')[0].innerText;
+      const allDesc = desc[2];
+      const tableRows = allDesc.getElementsByTagName('tr');
+      for (let i = 0; i < tableRows.length;i++) {
+        let tableDiv = tableRows[i].getElementsByTagName('td');
+        if (typeof tableDiv[0] !== 'undefined') {
+          let itemDesc;
+          if (typeof tableDiv[1] !== 'undefined') {
+            itemDesc = tableDiv[1].innerText;
           }
-          if (itemName !== titleProp) {
-            backupTitle = backupLink;
+          let itemName;
+          let backupTitle; // used as a potential link when the name link returns a 500 error
+          if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
+            itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+            backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0],itemName);
+          } else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
+            itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
+          } else if (typeof tableDiv[0].innerText !== 'undefined') {
+            itemName = tableDiv[0].innerText;
+          } else {
+            console.log('failed to get',tableDiv[0]);
           }
-        } else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
-          itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
-        } else if (typeof tableDiv[0].innerText !== 'undefined') {
-          itemName = tableDiv[0].innerText;
-        } else {
-          console.log('failed to get',tableDiv[0]);
+          let newItem = this.createNewItem(itemName, itemDesc, category, backupTitle)
+          descriptions.push(newItem);
         }
-        let newItem = {
-          'name': itemName,
-          'desc': itemDesc,
-          'category': category
-        }
-        if (backupTitle) {
-          newItem['backupTitle'] = backupTitle;
-          console.log(itemName+' -> '+backupTitle);
-        }
-        descriptions.push(newItem);
       }
+      return descriptions;
     }
-    return descriptions;
-    } catch (err) {
-      console.log(data['error']['info']);
+  }
+
+  createNewItem(itemName, itemDesc, category, backupTitle) {
+    let newItem = {
+      'name': itemName,
+      'desc': itemDesc,
+      'category': category
+    }
+    if (backupTitle) {
+      newItem['backupTitle'] = backupTitle;
+    }
+    return newItem;
+  }
+
+  /**
+   * Parse the anchor tag for the title of the item used in the tag,
+   * which can be different from the name of the item.
+   * @param tableDiv the DOM element
+   * @param itemName the item name
+   */
+  getAnchorTitleForBackupTitle(tableDiv: any, itemName: string) {
+    let titleProp = tableDiv.getElementsByTagName('a')[0].title;
+    let backupLink;
+    let backupTitle;
+    let href:string = tableDiv.getElementsByTagName('a')[0].href;
+    if (href) {
+      let slash = href.lastIndexOf('/');
+      backupLink = href.substr(slash+1,href.length);
+    }
+    if (href.indexOf('index.php') !== -1) {
+      backupTitle = -1; // we have a missing detail page
+    }
+    if (itemName !== titleProp && backupTitle !== -1) {
+      backupTitle = titleProp;
+    }
+    return backupTitle;
+  }
+
+  /**
+   * Parse the anchor tag for the link section of the item title similar to the
+   * getAnchorTitleForBackupTitle() function.  The element can look like this:
+   * <tr>
+   *  <td>
+   *      <a href=\"/wiki/Zero-sum_thinking\" 
+   *          title=\"Zero-sum thinking\">Zero-sum bias</a>
+   *  </td>
+   * </tr>
+   * Even though the title is a bias, the link and page redirects to thinking.
+   * This will be used if the item name used as a link and lower-cased returns
+   * a 500 error from the server.
+   * @param tableDiv the DOM element
+   * @param itemName the item name
+   * @returns backup link which can be used in case of a redirect
+   */
+  getAnchorTitleForBackupLink(tableDiv: any, itemName: string) {
+    let backupLink;
+    let titleProp = tableDiv.getElementsByTagName('a')[0].title;
+    let href = tableDiv.getElementsByTagName('a')[0].href;
+    if (href) {
+      let slash = href.lastIndexOf('/');
+      backupLink = href.substr(slash+1,href.length);
+    }
+    if (href.indexOf('index.php') !== -1) {
+      backupLink = null; // we have a missing detail page
+    }
+    // this will tell us if the name and the title are different
+    // if they are then we want to add a backupTitle.
+    // if they aren't then we will return null
+    if (itemName !== titleProp && backupLink) {
+      //console.log('backupLink',backupLink);
+      return backupLink;
+    } else  {
+      return null;
     }
   }
 

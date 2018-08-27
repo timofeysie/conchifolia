@@ -702,22 +702,20 @@ var ListPage = /** @class */ (function () {
      * Usually the name of item can be gotten from the inner text of an <a> tag inside the table cell.
      * A few however, like 'frequency illusion' are not links, so are just the contents of the <td> tag.
      * Some, such as 'regression bias' have a <span> inside the tag.
+     * The category descriptions can be had like this:
+     * if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
+     *    console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
+     * }
      * @param data result of a WikiMedia section API call
      * @returns Array of name/desc objects
      */
     ListPage.prototype.parseSectionList = function (data) {
-        try {
+        if (data['parse']) {
             var content = data['parse']['text']['*'];
             var one = this.createElementFromHTML(content);
             var desc = one.getElementsByClassName('mw-parser-output')[0].children;
             var descriptions = [];
             var category = desc[0].getElementsByClassName('mw-headline')[0].innerText;
-            // might use category descriptions later
-            // if (typeof desc[1].getElementsByTagName('a')[0] !== 'undefined') {
-            //   console.log('desc1',desc[1].getElementsByTagName('a')[0].innerText);
-            // } else {
-            //   console.log(desc[1]);
-            // }
             var allDesc = desc[2];
             var tableRows = allDesc.getElementsByTagName('tr');
             for (var i = 0; i < tableRows.length; i++) {
@@ -731,16 +729,7 @@ var ListPage = /** @class */ (function () {
                     var backupTitle = void 0; // used as a potential link when the name link returns a 500 error
                     if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
                         itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-                        var titleProp = tableDiv[0].getElementsByTagName('a')[0].title;
-                        var backupLink = void 0;
-                        var href = tableDiv[0].getElementsByTagName('a')[0].href;
-                        if (href) {
-                            var slash = href.lastIndexOf('/');
-                            backupLink = href.substr(slash + 1, href.length);
-                        }
-                        if (itemName !== titleProp) {
-                            backupTitle = backupLink;
-                        }
+                        backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0], itemName);
                     }
                     else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
                         itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
@@ -751,22 +740,83 @@ var ListPage = /** @class */ (function () {
                     else {
                         console.log('failed to get', tableDiv[0]);
                     }
-                    var newItem = {
-                        'name': itemName,
-                        'desc': itemDesc,
-                        'category': category
-                    };
-                    if (backupTitle) {
-                        newItem['backupTitle'] = backupTitle;
-                        console.log(itemName + ' -> ' + backupTitle);
-                    }
+                    var newItem = this.createNewItem(itemName, itemDesc, category, backupTitle);
                     descriptions.push(newItem);
                 }
             }
             return descriptions;
         }
-        catch (err) {
-            console.log(data['error']['info']);
+    };
+    ListPage.prototype.createNewItem = function (itemName, itemDesc, category, backupTitle) {
+        var newItem = {
+            'name': itemName,
+            'desc': itemDesc,
+            'category': category
+        };
+        if (backupTitle) {
+            newItem['backupTitle'] = backupTitle;
+        }
+        return newItem;
+    };
+    /**
+     * Parse the anchor tag for the title of the item used in the tag,
+     * which can be different from the name of the item.
+     * @param tableDiv the DOM element
+     * @param itemName the item name
+     */
+    ListPage.prototype.getAnchorTitleForBackupTitle = function (tableDiv, itemName) {
+        var titleProp = tableDiv.getElementsByTagName('a')[0].title;
+        var backupLink;
+        var backupTitle;
+        var href = tableDiv.getElementsByTagName('a')[0].href;
+        if (href) {
+            var slash = href.lastIndexOf('/');
+            backupLink = href.substr(slash + 1, href.length);
+        }
+        if (href.indexOf('index.php') !== -1) {
+            backupTitle = -1; // we have a missing detail page
+        }
+        if (itemName !== titleProp && backupTitle !== -1) {
+            backupTitle = titleProp;
+        }
+        return backupTitle;
+    };
+    /**
+     * Parse the anchor tag for the link section of the item title similar to the
+     * getAnchorTitleForBackupTitle() function.  The element can look like this:
+     * <tr>
+     *  <td>
+     *      <a href=\"/wiki/Zero-sum_thinking\"
+     *          title=\"Zero-sum thinking\">Zero-sum bias</a>
+     *  </td>
+     * </tr>
+     * Even though the title is a bias, the link and page redirects to thinking.
+     * This will be used if the item name used as a link and lower-cased returns
+     * a 500 error from the server.
+     * @param tableDiv the DOM element
+     * @param itemName the item name
+     * @returns backup link which can be used in case of a redirect
+     */
+    ListPage.prototype.getAnchorTitleForBackupLink = function (tableDiv, itemName) {
+        var backupLink;
+        var titleProp = tableDiv.getElementsByTagName('a')[0].title;
+        var href = tableDiv.getElementsByTagName('a')[0].href;
+        if (href) {
+            var slash = href.lastIndexOf('/');
+            backupLink = href.substr(slash + 1, href.length);
+        }
+        if (href.indexOf('index.php') !== -1) {
+            backupLink = null; // we have a missing detail page
+        }
+        // this will tell us if the name and the title are different
+        // if they are then we want to add a backupTitle.
+        // if they aren't then we will return null
+        if (itemName !== titleProp && backupLink) {
+            //console.log('backupLink',backupLink);
+            return backupLink;
+        }
+        else {
+            return null;
         }
     };
     /**
