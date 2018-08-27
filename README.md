@@ -25,6 +25,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Fixing the unit tests](#fixing-the-unit-tests)
 1. [Detail page errors](#detail-page-errors)
 1. [Item State](#item-atate)
 1. [Implementing a spinner](#implementing-a-spinner)
@@ -66,6 +67,50 @@ Planned features include:
 * component style library shared by all the app
 * capture link title and create an 'also known as' section from other sources.
 * allow user to clear the local storage
+
+
+## Fixing the unit tests
+
+After fixing some issues with the links and the detail page, it's time to address the sorry state of the tests.  Running ```npm test``` shows what's up.
+
+### 10 specs, 7 failures
+
+So the first goal is to fix those 10 specs, and then write one or two more to get ready for some T/B driven dev.
+
+A lot of those are config issues because we added routing, but that is not available in the tests setup.
+
+The first test result goes:
+```
+Failed: Template parse errors:
+'router-outlet' is not a known element:
+1. If 'router-outlet' is an Angular component ... 
+```
+
+To fix this just import the RouterTestingModule and then add it to imports.
+```
+import { RouterTestingModule } from '@angular/router/testing';
+...
+    imports: [ RouterTestingModule ],
+```
+
+The app.component tests which were made to test the sample DOM that the App was built with such as *should have as title 'app'*, and *should render title in a h1 tag*.  Since we only have the router-outlet there now, they should be removed.  Or commented out and moved to to the pages.
+
+## 8 specs, 4 failures
+
+```
+DetailPage should create
+Error: StaticInjectorError(DynamicTestModule)[DetailPage -> ActivatedRoute]: 
+  StaticInjectorError(Platform: core)[DetailPage -> ActivatedRoute]: 
+    NullInjectorError: No provider for ActivatedRoute!
+```
+
+We import and use ActivatedRoute in that page. Adding it to the "main" module
+as the accepted answer for [this question](https://stackoverflow.com/questions/45059075/error-error-uncaught-in-promise-error-no-provider-for-activatedroute).
+
+
+### 10 specs, 6 failures
+
+
 
 
 ## Detail page errors
@@ -271,6 +316,9 @@ https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&
 ```
 
 On the Wikipedia 'list of biases' page, the name is text only, not an anchor, and unlike *Form function attribution bias*, there is no 'new' class to indicate this.
+
+We need a better plan to deal with items that have no pages.  For now, we are still not sure programmatically if there are no pages, or the redirect is broken.
+
 
 ## Item State
 
