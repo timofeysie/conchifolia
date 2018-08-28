@@ -1,5 +1,6 @@
 # Conchifolia
 
+
 A NodeJS server app with a combined Angular client.
 
 The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
@@ -95,7 +96,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 The app.component tests which were made to test the sample DOM that the App was built with such as *should have as title 'app'*, and *should render title in a h1 tag*.  Since we only have the router-outlet there now, they should be removed.  Or commented out and moved to to the pages.
 
-## 8 specs, 4 failures
+### 8 specs, 4 failures
 
 ```
 DetailPage should create
@@ -108,8 +109,173 @@ We import and use ActivatedRoute in that page. Adding it to the "main" module
 as the accepted answer for [this question](https://stackoverflow.com/questions/45059075/error-error-uncaught-in-promise-error-no-provider-for-activatedroute).
 
 
-### 10 specs, 6 failures
+That doesn't help.  
+NullInjectorError: No provider for ActivatedRoute!
+NullInjectorError: No provider for HttpClient!
+NullInjectorError: No provider for InjectionToken SESSION_STORAGE!
 
+The answer to [this question](https://stackoverflow.com/questions/48710238/angular-4-unit-test-but-getting-error-no-provider-for-hubwrappercomponent) seems to point us in the right direction.  Adding ActivatedRoute to the providers array which we had to create ourselves:
+```
+    TestBed.configureTestingModule({
+      imports: [ RouterTestingModule ],
+      declarations: [
+        AppComponent,
+      ],
+      providers: [ActivatedRoute]
+    }).compileComponents();
+```
+
+### 8 specs, 5 failures
+
+Things got worse:
+Failed: Can't resolve all parameters for ActivatedRoute: (?, ?, ?, ?, ?, ?, ?, ?).
+
+What's the answer to [this question](https://stackoverflow.com/questions/48077725/angular-4-failed-cant-resolve-all-parameters-for-activatedroute?rq=1)?  It says: *inject a fake ActivatedRoute to your component, since you create it yourself in the test, and the router thus doesn't create it for you and inject an ActivatedRoute.*
+
+So we should be doing something like this:
+```
+providers: [{provide: ActivatedRoute, useValue: fakeActivatedRoute}]
+```
+
+But if we fix that:
+```
+import { HttpClientModule } from '@angular/common/http';
+```
+
+And use it in the providers:
+```
+NullInjectorError: No provider for HttpClient!
+```
+
+If we change that to:
+```
+import { HttpClient } from '@angular/common/http';
+```
+
+Then we get:
+```
+NullInjectorError: No provider for HttpHandler!
+```
+
+Then, if we add that to the imports and providers in the detail page, we get this brief error:
+```
+DetailPage should create
+[object ErrorEvent] thrown
+```
+
+### 8 specs, 5 failures
+
+If we do the same thing for the list page, then there we get this error:
+```
+NullInjectorError: No provider for Router!
+```
+
+The answer to [this question](https://stackoverflow.com/questions/48617318/nullinjectorerror-no-provider-for-router-error-angular-2) says *no provider has been specified for Router in your project. To solve this you will need to add RouterModule to the exports in your module.*
+
+Does that mean the list page module?  Same error.  Or the app module?  Same error.
+
+Following [this SO answer](https://stackoverflow.com/questions/42829796/no-provider-for-router) by putting
+```
+RouterModule.forRoot([{ path: "", component: ListPage }])
+```
+
+In providers array and there is a new error now:
+```
+ListPage should create
+Failed: Invalid provider for the NgModule 'DynamicTestModule' - only instances of Provider and Type are allowed, got: [[object Object], HttpClient, HttpHandler, ?[object Object]?, ...]
+```
+
+Found another [answer to this question](https://stackoverflow.com/questions/40734256/no-provider-for-router-error-in-jasmine-spec) which shows using another mockRouter in the providers.  After that, we get to the next error:
+```
+NullInjectorError: No provider for DataService!
+```
+Import that and put it in the providers array and then we get to the last error on the list above:
+```
+NullInjectorError: No provider for InjectionToken SESSION_STORAGE!
+```
+
+So import the token, and now in our providers array we have all this junk:
+```
+{ provide: ActivatedRoute, useValue: fakeActivatedRoute },
+{ provide: Router, useValue: mockRouter },
+{ provide: SESSION_STORAGE, useValue: {} },
+```
+
+### 8 specs, 3 failures
+
+```
+BackendApiService should be created
+Error: StaticInjectorError(DynamicTestModule)[BackendApiService -> HttpClient]: 
+  StaticInjectorError(Platform: core)[BackendApiService -> HttpClient]: 
+    NullInjectorError: No provider for HttpClient!
+```
+
+### 8 specs, 1 failure
+
+```
+DetailPage should create [object ErrorEvent] thrown
+```
+
+Getting close here.  What does this error mean?  [This answer](https://stackoverflow.com/questions/45722256/how-do-i-debug-a-object-errorevent-thrown-error-in-my-karma-jasmine-tests) indicates that you must run your tests without sourcemaps as a workaround:
+```
+CLI v6.0.8 and above: --source-map=false
+```
+
+So trying this:
+```
+$ npm test --source-map=false
+```
+
+But still getting the same error.  Also trying:
+```
+$ npm test --sourceMap=false
+```
+
+Another answer not marked as correct suggested choosing the 'Debug' button on the Jasmine/Karma Chrome window and look at the error in the console there.  It shows:
+```
+list.page.ts:91 error TypeError: _this.handler.handle is not a function
+    at MergeMapSubscriber.project (_karma_webpack_/webpack:/node_modules/@angular/common/fesm5/http.js:974)
+    at 
+```
+
+That line is for the list page backendApiService.getList() error handler.  Our error however is for the detail page.
+
+Another answer suggests *it may be related to testing routing*.  Leo with 1,705 reputation points goes on to say: *The problem lies with the test environment attempting to evaluate this.route.snapshot.paramMap.get('id').*
+
+So replaced this:
+```
+this.itemName = this.route.snapshot.paramMap.get('id');
+const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
+const backupTitle = this.route.snapshot.paramMap.get('title');
+```
+
+with this:
+```
+this.itemName = this.route.snapshot.paramMap[0];
+const listLanguage = this.route.snapshot.paramMap[1];
+const backupTitle = this.route.snapshot.paramMap[2];
+```
+
+Still same error.  User roo2 said in another answer that the error is *related to having a promise resolved in the ngOnInit of a component.*
+
+Guess where we have that call?  After trying roo2's suggestion of putting this in the test:    
+```
+component.ngOnInit()
+tick()
+fixture.detectChanges()
+```
+
+This seems to connect with what user Leo said:
+```
+TypeError: Cannot read property 'get' of undefined
+```
+
+I'm guessing that the router being called in the test is looking for a paramMap which is not there.  Do we have to stub that?  Had a terrible waste of time looking for how to do it with the useValue value:
+```
+useValue: { 'paramMap': observableFromPromise([{ 'id': '1'}]) } },
+```
+
+This will not work.  Have burnt up about four hours now on this.  And people wonder why front end dev's are know to not write unit tests!  Time for lunch...
 
 
 

@@ -33,7 +33,7 @@ export class DetailPage implements OnInit {
       error => {
         console.error('error',error);
         this.showSpinner = false;
-        this.message = error.status+': trying to redirect to';
+        this.message = error.status+': trying to redirect to ';
         if (backupTitle) {
           this.message += backupTitle;
           this.getAlternateTitle(listLanguage, backupTitle);

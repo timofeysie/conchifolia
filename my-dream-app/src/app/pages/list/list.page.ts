@@ -88,7 +88,7 @@ export class ListPage implements OnInit  {
           this.getWikiSections();
       },
       error => {
-        console.error('error',error);
+        console.error('error'+error);
       }
     );
   }
