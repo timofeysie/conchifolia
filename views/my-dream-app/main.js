@@ -156,7 +156,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_list_list_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/list/list.module */ "./src/app/pages/list/list.module.ts");
 /* harmony import */ var angular_webstorage_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! angular-webstorage-service */ "./node_modules/angular-webstorage-service/bundles/angular-webstorage-service.es5.js");
 /* harmony import */ var _components_shared_module__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/shared-module */ "./src/app/components/shared-module.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -173,15 +172,13 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"],
-                _angular_router__WEBPACK_IMPORTED_MODULE_10__["ActivatedRoute"]
+                _app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
@@ -523,6 +520,7 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.ngOnInit = function () {
         var _this = this;
+        this.elemList = [];
         this.getOptionsViaStorage().then(function () {
             _this.getListViaStorage();
         });
@@ -582,7 +580,7 @@ var ListPage = /** @class */ (function () {
             });
             _this.getWikiSections();
         }, function (error) {
-            console.error('error', error);
+            console.error('error' + error);
         });
     };
     /**
@@ -665,7 +663,7 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.addItems = function (section) {
         for (var i = 0; i < section.length; i++) {
-            //console.log('item:'+i+' ',section[i]);
+            console.log('item:' + i + ' ', section[i]);
             var itemName = section[i].name;
             var backupTitle = void 0;
             if (typeof section[i]['backupTitle'] !== 'undefined') {
@@ -728,27 +726,40 @@ var ListPage = /** @class */ (function () {
                     if (typeof tableDiv[1] !== 'undefined') {
                         itemDesc = tableDiv[1].innerText;
                     }
-                    var itemName = void 0;
-                    var backupTitle = void 0; // used as a potential link when the name link returns a 500 error
-                    if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
-                        itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-                        backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0], itemName);
-                    }
-                    else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
-                        itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
-                    }
-                    else if (typeof tableDiv[0].innerText !== 'undefined') {
-                        itemName = tableDiv[0].innerText;
-                    }
-                    else {
-                        console.log('failed to get', tableDiv[0]);
-                    }
+                    var itemName = this.findItemName(tableDiv[0]);
+                    var backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0], itemName);
+                    var backupLink = this.getAnchorTitleForBackupLink(tableDiv[0], itemName);
                     var newItem = this.createNewItem(itemName, itemDesc, category, backupTitle);
                     descriptions.push(newItem);
+                    this.elemList.push(tableDiv); // for the list of elements
                 }
             }
             return descriptions;
         }
+    };
+    /**
+     * The name to use can be in a few places on the table div element.
+     * Usually the name of item can be got this way:
+     * itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+     * A few however, like 'frequency illusion' are not links,
+     * so are just the contents of the <td> tag.
+     * Some, such as 'regression bias' have a <span> inside the tag.
+     */
+    ListPage.prototype.findItemName = function (tableDiv0) {
+        var itemName;
+        if (typeof tableDiv0.getElementsByTagName('a')[0] !== 'undefined') {
+            itemName = tableDiv0.getElementsByTagName('a')[0].innerText;
+        }
+        else if (typeof tableDiv0.getElementsByTagName('span')[0] !== 'undefined') {
+            itemName = tableDiv0.getElementsByTagName('span')[0].innerText;
+        }
+        else if (typeof tableDiv0.innerText !== 'undefined') {
+            itemName = tableDiv0.innerText;
+        }
+        else {
+            console.log('failed to get a name for div: ', tableDiv0);
+        }
+        return itemName;
     };
     ListPage.prototype.createNewItem = function (itemName, itemDesc, category, backupTitle) {
         var newItem = {
@@ -768,21 +779,42 @@ var ListPage = /** @class */ (function () {
      * @param itemName the item name
      */
     ListPage.prototype.getAnchorTitleForBackupTitle = function (tableDiv, itemName) {
-        var titleProp = tableDiv.getElementsByTagName('a')[0].title;
-        var backupLink;
-        var backupTitle;
-        var href = tableDiv.getElementsByTagName('a')[0].href;
-        if (href) {
-            var slash = href.lastIndexOf('/');
-            backupLink = href.substr(slash + 1, href.length);
+        if (typeof tableDiv.getElementsByTagName('a')[0] !== 'undefined') {
+            var titleProp = tableDiv.getElementsByTagName('a')[0].title;
+            var backupLink = void 0;
+            var backupTitle = void 0;
+            var href = tableDiv.getElementsByTagName('a')[0].href;
+            if (href) {
+                var slash = href.lastIndexOf('/');
+                backupLink = href.substr(slash + 1, href.length);
+            }
+            if (href.indexOf('index.php') !== -1) {
+                backupTitle = -1; // we have a missing detail page
+            }
+            if (itemName !== titleProp && backupTitle !== -1) {
+                backupTitle = titleProp;
+            }
+            console.log('backupTitle', backupTitle);
+            if ((backupTitle !== null)
+                && (typeof backupTitle !== 'undefined')
+                && (backupTitle !== -1)
+                && (backupTitle.indexOf('(psychology)') !== -1)) {
+                backupTitle = backupTitle.substr(0, backupTitle.indexOf('('));
+                console.log('backupTitle', backupTitle);
+                //compare the names again without the
+                if (backupTitle !== itemName) {
+                    backupTitle = null;
+                }
+            }
+            console.log(backupTitle + ' - ' + backupLink);
+            return backupTitle;
         }
-        if (href.indexOf('index.php') !== -1) {
-            backupTitle = -1; // we have a missing detail page
+        else {
+            console.log('tableDiv', tableDiv);
+            if (typeof tableDiv.getElementsByTagName('td')[0] !== 'undefined') {
+                return tableDiv.getElementsByTagName('td')[0].innerText();
+            }
         }
-        if (itemName !== titleProp && backupTitle !== -1) {
-            backupTitle = titleProp;
-        }
-        return backupTitle;
     };
     /**
      * Parse the anchor tag for the link section of the item title similar to the
@@ -802,21 +834,26 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.getAnchorTitleForBackupLink = function (tableDiv, itemName) {
         var backupLink;
-        var titleProp = tableDiv.getElementsByTagName('a')[0].title;
-        var href = tableDiv.getElementsByTagName('a')[0].href;
-        if (href) {
-            var slash = href.lastIndexOf('/');
-            backupLink = href.substr(slash + 1, href.length);
-        }
-        if (href.indexOf('index.php') !== -1) {
-            backupLink = null; // we have a missing detail page
-        }
-        // this will tell us if the name and the title are different
-        // if they are then we want to add a backupTitle.
-        // if they aren't then we will return null
-        if (itemName !== titleProp && backupLink) {
-            //console.log('backupLink',backupLink);
-            return backupLink;
+        if (tableDiv.getElementsByTagName('a')[0]) {
+            var titleProp = tableDiv.getElementsByTagName('a')[0].title;
+            var href = tableDiv.getElementsByTagName('a')[0].href;
+            if (href) {
+                var slash = href.lastIndexOf('/');
+                backupLink = href.substr(slash + 1, href.length);
+            }
+            if (href.indexOf('index.php') !== -1) {
+                backupLink = null; // we have a missing detail page
+            }
+            // this will tell us if the name and the title are different
+            // if they are then we want to add a backupTitle.
+            // if they aren't then we will return null
+            if (itemName !== titleProp && backupLink) {
+                //console.log('backupLink',backupLink);
+                return backupLink;
+            }
+            else {
+                return null;
+            }
         }
         else {
             return null;

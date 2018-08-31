@@ -12,6 +12,7 @@ import { DataService } from '../../services/data.service';
 export class ListPage implements OnInit  {
   title = 'Cognitive Biases';
   list: DetailModel[];
+  elemList: any[];
   repeats: number = 0;
   media: number = 0;
   listLanguage: string;
@@ -27,6 +28,7 @@ export class ListPage implements OnInit  {
    *  Get the options find the current language settings, then get the list from storage.
    */   
   ngOnInit() {
+    this.elemList = [];
     this.getOptionsViaStorage().then(() => {
       this.getListViaStorage();
     });
@@ -180,7 +182,7 @@ export class ListPage implements OnInit  {
    */
   addItems(section: any) {
     for (let i = 0; i < section.length; i++) {
-      //console.log('item:'+i+' ',section[i]);
+      console.log('item:'+i+' ',section[i]);
       let itemName = section[i].name;
       let backupTitle;
       if (typeof section[i]['backupTitle'] !== 'undefined') {
@@ -244,24 +246,38 @@ export class ListPage implements OnInit  {
           if (typeof tableDiv[1] !== 'undefined') {
             itemDesc = tableDiv[1].innerText;
           }
-          let itemName;
-          let backupTitle; // used as a potential link when the name link returns a 500 error
-          if (typeof tableDiv[0].getElementsByTagName('a')[0] !== 'undefined') {
-            itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
-            backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0],itemName);
-          } else if (typeof tableDiv[0].getElementsByTagName('span')[0] !== 'undefined') {
-            itemName = tableDiv[0].getElementsByTagName('span')[0].innerText;
-          } else if (typeof tableDiv[0].innerText !== 'undefined') {
-            itemName = tableDiv[0].innerText;
-          } else {
-            console.log('failed to get',tableDiv[0]);
-          }
+          let itemName = this.findItemName(tableDiv[0]);
+          let backupTitle = this.getAnchorTitleForBackupTitle(tableDiv[0],itemName);
+          let backupLink = this.getAnchorTitleForBackupLink(tableDiv[0],itemName);
           let newItem = this.createNewItem(itemName, itemDesc, category, backupTitle)
           descriptions.push(newItem);
+          this.elemList.push(tableDiv); // for the list of elements
         }
       }
       return descriptions;
     }
+  }
+
+  /**
+   * The name to use can be in a few places on the table div element.
+   * Usually the name of item can be got this way:
+   * itemName = tableDiv[0].getElementsByTagName('a')[0].innerText;
+   * A few however, like 'frequency illusion' are not links, 
+   * so are just the contents of the <td> tag.
+   * Some, such as 'regression bias' have a <span> inside the tag.
+   */
+  findItemName(tableDiv0: any): string {
+    let itemName;
+    if (typeof tableDiv0.getElementsByTagName('a')[0] !== 'undefined') {
+      itemName = tableDiv0.getElementsByTagName('a')[0].innerText;
+    } else if (typeof tableDiv0.getElementsByTagName('span')[0] !== 'undefined') {
+      itemName = tableDiv0.getElementsByTagName('span')[0].innerText;
+    } else if (typeof tableDiv0.innerText !== 'undefined') {
+      itemName = tableDiv0.innerText;
+    } else {
+      console.log('failed to get a name for div: ',tableDiv0);
+    }
+    return itemName;
   }
 
   createNewItem(itemName, itemDesc, category, backupTitle) {
@@ -283,21 +299,41 @@ export class ListPage implements OnInit  {
    * @param itemName the item name
    */
   getAnchorTitleForBackupTitle(tableDiv: any, itemName: string) {
-    let titleProp = tableDiv.getElementsByTagName('a')[0].title;
-    let backupLink;
-    let backupTitle;
-    let href:string = tableDiv.getElementsByTagName('a')[0].href;
-    if (href) {
-      let slash = href.lastIndexOf('/');
-      backupLink = href.substr(slash+1,href.length);
+    if (typeof tableDiv.getElementsByTagName('a')[0] !== 'undefined') {
+      let titleProp = tableDiv.getElementsByTagName('a')[0].title;
+      let backupLink;
+      let backupTitle;
+      let href:string = tableDiv.getElementsByTagName('a')[0].href;
+      if (href) {
+        let slash = href.lastIndexOf('/');
+        backupLink = href.substr(slash+1,href.length);
+      }
+      if (href.indexOf('index.php') !== -1) {
+        backupTitle = -1; // we have a missing detail page
+      }
+      if (itemName !== titleProp && backupTitle !== -1) {
+        backupTitle = titleProp;
+      }
+      console.log('backupTitle',backupTitle);
+      if ((backupTitle !== null) 
+        && (typeof backupTitle !== 'undefined')
+        && (backupTitle !== -1) 
+        && (backupTitle.indexOf('(psychology)') !== -1)) {
+        backupTitle = backupTitle.substr(0,backupTitle.indexOf('('));
+        console.log('backupTitle',backupTitle);
+        //compare the names again without the
+        if (backupTitle !== itemName) {
+          backupTitle = null;
+        }
+      }
+      console.log(backupTitle+' - '+backupLink);
+      return backupTitle;
+    } else {
+      console.log('tableDiv',tableDiv);
+      if (typeof tableDiv.getElementsByTagName('td')[0] !== 'undefined') {
+        return tableDiv.getElementsByTagName('td')[0].innerText();
+      }
     }
-    if (href.indexOf('index.php') !== -1) {
-      backupTitle = -1; // we have a missing detail page
-    }
-    if (itemName !== titleProp && backupTitle !== -1) {
-      backupTitle = titleProp;
-    }
-    return backupTitle;
   }
 
   /**
@@ -318,22 +354,26 @@ export class ListPage implements OnInit  {
    */
   getAnchorTitleForBackupLink(tableDiv: any, itemName: string) {
     let backupLink;
-    let titleProp = tableDiv.getElementsByTagName('a')[0].title;
-    let href = tableDiv.getElementsByTagName('a')[0].href;
-    if (href) {
-      let slash = href.lastIndexOf('/');
-      backupLink = href.substr(slash+1,href.length);
-    }
-    if (href.indexOf('index.php') !== -1) {
-      backupLink = null; // we have a missing detail page
-    }
-    // this will tell us if the name and the title are different
-    // if they are then we want to add a backupTitle.
-    // if they aren't then we will return null
-    if (itemName !== titleProp && backupLink) {
-      //console.log('backupLink',backupLink);
-      return backupLink;
-    } else  {
+    if (tableDiv.getElementsByTagName('a')[0]) {
+      let titleProp = tableDiv.getElementsByTagName('a')[0].title;
+      let href = tableDiv.getElementsByTagName('a')[0].href;
+      if (href) {
+        let slash = href.lastIndexOf('/');
+        backupLink = href.substr(slash+1,href.length);
+      }
+      if (href.indexOf('index.php') !== -1) {
+        backupLink = null; // we have a missing detail page
+      }
+      // this will tell us if the name and the title are different
+      // if they are then we want to add a backupTitle.
+      // if they aren't then we will return null
+      if (itemName !== titleProp && backupLink) {
+        //console.log('backupLink',backupLink);
+        return backupLink;
+      } else  {
+        return null;
+      }
+    } else {
       return null;
     }
   }

@@ -54,20 +54,21 @@ Start the server with ```npm start```.  Build the Angular project served in the 
 
 Planned features include:
 
-* settings page
-* language change option
-* bookmark the last viewed item
-* let the user build a short description
-* swipe right to see short description
-* swipe up/down on the short description to send the item to the top/bottom of the list
-* swipe right to remove it from the list
-* save named list changes in local storage
-* metrics for the list (number of removed items out of total items)
-* detail page metrics (number of preambles, expand/contract preambles, footnotes)
-* create a new category
-* component style library shared by all the app
-* capture link title and create an 'also known as' section from other sources.
-* allow user to clear the local storage
+1. settings page
+1. done: language change option
+1. bookmark the last viewed item
+1. let the user build a short description
+1. swipe right to see short description
+1. swipe up/down on the short description to send the item to the top/bottom of the list
+1. swipe right to remove it from the list
+1. metrics for the list (number of removed items out of total items)
+1. detail page metrics (number of preambles, expand/contract preambles, footnotes)
+1. create a new category
+1. component style library shared by all the app
+1. capture link title and create an 'also known as' section from other sources.
+1. done: allow user to clear the local storage
+1. Track how many times item desc and details have been used.  
+1. Export xAPI actions
 
 
 ## Fixing the unit tests
@@ -277,6 +278,11 @@ useValue: { 'paramMap': observableFromPromise([{ 'id': '1'}]) } },
 
 This will not work.  Have burnt up about four hours now on this.  And people wonder why front end dev's are know to not write unit tests!  Time for lunch...
 
+I take that back.  This is time well spent.  Now we have a (mostly) passing suite of tests.  It's time to write a new one to highlight the issue with some items on the list that show the "(psychology)" category, which indicates that the link should be that in the title that includes the category, otherwise we will be served the disambiguation page.
+
+This includes first creating a test list that has some sample names including a psychology redirect page. 
+
+More good news is that with test passing, we can refactor the parseSectionList function down to about 20 lines.  More refactoring to follow as we move to include the entire DOM element from the table row into the list and use those directly to create the links for the detail page.
 
 
 ## Detail page errors
@@ -485,6 +491,10 @@ On the Wikipedia 'list of biases' page, the name is text only, not an anchor, an
 
 We need a better plan to deal with items that have no pages.  For now, we are still not sure programmatically if there are no pages, or the redirect is broken.
 
+The item *Information bias* has a title with the category.  However, using the name in this case goes to a redirect page, whereas going to the link URL works:
+https://en.wikipedia.org/wiki/Information_bias_(psychology)
+
+So in this case, although it's a page returned (a disambiguation page) it's not right page, when we should know better.
 
 ## Item State
 

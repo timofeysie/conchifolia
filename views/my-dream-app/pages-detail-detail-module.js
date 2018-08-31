@@ -120,7 +120,7 @@ var DetailPage = /** @class */ (function () {
         }, function (error) {
             console.error('error', error);
             _this.showSpinner = false;
-            _this.message = error.status + ': trying to redirect to';
+            _this.message = error.status + ': trying to redirect to ';
             if (backupTitle) {
                 _this.message += backupTitle;
                 _this.getAlternateTitle(listLanguage, backupTitle);
