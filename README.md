@@ -5,7 +5,7 @@ A NodeJS server app with a combined Angular client.
 
 The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
-This the pure Angular version of the WikiData parsing project that has identical implementations is Ionic 4, React Native, and now Angular 6.  Next will be a pure React 16 version of the app.
+This the pure Angular version of the WikiData parsing project that has an identical implementations in Ionic 4, React Native, and now Angular 6.  Next will be a pure React 16 version of the app.
 
 [React Native version](https://github.com/timofeysie/teretifolia)
 
@@ -276,7 +276,7 @@ I'm guessing that the router being called in the test is looking for a paramMap 
 useValue: { 'paramMap': observableFromPromise([{ 'id': '1'}]) } },
 ```
 
-This will not work.  Have burnt up about four hours now on this.  And people wonder why front end dev's are know to not write unit tests!  Time for lunch...
+This will not work.  Have burnt up about four hours now on this.  And people wonder why front end dev's are known to not write unit tests!  Time for lunch...
 
 I take that back.  This is time well spent.  Now we have a (mostly) passing suite of tests.  It's time to write a new one to highlight the issue with some items on the list that show the "(psychology)" category, which indicates that the link should be that in the title that includes the category, otherwise we will be served the disambiguation page.
 
