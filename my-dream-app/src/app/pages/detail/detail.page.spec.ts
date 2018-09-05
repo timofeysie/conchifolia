@@ -4,32 +4,41 @@ import { ActivatedRoute } from '@angular/router';
 import { DetailPage } from './detail.page';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { BackendApiService } from '../../services/backend-api.service';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
+import { ActivatedRouteStub } from './ActivatedRouteStub';
+//import { ValueService } from 'jasmine';
 
 describe('DetailPage', () => {
-  const fakeActivatedRoute = {  
-    snapshot: { data: { } }
-  } as ActivatedRoute;
 
   let component: DetailPage;
   let fixture: ComponentFixture<DetailPage>;
   let observableFromPromise = Observable.create;
+//  let service: ValueService;
 
   beforeEach(async(() => {
+    // The TestBed emulates @NgModule.
     TestBed.configureTestingModule({
       declarations: [ DetailPage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        { provide: ActivatedRoute,
-          useValue: { 'paramMap': observableFromPromise([{ 'id': '1'}]) } },
+        { provide: ActivatedRoute, useValue: ActivatedRouteStub },
         HttpClient,
         HttpHandler,
         BackendApiService]
     })
     .compileComponents();
   }));
+  // @NgModule({
+  //   imports: [
+  //     CommonModule,
+  //     SharedModule,
+  //     RouterModule.forChild(routes)
+  //   ],
+  //   declarations: [DetailPage]
+  // })x
 
   beforeEach(() => {
+    //activatedRoute.setParamMap({ id: expectedHero.id });
     fixture = TestBed.createComponent(DetailPage);
     component = fixture.componentInstance;
     fixture.detectChanges();

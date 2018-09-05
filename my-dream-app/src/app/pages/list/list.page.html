@@ -21,8 +21,14 @@
         [ngClass]="{
           'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
           'list__text-wikimedia': !item.cognitive_biasLabel,
-          'list__item--viewed': item.detailState ==='viewed'}">
-        {{ item.sortName }} <span *ngIf="item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1">({{ item.backupTitle }})</span>
+          'list__item--viewed': item.detailState ==='viewed'}"
+          class="tooltip">
+        {{ item.sortName }}
+        <span *ngIf="item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1">
+          ({{ item.backupTitle }})</span>
+        <span class="tooltiptext">{{ item.cognitive_biasDescription }} 
+          {{ item.wikiMedia_description }}
+        </span>
       </h4>
     </li>
   </div>

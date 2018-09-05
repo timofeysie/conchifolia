@@ -107,6 +107,7 @@ var DetailPage = /** @class */ (function () {
         this.showSpinner = true;
     }
     DetailPage.prototype.ngOnInit = function () {
+        //this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
         var _this = this;
         this.itemName = this.route.snapshot.paramMap.get('id');
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');

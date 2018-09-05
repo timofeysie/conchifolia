@@ -19,6 +19,8 @@ export class DetailPage implements OnInit {
     private backendApiService: BackendApiService) { }
 
   ngOnInit() {
+    //this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
+    
     this.itemName = this.route.snapshot.paramMap.get('id');
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     const backupTitle = this.route.snapshot.paramMap.get('title');

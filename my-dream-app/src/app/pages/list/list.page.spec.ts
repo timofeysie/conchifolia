@@ -1,11 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClient, HttpHandler } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { ListPage } from './list.page';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { DataService } from '../../services/data.service';
-import { SESSION_STORAGE, StorageService } from 'angular-webstorage-service';
+import { SESSION_STORAGE } from 'angular-webstorage-service';
 import { BackendApiService } from '../../services/backend-api.service';
 import { DetailModel } from '../../models/detail.model';
 import { of } from 'rxjs';
@@ -15,13 +14,6 @@ describe('ListPage', () => {
   let component: ListPage;
   let fixture: ComponentFixture<ListPage>; 
   let backendApiServiceSpy: jasmine.SpyObj<BackendApiService>;
-  const fakeActivatedRoute = {  
-    snapshot: { data: { } }
-  } as ActivatedRoute;
-  let mockRouter:any;
-    class MockRouter {
-        navigate = jasmine.createSpy('navigate');
-    }
 
     beforeEach(() => {
       backendApiServiceSpy = jasmine.createSpyObj('BackendApiService', ['getList']);
@@ -51,12 +43,9 @@ describe('ListPage', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: BackendApiService, useValue: backendApiServiceSpy },
-        { provide: ActivatedRoute, useValue: fakeActivatedRoute },
-        { provide: Router, useValue: mockRouter },
         { provide: SESSION_STORAGE, useValue: {} },
         HttpClient,
         HttpHandler,
-        RouterModule,
         DataService
       ],
     })
@@ -73,10 +62,22 @@ describe('ListPage', () => {
     expect(component).toBeTruthy();
   });
 
+  // it('should call ApiService:artworks one time', () => {
+  //   expect(backendApiServiceSpy.getList('en').subscribe()).toBe(1);
+  // });
+
   it('should show loaded artworks', () => {
       fixture.detectChanges();
       const host: HTMLElement = fixture.nativeElement;
       expect(host.textContent).toContain('Cognitive Biases');
+      //expect(host.textContent).toContain('title', 'Cognitive Biases');
   });
+
+  // it('should show update button if no artworks', () => {
+  //     component.list = [];
+  //     //component.error = 'add some artworks';
+  //     fixture.detectChanges();
+  //     expect(fixture.nativeElement.textContent).toContain('Update');
+  // });
 
 });
