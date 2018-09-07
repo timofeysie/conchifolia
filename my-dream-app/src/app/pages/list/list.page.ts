@@ -182,7 +182,6 @@ export class ListPage implements OnInit  {
    */
   addItems(section: any) {
     for (let i = 0; i < section.length; i++) {
-      console.log('item:'+i+' ',section[i]);
       let itemName = section[i].name;
       let backupTitle;
       if (typeof section[i]['backupTitle'] !== 'undefined') {
@@ -193,7 +192,10 @@ export class ListPage implements OnInit  {
         if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
           found = true;
           this.list[j].wikiMedia_label = itemName;
-          this.list[j].wikiMedia_description = section[i].description;
+          this.list[j].wikiMedia_description = section[i].desc;
+          if (typeof section[i].desc === 'undefined' || section[i].desc === ''  || section[i].desc === null) {
+            console.log('found itemName:'+itemName+' '+section[i].desc);
+          }
           this.list[j].wikiMedia_category = section[i].category;
           this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
           if (backupTitle) {
@@ -206,7 +208,10 @@ export class ListPage implements OnInit  {
       if (!found) {
         let wikiMediaObj = new DetailModel();
         wikiMediaObj.wikiMedia_label = itemName;
-        wikiMediaObj.wikiMedia_description = section[i].description;
+        wikiMediaObj.wikiMedia_description = section[i].desc;
+        if (typeof section[i].desc === 'undefined' || section[i].desc === '  '  || section[i].desc === '   '  || section[i].desc === null) {
+          console.log('found itemName:'+itemName+' '+section[i].desc);
+        }
         wikiMediaObj.wikiMedia_category = section[i].category;
         wikiMediaObj.sortName = itemName.split('"').join('');
         wikiMediaObj.sortName.charAt(0).toUpperCase() + wikiMediaObj.sortName.substr(1);
@@ -314,22 +319,18 @@ export class ListPage implements OnInit  {
       if (itemName !== titleProp && backupTitle !== -1) {
         backupTitle = titleProp;
       }
-      console.log('backupTitle',backupTitle);
       if ((backupTitle !== null) 
         && (typeof backupTitle !== 'undefined')
         && (backupTitle !== -1) 
         && (backupTitle.indexOf('(psychology)') !== -1)) {
         backupTitle = backupTitle.substr(0,backupTitle.indexOf('('));
-        console.log('backupTitle',backupTitle);
         //compare the names again without the
         if (backupTitle !== itemName) {
           backupTitle = null;
         }
       }
-      console.log(backupTitle+' - '+backupLink);
       return backupTitle;
     } else {
-      console.log('tableDiv',tableDiv);
       if (typeof tableDiv.getElementsByTagName('td')[0] !== 'undefined') {
         return tableDiv.getElementsByTagName('td')[0].innerText();
       }

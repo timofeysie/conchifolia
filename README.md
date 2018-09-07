@@ -71,6 +71,41 @@ Planned features include:
 1. Export xAPI actions
 
 
+## Missing WikiMedia descriptions
+
+After adding a basic tool tip to display the short message, it was noticed that most of them were missing.  Only the WikiData descriptions which are spotty and some are just category names.
+
+In Conchifolia this is done:
+```
+this.list[j].wikiMedia_description = key.desc;
+```
+
+Here we do almost the same thing:
+```
+this.list[j].wikiMedia_description = section[i].description;
+```
+
+The sad truth is that the description is sent as *desc* from the server.  But there is still more work to do.  For some reason, the tool tip description for "Courtesy bias a.k.a. The Shy Tory Factor" is off to the right.
+
+Also, it shouldn't be a tool tip so that mobile users can see it.  We will also want to add the controls for changing the status of the items, so a tool tip might be too fragile for that purpose.
+
+After thinking about using the icon component to show arrows and expand and contract the descriptions,  I decided on using html5 details element.
+```
+<details>
+    <summary>
+        item
+    </summary>
+    <p>
+        description
+    </p>
+</details>
+```
+
+In the past it would have been a javascript affair, either by adding listeners or using Angular.
+
+With a bit of styling, the expand/contract works well, except we need a transition.  Can we set an animation with the expand as a trigger?
+
+
 ## Fixing the unit tests
 
 After fixing some issues with the links and the detail page, it's time to address the sorry state of the tests.  Running ```npm test``` shows what's up.

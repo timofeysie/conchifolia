@@ -217,7 +217,7 @@ module.exports = ""
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div>\n  <svg height=\"16px\" \n    id=\"Layer_1\" \n    style=\"enable-background:new 0 0 16 16;\" \n    version=\"1.1\" \n    viewBox=\"0 0 16 16\" \n    width=\"16px\" \n    xml:space=\"preserve\" \n    xmlns=\"http://www.w3.org/2000/svg\" \n    xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n    <path d=\"M14,8c-0.609,0-0.898,0.43-1,0.883C12.635,10.516,11.084,13,8,13c-0.757,0-1.473-0.172-2.114-0.474L6.414,12  C6.773,11.656,7,11.445,7,11c0-0.523-0.438-1-1-1H3c-0.609,0-1,0.492-1,1v3c0,0.541,0.428,1,1,1c0.484,0,0.688-0.273,1-0.594  l0.408-0.407C5.458,14.632,6.685,15,8,15c4.99,0,7-4.75,7-5.938C15,8.336,14.469,8,14,8z M3,7.117C3.365,5.485,4.916,3,8,3  c0.757,0,1.473,0.171,2.114,0.473L9.586,4C9.227,4.344,9,4.555,9,5c0,0.523,0.438,1,1,1h3c0.609,0,1-0.492,1-1V2  c0-0.541-0.428-1-1-1c-0.484,0-0.688,0.273-1,0.594l-0.408,0.407C10.542,1.368,9.315,1,8,1C3.01,1,1,5.75,1,6.938  C1,7.664,1.531,8,2,8C2.609,8,2.898,7.57,3,7.117z\"/></svg>\n</div>\n"
+module.exports = "<div>\n    <svg height=\"16px\" \n      id=\"Layer_1\" \n      style=\"enable-background:new 0 0 16 16;\" \n      version=\"1.1\" \n      viewBox=\"0 0 16 16\" \n      width=\"16px\" \n      xml:space=\"preserve\" \n      xmlns=\"http://www.w3.org/2000/svg\" \n      xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n      <path d=\"M14,8c-0.609,0-0.898,0.43-1,0.883C12.635,10.516,11.084,13,8,13c-0.757,0-1.473-0.172-2.114-0.474L6.414,12  C6.773,11.656,7,11.445,7,11c0-0.523-0.438-1-1-1H3c-0.609,0-1,0.492-1,1v3c0,0.541,0.428,1,1,1c0.484,0,0.688-0.273,1-0.594  l0.408-0.407C5.458,14.632,6.685,15,8,15c4.99,0,7-4.75,7-5.938C15,8.336,14.469,8,14,8z M3,7.117C3.365,5.485,4.916,3,8,3  c0.757,0,1.473,0.171,2.114,0.473L9.586,4C9.227,4.344,9,4.555,9,5c0,0.523,0.438,1,1,1h3c0.609,0,1-0.492,1-1V2  c0-0.541-0.428-1-1-1c-0.484,0-0.688,0.273-1,0.594l-0.408,0.407C10.542,1.368,9.315,1,8,1C3.01,1,1,5.75,1,6.938  C1,7.664,1.531,8,2,8C2.609,8,2.898,7.57,3,7.117z\"/></svg>\n</div>"
 
 /***/ }),
 
@@ -460,7 +460,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <h4 (click)=\"navigateAction(item.sortName, i)\"\n        [ngClass]=\"{\n          'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n          'list__text-wikimedia': !item.cognitive_biasLabel,\n          'list__item--viewed': item.detailState ==='viewed'}\"\n          class=\"tooltip\">\n        {{ item.sortName }}\n        <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n          ({{ item.backupTitle }})</span>\n        <span class=\"tooltiptext\">{{ item.cognitive_biasDescription }} \n          {{ item.wikiMedia_description }}\n        </span>\n      </h4>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <details>\n        <summary>\n          <span (click)=\"navigateAction(item.sortName, i)\"\n            [ngClass]=\"{\n              'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n              'list__text-wikimedia': !item.cognitive_biasLabel,\n              'list__item--viewed': item.detailState ==='viewed'}\">\n              {{ item.sortName }}\n            <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n              ({{ item.backupTitle }})</span>\n            </span>\n        </summary>\n        <p>\n          <span class=\"description\">{{ item.cognitive_biasDescription }} \n            {{ item.wikiMedia_description }}\n          </span>\n        </p>\n      </details>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -471,7 +471,7 @@ module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngI
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige;\n  position: fixed; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  padding-top: 7px; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  /* Position the tooltip text - see examples below! */\n  position: absolute;\n  z-index: 1; }\n\n/* Show the tooltip text when you mouse over the tooltip container */\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n"
+module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige;\n  position: fixed; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  top: 20px;\n  position: relative; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  padding: 5px 0;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 1; }\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n\nsummary {\n  outline: none; }\n\ndetails summary::-webkit-details-marker {\n  color: Gainsboro; }\n\n.description {\n  color: LightSlateGray; }\n"
 
 /***/ }),
 
@@ -663,7 +663,6 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.addItems = function (section) {
         for (var i = 0; i < section.length; i++) {
-            console.log('item:' + i + ' ', section[i]);
             var itemName = section[i].name;
             var backupTitle = void 0;
             if (typeof section[i]['backupTitle'] !== 'undefined') {
@@ -674,7 +673,10 @@ var ListPage = /** @class */ (function () {
                 if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
                     found = true;
                     this.list[j].wikiMedia_label = itemName;
-                    this.list[j].wikiMedia_description = section[i].description;
+                    this.list[j].wikiMedia_description = section[i].desc;
+                    if (typeof section[i].desc === 'undefined' || section[i].desc === '' || section[i].desc === null) {
+                        console.log('found itemName:' + itemName + ' ' + section[i].desc);
+                    }
                     this.list[j].wikiMedia_category = section[i].category;
                     this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
                     if (backupTitle) {
@@ -687,7 +689,10 @@ var ListPage = /** @class */ (function () {
             if (!found) {
                 var wikiMediaObj = new _models_detail_model__WEBPACK_IMPORTED_MODULE_2__["DetailModel"]();
                 wikiMediaObj.wikiMedia_label = itemName;
-                wikiMediaObj.wikiMedia_description = section[i].description;
+                wikiMediaObj.wikiMedia_description = section[i].desc;
+                if (typeof section[i].desc === 'undefined' || section[i].desc === '  ' || section[i].desc === '   ' || section[i].desc === null) {
+                    console.log('found itemName:' + itemName + ' ' + section[i].desc);
+                }
                 wikiMediaObj.wikiMedia_category = section[i].category;
                 wikiMediaObj.sortName = itemName.split('"').join('');
                 wikiMediaObj.sortName.charAt(0).toUpperCase() + wikiMediaObj.sortName.substr(1);
@@ -794,23 +799,19 @@ var ListPage = /** @class */ (function () {
             if (itemName !== titleProp && backupTitle !== -1) {
                 backupTitle = titleProp;
             }
-            console.log('backupTitle', backupTitle);
             if ((backupTitle !== null)
                 && (typeof backupTitle !== 'undefined')
                 && (backupTitle !== -1)
                 && (backupTitle.indexOf('(psychology)') !== -1)) {
                 backupTitle = backupTitle.substr(0, backupTitle.indexOf('('));
-                console.log('backupTitle', backupTitle);
                 //compare the names again without the
                 if (backupTitle !== itemName) {
                     backupTitle = null;
                 }
             }
-            console.log(backupTitle + ' - ' + backupLink);
             return backupTitle;
         }
         else {
-            console.log('tableDiv', tableDiv);
             if (typeof tableDiv.getElementsByTagName('td')[0] !== 'undefined') {
                 return tableDiv.getElementsByTagName('td')[0].innerText();
             }

@@ -29,7 +29,8 @@ ion-item-options {
     text-transform: capitalize;
 }
 .list {
-    padding-top: 7px;
+    top: 20px;
+    position: relative;
     li {
         list-style-type: none;
         color: green;
@@ -68,14 +69,21 @@ ion-item-options {
     background-color: whitesmoke;
     //color: #fff;
     text-align: center;
-    //padding: 5px 0;
-    //border-radius: 6px;
-    /* Position the tooltip text - see examples below! */
+    padding: 5px 0;
+    border-radius: 6px;
     position: absolute;
     z-index: 1;
 }
-
-/* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+summary {
+    outline: none;
+}
+details summary::-webkit-details-marker {
+    color: Gainsboro;
+}
+.description {
+    color: LightSlateGray;
+}
+  
