@@ -154,6 +154,9 @@ Can't bind to 'onToggle' since it isn't a known property of 'details'. ("t; let 
           <span (click)="navigateAction(item.sortName"): ng:///ListPageModule/ListPage.html@19:15
 ```
 
+Not sure what the event hook is for this right now.  The features this would be used for (like counting the number of times the short description has been viewed to change a style) is not ready for development yet.
+
+It's time to finally get back to Loranthifolia so that it can catch up with all the features ironed out here.  After THAT then the React Native app needs a lot of catching up.  It only has the WikiData list, so would need to implement the WikiMedia section calls, merge and sort the list.  Then implement the language option.  All in good time.
 
 
 ## Fixing the unit tests

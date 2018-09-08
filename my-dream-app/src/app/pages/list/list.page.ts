@@ -228,6 +228,10 @@ export class ListPage implements OnInit  {
     }
   }
 
+  /**
+   * @param description 
+   * @returns the description without any [1] footnote markers.
+   */
   removeFootnotes(description: string) {
     if (description) {
       const indexOfBracket = description.indexOf('[');
