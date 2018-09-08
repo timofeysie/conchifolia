@@ -17,7 +17,7 @@
 <ul class="list">
   <div *ngFor="let item of list; let i = index">
     <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
-      <details (onToggle)="detailsToggle()">
+      <details (Toggle)="detailsToggle()">
         <summary>
           <span (click)="navigateAction(item.sortName, i)"
             [ngClass]="{

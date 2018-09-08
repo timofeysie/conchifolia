@@ -133,6 +133,28 @@ Bingo!  So with Angular, in the html all we have to do is this:
 
 Except that doesn't work.  Or is it onToggle?  No.
 
+Also tried:
+```
+<details [onToggle]="detailsToggle()">
+```
+
+Got this:
+```
+compiler.js:1016 Uncaught Error: Template parse errors:
+Binding to event property 'onToggle' is disallowed for security reasons, please use (Toggle)=...
+If 'onToggle' is a directive input, make sure the directive is imported by the current module. ("t; let i = index">
+    <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
+      <details [ERROR ->][onToggle]="detailsToggle()">
+        <summary>
+          <span (click)="navigateAction(item.sortName"): ng:///ListPageModule/ListPage.html@19:15
+Can't bind to 'onToggle' since it isn't a known property of 'details'. ("t; let i = index">
+    <li *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
+      <details [ERROR ->][onToggle]="detailsToggle()">
+        <summary>
+          <span (click)="navigateAction(item.sortName"): ng:///ListPageModule/ListPage.html@19:15
+```
+
+
 
 ## Fixing the unit tests
 

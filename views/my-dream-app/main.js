@@ -460,7 +460,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <details (onToggle)=\"detailsToggle()\">\n        <summary>\n          <span (click)=\"navigateAction(item.sortName, i)\"\n            [ngClass]=\"{\n              'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n              'list__text-wikimedia': !item.cognitive_biasLabel,\n              'list__item--viewed': item.detailState ==='viewed'}\"\n              class=\"list__text\">\n              {{ item.sortName }}\n            <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n              ({{ item.backupTitle }})</span>\n            </span>\n        </summary>\n        <p>\n          <span class=\"description\">{{ item.cognitive_biasDescription }} \n            {{ item.wikiMedia_description }}\n          </span>\n        </p>\n      </details>\n    </li>\n  </div>\n</ul>\n"
+module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<ul class=\"list\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <li *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n      <details (Toggle)=\"detailsToggle()\">\n        <summary>\n          <span (click)=\"navigateAction(item.sortName, i)\"\n            [ngClass]=\"{\n              'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n              'list__text-wikimedia': !item.cognitive_biasLabel,\n              'list__item--viewed': item.detailState ==='viewed'}\"\n              class=\"list__text\">\n              {{ item.sortName }}\n            <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n              ({{ item.backupTitle }})</span>\n            </span>\n        </summary>\n        <p>\n          <span class=\"description\">{{ item.cognitive_biasDescription }} \n            {{ item.wikiMedia_description }}\n          </span>\n        </p>\n      </details>\n    </li>\n  </div>\n</ul>\n"
 
 /***/ }),
 
@@ -471,7 +471,7 @@ module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngI
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige;\n  position: fixed; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text {\n  position: relative;\n  top: -5px; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  top: 20px;\n  left: -40px;\n  position: relative; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  padding: 5px 0;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 1; }\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n\nsummary {\n  outline: none; }\n\ndetails summary::-webkit-details-marker {\n  color: Gainsboro;\n  font-size: 2em; }\n\n.description {\n  color: LightSlateGray; }\n"
+module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige;\n  position: fixed; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text {\n  position: relative;\n  top: -5px; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  top: 20px;\n  left: -40px;\n  position: relative; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  padding: 5px 0;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 1; }\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n\nsummary {\n  outline: none; }\n\ndetails summary::-webkit-details-marker {\n  color: Gainsboro;\n  font-size: 2em; }\n\n.description {\n  color: LightSlateGray;\n  position: relative;\n  left: 10px; }\n"
 
 /***/ }),
 
@@ -676,7 +676,7 @@ var ListPage = /** @class */ (function () {
                 if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
                     found = true;
                     this.list[j].wikiMedia_label = itemName;
-                    this.list[j].wikiMedia_description = section[i].desc;
+                    this.list[j].wikiMedia_description = this.removeFootnotes(section[i].desc);
                     if (typeof section[i].desc === 'undefined' || section[i].desc === '' || section[i].desc === null) {
                         console.log('found itemName:' + itemName + ' ' + section[i].desc);
                     }
@@ -692,7 +692,7 @@ var ListPage = /** @class */ (function () {
             if (!found) {
                 var wikiMediaObj = new _models_detail_model__WEBPACK_IMPORTED_MODULE_2__["DetailModel"]();
                 wikiMediaObj.wikiMedia_label = itemName;
-                wikiMediaObj.wikiMedia_description = section[i].desc;
+                wikiMediaObj.wikiMedia_description = this.removeFootnotes(section[i].desc);
                 if (typeof section[i].desc === 'undefined' || section[i].desc === '  ' || section[i].desc === '   ' || section[i].desc === null) {
                     console.log('found itemName:' + itemName + ' ' + section[i].desc);
                 }
@@ -704,6 +704,17 @@ var ListPage = /** @class */ (function () {
                 }
                 this.list.push(wikiMediaObj);
                 this.media++;
+            }
+        }
+    };
+    ListPage.prototype.removeFootnotes = function (description) {
+        if (description) {
+            var indexOfBracket = description.indexOf('[');
+            if (indexOfBracket !== -1) {
+                return description.substring(0, indexOfBracket);
+            }
+            else {
+                return description;
             }
         }
     };

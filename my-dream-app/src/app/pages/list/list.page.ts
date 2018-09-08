@@ -196,7 +196,7 @@ export class ListPage implements OnInit  {
         if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
           found = true;
           this.list[j].wikiMedia_label = itemName;
-          this.list[j].wikiMedia_description = section[i].desc;
+          this.list[j].wikiMedia_description = this.removeFootnotes(section[i].desc);
           if (typeof section[i].desc === 'undefined' || section[i].desc === ''  || section[i].desc === null) {
             console.log('found itemName:'+itemName+' '+section[i].desc);
           }
@@ -212,7 +212,7 @@ export class ListPage implements OnInit  {
       if (!found) {
         let wikiMediaObj = new DetailModel();
         wikiMediaObj.wikiMedia_label = itemName;
-        wikiMediaObj.wikiMedia_description = section[i].desc;
+        wikiMediaObj.wikiMedia_description = this.removeFootnotes(section[i].desc);
         if (typeof section[i].desc === 'undefined' || section[i].desc === '  '  || section[i].desc === '   '  || section[i].desc === null) {
           console.log('found itemName:'+itemName+' '+section[i].desc);
         }
@@ -224,6 +224,17 @@ export class ListPage implements OnInit  {
         }
         this.list.push(wikiMediaObj);
         this.media++;
+      }
+    }
+  }
+
+  removeFootnotes(description: string) {
+    if (description) {
+      const indexOfBracket = description.indexOf('[');
+      if (indexOfBracket !== -1) {
+        return description.substring(0, indexOfBracket);
+      } else {
+        return description;
       }
     }
   }
