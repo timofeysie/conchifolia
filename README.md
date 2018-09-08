@@ -103,7 +103,35 @@ After thinking about using the icon component to show arrows and expand and cont
 
 In the past it would have been a javascript affair, either by adding listeners or using Angular.
 
-With a bit of styling, the expand/contract works well, except we need a transition.  Can we set an animation with the expand as a trigger?
+With a bit of styling, the expand/contract works well, except we need a transition.  Can we set an animation with the expand as a trigger?  Should we use a hook to get the element in Angular and listen for the event?
+
+If we were going to use Angular all along, then why did we opt for the html solution?
+
+The docs for details show:
+```
+Attributes
+open	Specifies that the details should be visible (open) to the user
+
+Global Attributes
+The <details> tag also supports the Global Attributes in HTML.
+
+Event Attributes
+The <details> tag also supports the Event Attributes in HTML.
+```
+
+Right at the bottom of the events docs, it says:
+```
+Misc Events
+Attribute	Value	Description
+ontoggle	script	Fires when the user opens or closes the <details> element
+```
+
+Bingo!  So with Angular, in the html all we have to do is this:
+```
+(ontoggle)="setVar()"
+```
+
+Except that doesn't work.  Or is it onToggle?  No.
 
 
 ## Fixing the unit tests

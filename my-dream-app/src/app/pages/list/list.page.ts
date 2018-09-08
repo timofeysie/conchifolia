@@ -34,6 +34,10 @@ export class ListPage implements OnInit  {
     });
   }
 
+  detailsToggle() {
+    console.log('detailsToggle');
+  }
+
   /**
    * Load the list again via http which will overwrite the current list including options.
    */
