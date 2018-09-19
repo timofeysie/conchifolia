@@ -4,6 +4,7 @@ const path = require('path')
 const PORT = process.env.PORT || 5000
 const curator = require('art-curator');
 const https = require('https');
+const details = require('./endpoints/details');
 
 const allowedExt = [
   '.js',
@@ -118,29 +119,47 @@ express()
   })
   .get('/api/detail/:id/:lang/:leaveCaseAlone', function(req, res) {
     console.log('id',req.params.id);
-    console.log('leaveCaseAlone',req.params.leaveCaseAlone);
-    let leaveCaseAlone = req.params.leaveCaseAlone;
+    let leaveCaseAloneParam = req.params.leaveCaseAlone.toString();
+    const leaveCaseAlone = (leaveCaseAloneParam == 'true');
     let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang,leaveCaseAlone));
-        let newUrl = singlePageUrl.replace('http','https');
-        https.get(newUrl, (wikiRes) => {
-            let rawData = '';
-            wikiRes.on('data', (chunk) => { rawData += chunk; });
-            wikiRes.on('end', () => {
-              try {
-                let result = JSON.parse(rawData)['parse']['text']['*'];
-                let preamblesRemoved = curator.removeWikiDataPreambles(result);
-                const desc = { description: preamblesRemoved }
-                res.status(200).json(desc);
-              } catch (err) {
-                console.log('wikiRes.headers',wikiRes.headers);
-                console.log('Url:',newUrl);
-                res.status(500).send('No data in response:'+wikiRes);
+    let newUrl = singlePageUrl.replace('http','https');
+    https.get(newUrl, (wikiRes) => {
+        let rawData = '';
+        wikiRes.on('data', (chunk) => { rawData += chunk; });
+        wikiRes.on('end', () => {
+          try {
+            //console.log('raw data',rawData);
+            let result = JSON.parse(rawData)['parse']['text']['*'];
+            let preamblesRemoved = curator.removeWikiDataPreambles(result);
+            const desc = { description: preamblesRemoved }
+            // check to see if this is a re-direct page
+            if (preamblesRemoved.indexOf('<div class="redirectMsg">') !== -1) {
+                const anchorIndex = preamblesRemoved.indexOf('<a href="');
+                if (anchorIndex !== -1) {
+                const anchorToEnd = preamblesRemoved.substring(anchorIndex+'<a href="/wiki/'.length, preamblesRemoved.length);
+                const anchor = anchorToEnd.substring(0, anchorToEnd.indexOf('"'));
+                details.redirect(anchor).then((rug) => {
+                  res.status(200).json(rug);
+                })
+              } else {
+                  console.log('redirect without href?');
+                  res.status(500).json('redirect without href');
               }
-            });
-        }).on('error', (e) => {
-            console.error(`Got error: ${e.message}`);
-            res.status(e.status).send('server error',e.message);
-        });
+            } else {
+              console.log('When will this happen?');
+              res.status(200).json(desc);
+            }
+          } catch (err) {
+            console.log('No data in response ============')
+            console.log('wikiRes.headers',wikiRes.headers);
+            console.log('Url:',newUrl);
+            res.status(500).send('No data in response:'+wikiRes);
+          }
+      });
+    }).on('error', (e) => {
+        console.error(`Got error: ${e.message}`);
+        res.status(e.status).send('server error',e.message);
+    });
   })
   .get('*', (req, res) => {
     if (allowedExt.filter(ext => req.url.indexOf(ext) > 0).length > 0) {

@@ -71,6 +71,64 @@ Planned features include:
 1. Export xAPI actions
 
 
+## Re-factoring the NodeJS app
+
+While trying to support the automatic re-direct feature, it became clear that just adding more code to the detail endpoint was not the way to go.  We have been relying on this simplistic old school single index.js file for too long.
+
+We should have directory structure that will hold the node file, and a file for each endpoint.  That would be an improvement.
+
+Why not also create an error handler middleware function like this:
+```
+app.use((err, request, response, next) => {
+  console.log(err)
+  response.status(500).send('Something broke!')
+})
+```
+
+Apparently the error handler function should be the last function added with app.use.
+
+But first, let's just get the redirect working in a separate file.
+
+
+## Automatic detail re-directs
+
+The *framing effect* returns content which is a re-direct to *Framing (social sciences).  The goal is to find re-directs like this and deliver the content instead of just a redirect link.
+
+We actually have TWO listings for this item:
+Framing & Framing effect.
+
+To test the second one, we can use the local link:
+```
+localhost:5000/detail/framing_effect/en
+```
+
+We get this response:
+```
+desc { description: '
+<div class="mw-parser-output">
+    <div class="redirectMsg">
+        <p>Redirect to:</p>
+        <ul class="redirectText">
+            <li><a href="/wiki/Framing_(social_sciences)" title="Framing (social sciences)">Framing (social sciences)</a></li></ul></div>\n<!-- \nNewPP limit report\nParsed by mw2207\nCached time: 20180914132220\nCache expiry: 1900800\nDynamic content: false\nCPU time usage: 0.000 seconds\nReal time usage: 0.001 seconds\nPreprocessor visited node count: 0/1000000\nPreprocessor generated node count: 0/1500000\nPost‐expand include size: 0/2097152 bytes\nTemplate argument size: 0/2097152 bytes\nHighest expansion depth: 0/40\nExpensive parser function count: 0/500\nUnstrip recursion depth: 0/20\nUnstrip post‐expand size: 0/5000000 bytes\nNumber of Wikibase entities loaded: 0/400\n-->\n<!--\nTransclusion expansion time report (%,ms,calls,template)\n100.00%    0.000      1 -total\n-->\n</div>' }
+```
+
+So if we search for this: ```<div class="redirectMsg"><p>Redirect to:</p>``` and find it, we can use the href value ```/wiki/Framing_(social_sciences)``` to create a new link and then return the content from that call.  
+
+Question: should we do this on the client so that we can provide a message to the user when the re-direct is happening so they are more understanding of the long wait?  Not sure.  That would make the wait time actually longer, as the client would have to make another call and wait for another response instead of waiting for the first one to happen.  Going with changing the server for now.  We can always move that logic to the client later.
+
+
+So the simplest thing is to follow the simplest method, which is check for the redirect tags.
+
+Test with this URL: http://localhost:5000/detail/framing_effect/en/true
+
+One quick change, we have to get rid of the /wiki/ part of the url otherwise we will get URLs like this:
+```
+http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=/wiki/framing_(social_sciences)
+```
+
+After that, we have out automatic redirects working.  At least for that one.  Time to test a bit.
+
+
 ## Missing WikiMedia descriptions
 
 After adding a basic tool tip to display the short message, it was noticed that most of them were missing.  Only the WikiData descriptions which are spotty and some are just category names.
