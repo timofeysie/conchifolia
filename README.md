@@ -26,6 +26,8 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Re-factoring the NodeJS app](#re-factoring-the-nodeJS-app)
+1. [Automatic detail re-directs](#Automatic-detail-re-directs)
 1. [Fixing the unit tests](#fixing-the-unit-tests)
 1. [Detail page errors](#detail-page-errors)
 1. [Item State](#item-atate)
@@ -87,15 +89,33 @@ app.use((err, request, response, next) => {
 
 Apparently the error handler function should be the last function added with app.use.
 
-But first, let's just get the redirect working in a separate file.
+But first, let's just get the redirect working in a separate file.  That's a step in the right direction at least.
+
+If you export functions from one file, and use a traditional require to consume those funtions in another file (read index.js), then Bob is a close family relation.
+
+If you need to load JavaScript that has already been written and isn't aware of node, the vm module is the way to go (and definitely preferable to eval).
+```
+var vm = require("vm");
+var fs = require("fs");
+module.exports = function(path, context) {
+  var data = fs.readFileSync(path);
+  vm.runInNewContext(data, context, path);
+}
+```
+
+Also, modules loaded with require(…) don't have access to the global context, so we avoid the Angular 1.x problem of scope soup.
+
+We will be using Node.js's standard module.export functionality.  So far we are just using an external function to reduce the loc (lines of code) in the details function.  But by putting each API endpoint function it their own file will allow index.js to be viable in one screen and get us closer to the 'easy to reason about' state.
+
 
 
 ## Automatic detail re-directs
 
-The *framing effect* returns content which is a re-direct to *Framing (social sciences).  The goal is to find re-directs like this and deliver the content instead of just a redirect link.
+The *framing effect* returns content which is a re-direct to *Framing (social sciences)*.  The goal is to find re-directs like this and deliver the content instead of just a redirect link.
 
 We actually have TWO listings for this item:
-Framing & Framing effect.
+Framing & Framing effect
+That's a different problem which we will deal with later.
 
 To test the second one, we can use the local link:
 ```
