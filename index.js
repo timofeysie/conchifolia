@@ -140,6 +140,9 @@ express()
                 const anchor = anchorToEnd.substring(0, anchorToEnd.indexOf('"'));
                 details.redirect(anchor).then((rug) => {
                   res.status(200).json(rug);
+                }).catch((errors) => {
+                  console.log('errors',errors);
+                  res.status(500).send('Error code:'+errors);
                 })
               } else {
                   console.log('redirect without href?');

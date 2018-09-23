@@ -190,6 +190,10 @@ export class ListPage implements OnInit  {
       let backupTitle;
       if (typeof section[i]['backupTitle'] !== 'undefined') {
         backupTitle = section[i]['backupTitle'];
+        console.log(itemName+' -> '+backupTitle);
+      }
+      if (itemName === 'Actor-observer bias') {
+        console.log('item',section[i]);
       }
       let found = false;
       for(var j = 0; j < this.list.length; j++) {
@@ -257,6 +261,7 @@ export class ListPage implements OnInit  {
   parseSectionList(data: any) {
     if (data['parse']) {
       const content = data['parse']['text']['*'];
+      console.log('content',content);
       let one = this.createElementFromHTML(content);
       const desc:any = one.getElementsByClassName('mw-parser-output')[0].children;
       let descriptions: any [] = [];

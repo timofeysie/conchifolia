@@ -112,6 +112,7 @@ var DetailPage = /** @class */ (function () {
         this.itemName = this.route.snapshot.paramMap.get('id');
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         var backupTitle = this.route.snapshot.paramMap.get('title');
+        console.log('backupTitle', backupTitle);
         this.title = this.itemName.split('_').join(' ');
         this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
             _this.description = data['description'].toString();

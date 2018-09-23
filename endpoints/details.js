@@ -9,10 +9,14 @@ exports.redirect = (id, lang, leaveCaseAlone) => {
             let rawData = '';
             wikiRes.on('data', (chunk) => { rawData += chunk; });
             wikiRes.on('end', () => {
-                let result = JSON.parse(rawData)['parse']['text']['*'];
-                let preamblesRemoved = curator.removeWikiDataPreambles(result);
-                const desc = { description: preamblesRemoved }
-                resolve(desc);
+                if (typeof JSON.parse(rawData)['error'] !== 'undefined') {
+                    reject(JSON.parse(rawData)['error']['code'])
+                } else {
+                    let result = JSON.parse(rawData)['parse']['text']['*'];
+                    let preamblesRemoved = curator.removeWikiDataPreambles(result);
+                    const desc = { description: preamblesRemoved }
+                    resolve(desc);
+                }
             });
         });
     });

@@ -107,6 +107,87 @@ Also, modules loaded with require(…) don't have access to the global context, 
 
 We will be using Node.js's standard module.export functionality.  So far we are just using an external function to reduce the loc (lines of code) in the details function.  But by putting each API endpoint function it their own file will allow index.js to be viable in one screen and get us closer to the 'easy to reason about' state.
 
+Just when everything seemed to work, this showed up:
+```
+TypeError: Cannot read property 'text' of undefined
+    at IncomingMessage.wikiRes.on (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/endpoints/details.js:12:58)
+    at IncomingMessage.emit (events.js:185:15)
+    at endReadableNT (_stream_readable.js:1106:12)
+    at process._tickCallback (internal/process/next_tick.js:178:19)
+```
+
+The error from the Ionic app was:
+```
+scheduleTask @ zone.js:2969
+push../node_modules/zone.js/dist/zone.js.ZoneDelegate.scheduleTask @ zone.js:407
+...
+Actor-observer%20bias:1 Failed to load https://radiant-springs-38893.herokuapp.com/api/detail/actor-observer_bias/en/false: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8100' is therefore not allowed access. The response had HTTP status code 503.
+```
+
+That is a CORS error.  But caused by the new detail redirect function.
+
+actor-observer_bias should be Actor–observer_asymmetry
+
+I'm thinking this redirect did work before this new redirect function, and that the backupTitle is what should be holding that re-direct value.  So what happened to it?
+
+These
+```
+Courtesy bias -> Shy Tory Factor
+Experimenter's -> Experimenter's bias
+Form function attribution bias -> -1
+Moral credential effect -> Moral credential
+Zero-sum bias -> Zero-sum thinking
+```
+
+So, yeah, -1 is not on, and actor-observer bias is missing.  Testing Courtesy bias shows it still re-directs (on the client side) to the Shy Tory Factor.  Along with this list and the proper value for form function, these are the missing title from our old list when the feature was being developed:
+```
+Form function attribution bias -> Form function attribution bias (page does not exist)
+Framing effect -> Framing effect (psychology)
+Information bias -> Information bias (psychology)
+Reactance -> Reactance (psychology)
+Naïve realism -> Naïve realism (psychology)
+```
+
+Those are handled on the server now, right?  So the -1 and the actor-observer bias needs to be addressed.  
+
+First things first:  Actor-observer_bias should be Actor–observer_asymmetry
+
+```
+<td><a href="/wiki/Actor-observer_bias" class="mw-redirect" title="Actor-observer bias">Actor-observer bias</a>
+</td>
+<td>The tendency for explanations of other individuals' behaviors to overemphasize the influence of their personality and underemphasize the influence of their situation (see also <a href="/wiki/Fundamental_attribution_error" title="Fundamental attribution error">Fundamental attribution error</a>), and for explanations of one's own behaviors to do the opposite (that is, to overemphasize the influence of our situation and underemphasize the influence of our own personality).
+</td>
+```
+
+So there may be a way to fix these re-directs in the first list.  Notice the class name in the title cell tag.  But for, we are trying to handle this when the request for the detail is made:
+```
+http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=actor-observer_asymmetry
+```
+
+Looks like a problem with the title, as the message returned says:
+actor%25e2%2580%2593observer_asymmetry
+
+What is 25e2%2580%2593?  It's the slash obviously.  Found [this SO answer](https://stackoverflow.com/questions/33137955/window-open-utf-8-issue) which said in part *Nested syntaxes needing escaping are very, very difficult to get right. And generally you should never use javascript: URLs: as well as being a nightmare of multiple-escaping, they're also pretty bad for usability and accessibility.*
+
+Actually, it's not all that bad.  If we just remove the encodeURI function on the url, it leaves it alone and all is well with the re-direct.  How does this work with Korean?
+
+The first one on the list works: id 호손_효과
+The second one, not: 현상유지편향
+redirect Url http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ed%98%84%ec%83%81_%ec%9c%a0%ec%a7%80_%ed%8e%b8%ed%96%a5
+errors missingtitle
+
+But, even with the encodeURI function, that item still fails the redirect.  What should it be?
+현상 유지 편향 (redirect from 현상유지편향)
+
+That leads to:
+```
+https://ko.wikipedia.org/wiki/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
+```
+
+So we actually have the name right:  %ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
+But for Korean, the redirect is a simpler URI.
+
+
 
 
 ## Automatic detail re-directs
@@ -523,16 +604,15 @@ Unfortunately, we will have to make the bad request and then use the title to cr
 
 It's worth checking all these after we are done here:
 ```
-
-list.page.ts:234 Courtesy bias -> Shy Tory Factor
-list.page.ts:234 Experimenter's -> Experimenter's bias
-list.page.ts:234 Form function attribution bias -> Form function attribution bias (page does not exist)
-list.page.ts:234 Framing effect -> Framing effect (psychology)
-list.page.ts:234 Information bias -> Information bias (psychology)
-list.page.ts:234 Moral credential effect -> Moral credential
-list.page.ts:234 Reactance -> Reactance (psychology)
-list.page.ts:234 Zero-sum bias -> Zero-sum thinking
-list.page.ts:234 Naïve realism -> Naïve realism (psychology)
+Courtesy bias -> Shy Tory Factor
+Experimenter's -> Experimenter's bias
+Form function attribution bias -> Form function attribution bias (page does not exist)
+Framing effect -> Framing effect (psychology)
+Information bias -> Information bias (psychology)
+Moral credential effect -> Moral credential
+Reactance -> Reactance (psychology)
+Zero-sum bias -> Zero-sum thinking
+Naïve realism -> Naïve realism (psychology)
 ```
 
 A note about the routing here, we need to add a second route to pass a conditional parameter.  It looks like this:

@@ -670,6 +670,10 @@ var ListPage = /** @class */ (function () {
             var backupTitle = void 0;
             if (typeof section[i]['backupTitle'] !== 'undefined') {
                 backupTitle = section[i]['backupTitle'];
+                console.log(itemName + ' -> ' + backupTitle);
+            }
+            if (itemName === 'Actor-observer bias') {
+                console.log('item', section[i]);
             }
             var found = false;
             for (var j = 0; j < this.list.length; j++) {
@@ -707,6 +711,10 @@ var ListPage = /** @class */ (function () {
             }
         }
     };
+    /**
+     * @param description
+     * @returns the description without any [1] footnote markers.
+     */
     ListPage.prototype.removeFootnotes = function (description) {
         if (description) {
             var indexOfBracket = description.indexOf('[');
@@ -732,6 +740,7 @@ var ListPage = /** @class */ (function () {
     ListPage.prototype.parseSectionList = function (data) {
         if (data['parse']) {
             var content = data['parse']['text']['*'];
+            console.log('content', content);
             var one = this.createElementFromHTML(content);
             var desc = one.getElementsByClassName('mw-parser-output')[0].children;
             var descriptions = [];
