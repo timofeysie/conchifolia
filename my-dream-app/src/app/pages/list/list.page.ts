@@ -261,7 +261,6 @@ export class ListPage implements OnInit  {
   parseSectionList(data: any) {
     if (data['parse']) {
       const content = data['parse']['text']['*'];
-      console.log('content',content);
       let one = this.createElementFromHTML(content);
       const desc:any = one.getElementsByClassName('mw-parser-output')[0].children;
       let descriptions: any [] = [];
