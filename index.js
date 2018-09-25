@@ -40,7 +40,7 @@ express()
   .get('/api/list/:lang', function(req, res) {
     const lang = req.params.lang;
     const wikiUrl = curator.createWikiDataUrl(lang);
-        console.log('bias',wikiUrl);
+        console.log('wikiUrl',wikiUrl);
         https.get(wikiUrl, (wikiRes) => {
             const statusCode = wikiRes.statusCode;
             let error;
@@ -61,6 +61,7 @@ express()
                   let desc = result[i]['cognitive_biasDescription'];
                   if (typeof desc !== 'undefined') { desc = result[i]['cognitive_biasDescription']['value']; }
                   let item = {
+                    cognitive_bias: result[i]['cognitive_bias']['value'],
                     cognitive_biasLabel: result[i]['cognitive_biasLabel']['value'],
                     cognitive_biasDescription: desc,
                     lang: result[i]['cognitive_biasLabel']['xml:lang'],
@@ -79,7 +80,6 @@ express()
   })
   .get('/api/wiki-list/:id/:lang', function(req, res) {
     if (req.method === 'OPTIONS') {
-      console.log('!OPTIONS');
       var headers = {};
       // IE8 does not allow domains to be specified, just the *
       //headers["Access-Control-Allow-Origin"] = req.headers.origin;
@@ -125,6 +125,7 @@ express()
     const leaveCaseAlone = (leaveCaseAloneParam == 'true');
     let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(id,lang,leaveCaseAlone));
     let newUrl = singlePageUrl.replace('http','https');
+    console.log('singlePageUrl',singlePageUrl);
     https.get(newUrl, (wikiRes) => {
         let rawData = '';
         wikiRes.on('data', (chunk) => { rawData += chunk; });

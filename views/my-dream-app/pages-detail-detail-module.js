@@ -115,10 +115,15 @@ var DetailPage = /** @class */ (function () {
         console.log('backupTitle', backupTitle);
         this.title = this.itemName.split('_').join(' ');
         this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
-            _this.description = data['description'].toString();
+            _this.showSpinner = false;
+            if (typeof data['description'] !== 'undefined') {
+                _this.description = data['description'].toString();
+            }
+            else {
+                _this.description = data.toString();
+            }
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
-            _this.showSpinner = false;
         }, function (error) {
             console.error('error', error);
             _this.showSpinner = false;

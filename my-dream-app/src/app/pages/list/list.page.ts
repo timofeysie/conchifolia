@@ -82,6 +82,7 @@ export class ListPage implements OnInit  {
     this.list = [];
       this.backendApiService.getList(this.listLanguage).subscribe(
         data => {
+          console.log('data',data);
           this.list = data['list'];
           // remove items that do not have a page in the requested language
           this.list.slice().reverse().forEach((item, index, object) => {
@@ -185,6 +186,7 @@ export class ListPage implements OnInit  {
    * @param section WIkiMedia section
    */
   addItems(section: any) {
+    console.log('section',section);
     for (let i = 0; i < section.length; i++) {
       let itemName = section[i].name;
       let backupTitle;
@@ -192,18 +194,12 @@ export class ListPage implements OnInit  {
         backupTitle = section[i]['backupTitle'];
         console.log(itemName+' -> '+backupTitle);
       }
-      if (itemName === 'Actor-observer bias') {
-        console.log('item',section[i]);
-      }
       let found = false;
       for(var j = 0; j < this.list.length; j++) {
         if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
           found = true;
           this.list[j].wikiMedia_label = itemName;
           this.list[j].wikiMedia_description = this.removeFootnotes(section[i].desc);
-          if (typeof section[i].desc === 'undefined' || section[i].desc === ''  || section[i].desc === null) {
-            console.log('found itemName:'+itemName+' '+section[i].desc);
-          }
           this.list[j].wikiMedia_category = section[i].category;
           this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
           if (backupTitle) {

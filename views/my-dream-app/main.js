@@ -571,6 +571,7 @@ var ListPage = /** @class */ (function () {
         var _this = this;
         this.list = [];
         this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
+            console.log('data', data);
             _this.list = data['list'];
             // remove items that do not have a page in the requested language
             _this.list.slice().reverse().forEach(function (item, index, object) {
@@ -665,6 +666,7 @@ var ListPage = /** @class */ (function () {
      * @param section WIkiMedia section
      */
     ListPage.prototype.addItems = function (section) {
+        console.log('section', section);
         for (var i = 0; i < section.length; i++) {
             var itemName = section[i].name;
             var backupTitle = void 0;
@@ -672,18 +674,12 @@ var ListPage = /** @class */ (function () {
                 backupTitle = section[i]['backupTitle'];
                 console.log(itemName + ' -> ' + backupTitle);
             }
-            if (itemName === 'Actor-observer bias') {
-                console.log('item', section[i]);
-            }
             var found = false;
             for (var j = 0; j < this.list.length; j++) {
                 if ((typeof this.list[j].cognitive_biasLabel !== 'undefined' && typeof itemName !== 'undefined') && this.list[j].cognitive_biasLabel.toLocaleUpperCase() === itemName.toLocaleUpperCase()) {
                     found = true;
                     this.list[j].wikiMedia_label = itemName;
                     this.list[j].wikiMedia_description = this.removeFootnotes(section[i].desc);
-                    if (typeof section[i].desc === 'undefined' || section[i].desc === '' || section[i].desc === null) {
-                        console.log('found itemName:' + itemName + ' ' + section[i].desc);
-                    }
                     this.list[j].wikiMedia_category = section[i].category;
                     this.list[j].sortName = itemName.charAt(0).toUpperCase() + itemName.substr(1);
                     if (backupTitle) {
@@ -740,7 +736,6 @@ var ListPage = /** @class */ (function () {
     ListPage.prototype.parseSectionList = function (data) {
         if (data['parse']) {
             var content = data['parse']['text']['*'];
-            console.log('content', content);
             var one = this.createElementFromHTML(content);
             var desc = one.getElementsByClassName('mw-parser-output')[0].children;
             var descriptions = [];

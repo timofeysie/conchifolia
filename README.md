@@ -173,7 +173,10 @@ Actually, it's not all that bad.  If we just remove the encodeURI function on th
 
 The first one on the list works: id 호손_효과
 The second one, not: 현상유지편향
-redirect Url http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ed%98%84%ec%83%81_%ec%9c%a0%ec%a7%80_%ed%8e%b8%ed%96%a5
+redirect Url:
+```
+http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ed%98%84%ec%83%81_%ec%9c%a0%ec%a7%80_%ed%8e%b8%ed%96%a5
+```
 errors missingtitle
 
 But, even with the encodeURI function, that item still fails the redirect.  What should it be?
@@ -186,6 +189,86 @@ https://ko.wikipedia.org/wiki/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED
 
 So we actually have the name right:  %ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
 But for Korean, the redirect is a simpler URI.
+
+현상유지편향 is giving us a problem actually.
+This is what it should be:
+```
+https://ko.wikipedia.org/wiki/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
+```
+That's actually the title with underscores:
+현상_유지_편향 (status quo bias for those interested).
+
+Here is the original JSON from the main list:
+```
+{
+    "cognitive_bias" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q29598"
+    },
+        "cognitive_biasLabel" : {
+        "xml:lang" : "ko",
+        "type" : "literal",
+        "value" : "현상유지편향"
+    }
+}
+```
+
+The link there leads to the data page, which we may have to parse to solve this one, unless there is a way to get the data from these sections in a query.  We always intended to use these data pages to number one, get a list of available languages to support.
+
+The Wikipedia section has the list of langauges that has the title which would give us the correct re-direct: ko	현상 유지 편향 (it's a link to the page, so we don't have to worry about adding the _ characters).
+
+Since this is a WikiData page, we should be able to get the data in a query.  Time for some more research.  The curator lib will need to hold a new function to get the query, but after that, the server will need to make the calls and return the data.  Then the Angular/Ionic/React/React Native apps will have to use the results to a) provide redirects for this edge case, and b) provide a list of available languages for each page.
+
+Actually, for part b, we really just want a list of available languages for the list.  There would be not much use for a list of languages from detail pages unless they were not already on the list.  Or maybe there is.  It would still be better to show a list of available languages for the list, and let the user choose the item from that list.
+
+Alternatively, the user would use English, go to a detail page, then want to see a different languages version rather than try to go back and find the item in that language.  So we can further break up this task with another goal: c) provide a list of languages available on the WikiData list, and d) provide a list of languages available on the WikiMedia list.
+
+Wikidata uses the [SPARQL query service](https://www.mediawiki.org/wiki/Wikidata_Query_Service/User_Manual).  Unlike SQL, items are not part of any tables. Instead, items are linked with each other like a graph.  This is pretty vast and the documentation for it is vast, as well as the examples of how to create a query to get what you want.  So it might be easier (at least except for React) to just get the list form the html returned from that page.
+
+For c, we have this page:
+```
+https://www.wikidata.org/wiki/Q2607828
+```
+
+The Wikipedia section has 12 entries, none of which are Korean.  So what is our list of Korean items?  We use this query:
+```
+https://query.wikidata.org/sparql?format=json&query=%0A%20%20%20%20%20%20%20%20SELECT%20%3Fcognitive_bias%20%3Fcognitive_biasLabel%20%3Fcognitive_biasDescription%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Alanguage%20%22%5BAUTO_LANGUAGE%5D%2Cko%22.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Fcognitive_bias%20wdt%3AP31%20wd%3AQ1127759.%0A%20%20%20%20%20%20%20%20%7D%0A%09%09LIMIT%201000
+```
+
+To create a query to get the list of languages for this subject could be tricky and time consuming.  Currently we determine items in the result list that have Korean pages by the absence of a Q-id as a value and a text string in Korean in it's place:
+```
+{
+    "cognitive_bias" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q182490"
+    },
+    "cognitive_biasLabel" : {
+        "type" : "literal",
+        "value" : "Q182490"
+    }
+}, {
+    "cognitive_bias" : {
+        "type" : "uri",
+        "value" : "http://www.wikidata.org/entity/Q184812"
+    },
+    "cognitive_biasLabel" : {
+        "xml:lang" : "ko",
+        "type" : "literal",
+        "value" : "미완성 효과"
+    }
+}
+```
+
+The first page has no Korean version (but 12 other languages) and the second one has (as well as 25 other languages).  It's a little annoying that 현상유지편향 which needs spaces as underscores for a correct redirect does not have that correctly in the the query result but does have it in the WikiData page Wikipedia section label.  Another inconsistency in the WikiData project.  But, it is a relatively young project and hopefully will continue to grow and improve and be used by more systems.  It's still better than no clear source of truth for public shared data.
+
+
+First, we can add the cognitive_bias uri value to the list items so we get this:
+```
+cognitive_bias: "http://www.wikidata.org/entity/Q29598"
+cognitive_biasLabel: "현상유지편향"
+lang: "ko"
+sortName: "현상유지편향"
+```
 
 
 
