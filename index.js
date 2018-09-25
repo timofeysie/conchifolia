@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 5000
 const curator = require('art-curator');
 const https = require('https');
 const details = require('./endpoints/details');
+const detailsSimpleRedirect = require('./endpoints/details-simple-redirect');
 
 const allowedExt = [
   '.js',
@@ -118,10 +119,11 @@ express()
     }
   })
   .get('/api/detail/:id/:lang/:leaveCaseAlone', function(req, res) {
-    console.log('id',req.params.id);
+    const lang = req.params.lang;
+    const id = req.params.id;
     let leaveCaseAloneParam = req.params.leaveCaseAlone.toString();
     const leaveCaseAlone = (leaveCaseAloneParam == 'true');
-    let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(req.params.id,req.params.lang,leaveCaseAlone));
+    let singlePageUrl = encodeURI(curator.createSingleWikiMediaPageUrl(id,lang,leaveCaseAlone));
     let newUrl = singlePageUrl.replace('http','https');
     https.get(newUrl, (wikiRes) => {
         let rawData = '';
@@ -153,10 +155,14 @@ express()
               res.status(200).json(desc);
             }
           } catch (err) {
+            detailsSimpleRedirect.redirect(id, lang).then((secondResult) => {
+              res.status(200).json(secondResult);
+            }).catch((error) => {
             console.log('No data in response ============')
-            console.log('wikiRes.headers',wikiRes.headers);
-            console.log('Url:',newUrl);
-            res.status(500).send('No data in response:'+wikiRes);
+              console.log('wikiRes.headers',wikiRes.headers);
+              console.log('Url:',newUrl);
+              res.status(500).send('No data in response:'+wikiRes);
+            });
           }
       });
     }).on('error', (e) => {

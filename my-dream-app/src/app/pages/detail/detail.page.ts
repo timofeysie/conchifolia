@@ -28,10 +28,14 @@ export class DetailPage implements OnInit {
     this.title = this.itemName.split('_').join(' ');
     this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
       data => {
-        this.description = data['description'].toString();
-        this.description = this.description.split('href="/wiki/')
-          .join('href="https://en.wikipedia.org/wiki/');
         this.showSpinner = false;
+        if (typeof data['description'] !== 'undefined') {
+          this.description = data['description'].toString();
+        } else {
+          this.description = data.toString();
+        }
+        this.description = this.description.split('href="/wiki/')
+            .join('href="https://en.wikipedia.org/wiki/');
       },
       error => {
         console.error('error',error);
