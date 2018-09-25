@@ -126,14 +126,32 @@ var DetailPage = /** @class */ (function () {
                 .join('href="https://en.wikipedia.org/wiki/');
         }, function (error) {
             console.error('error', error);
-            _this.showSpinner = false;
-            _this.message = error.status + ': trying to redirect to ';
-            if (backupTitle) {
-                _this.message += backupTitle;
-                _this.getAlternateTitle(listLanguage, backupTitle);
+            if (typeof error['error'] !== 'undefined') {
+                console.log('error msg', error['error']);
+                if (error['error'] === 'Redirect to data uri value') {
+                    console.log('backupTitle2', backupTitle);
+                    _this.getWikiDataUriValue(listLanguage, backupTitle);
+                }
+            }
+            else {
+                _this.message = error.status + ': trying to redirect to ';
+                if (backupTitle) {
+                    _this.message += backupTitle;
+                    _this.getAlternateTitle(listLanguage, backupTitle);
+                }
             }
         });
     };
+    DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {
+        this.backendApiService.getData(backupTitle, listLanguage).subscribe(function (data) {
+            console.log('data2', data);
+        });
+    };
+    /**
+     *
+     * @param listLanguage
+     * @param backupTitle
+     */
     DetailPage.prototype.getAlternateTitle = function (listLanguage, backupTitle) {
         var _this = this;
         this.showSpinner = true;

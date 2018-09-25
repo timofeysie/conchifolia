@@ -571,7 +571,6 @@ var ListPage = /** @class */ (function () {
         var _this = this;
         this.list = [];
         this.backendApiService.getList(this.listLanguage).subscribe(function (data) {
-            console.log('data', data);
             _this.list = data['list'];
             // remove items that do not have a page in the requested language
             _this.list.slice().reverse().forEach(function (item, index, object) {
@@ -927,7 +926,8 @@ var ListPage = /** @class */ (function () {
             this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
         }
         else {
-            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage]);
+            var backupTitle = this.list[i]['cognitive_bias'].replace(/\//g, '*');
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
         }
     };
     ListPage = __decorate([
@@ -976,13 +976,20 @@ var BackendApiService = /** @class */ (function () {
         this.backendListUrl = '/api/list';
         this.backendWikiListUrl = '/api/wiki-list';
         this.backendDetailUrl = '/api/detail';
+        this.backendDataUrl = '/api/data';
     }
-    // get("/api/contacts")
+    // /api/data/uri(with *s instead of /s)
+    BackendApiService.prototype.getData = function (uri, lang) {
+        return this.httpClient.get(this.backendDataUrl + '/' + uri + '/' + lang)
+            .pipe(function (data) { return data; });
+    };
+    // /api/contacts
     BackendApiService.prototype.getList = function (lang) {
         var _this = this;
         return this.httpClient.get(this.backendListUrl + '/' + lang)
             .pipe(function (data) { return _this.listData = data; });
     };
+    // /api/detail/id/lang/leaveCaseAlone
     BackendApiService.prototype.getDetail = function (detailId, lang, leaveCaseAlone) {
         return this.httpClient.get(encodeURI(this.backendDetailUrl + '/' + detailId + '/' + lang + '/' + leaveCaseAlone))
             .pipe(function (data) { return data; });

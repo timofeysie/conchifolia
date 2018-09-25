@@ -39,16 +39,36 @@ export class DetailPage implements OnInit {
       },
       error => {
         console.error('error',error);
-        this.showSpinner = false;
-        this.message = error.status+': trying to redirect to ';
-        if (backupTitle) {
-          this.message += backupTitle;
-          this.getAlternateTitle(listLanguage, backupTitle);
+        if (typeof error['error'] !== 'undefined') {
+          console.log('error msg',error['error']);
+          if (error['error'] === 'Redirect to data uri value') {
+            console.log('backupTitle2',backupTitle);
+            this.getWikiDataUriValue(listLanguage, backupTitle);
+          }
+        } else {
+          this.message = error.status+': trying to redirect to ';
+          if (backupTitle) {
+            this.message += backupTitle;
+            this.getAlternateTitle(listLanguage, backupTitle);
+          }
         }
       }
     );
   }
 
+  getWikiDataUriValue(listLanguage: string, backupTitle: string) {
+    this.backendApiService.getData(backupTitle, listLanguage).subscribe(
+      data => {
+        console.log('data2',data);
+      }
+    )
+  }
+
+  /**
+   * 
+   * @param listLanguage 
+   * @param backupTitle 
+   */
   getAlternateTitle(listLanguage: string, backupTitle: string) {
     this.showSpinner = true;
     this.backendApiService.getDetail(backupTitle,listLanguage,true).subscribe(

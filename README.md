@@ -270,6 +270,26 @@ lang: "ko"
 sortName: "현상유지편향"
 ```
 
+Next, when the detail page re-direct returns a 잘못된 제목 (bad title), we can use the uri value.  This will give us a page that has the Wikipedia section, which we will then need to parse to get the list of languages which we can then use to get the correct URI for the detail page.
+
+Since we pass the backup title as a route param, we have to replace the '/' slash characters with something to get past router errors which would read the uri as a separate path.  Then we convert them back to slashes when we get a 300 redirect error from the server to use that uri.
+
+Then, we need a new API endpoint that will get the WikiData page and return some kind of result.  What that looks like we will find out now.
+
+The next issue is that we are getting this back instead of the WikiData page:
+```
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>303 See Other</title>
+</head><body>
+<h1>See Other</h1>
+<p>The answer to your request is located <a href="https://www.wikidata.org/wiki/Special:EntityData/Q29598">here</a>.</p>
+</body></html>
+```
+
+In the browser, ```https://www.wikidata.org/wiki/Special:EntityData/Q29598``` will re-direct to  ```https://www.wikidata.org/wiki/Q29598```
+
+That's the same URL we requested first.  Anyhow, this is yet another http call.  Time to use a new endpoint module.
 
 
 

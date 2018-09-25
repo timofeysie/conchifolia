@@ -18,7 +18,8 @@ exports.redirect = (id, lang) => {
                         resolve(desc);
                     }
                 } catch (errors) {
-                    resolve(rawData);
+                    // in this case 
+                    reject('user-data-uri');
                 }
             });
         });

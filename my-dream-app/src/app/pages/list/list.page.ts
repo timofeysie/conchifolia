@@ -82,7 +82,6 @@ export class ListPage implements OnInit  {
     this.list = [];
       this.backendApiService.getList(this.listLanguage).subscribe(
         data => {
-          console.log('data',data);
           this.list = data['list'];
           // remove items that do not have a page in the requested language
           this.list.slice().reverse().forEach((item, index, object) => {
@@ -449,7 +448,8 @@ export class ListPage implements OnInit  {
       let backupTitle = this.list[i]['backupTitle'];
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);
     } else {
-      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage]);    
+      let backupTitle = this.list[i]['cognitive_bias'].replace(/\//g,'*');
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);    
     }
   }
   

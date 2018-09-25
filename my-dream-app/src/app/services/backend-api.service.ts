@@ -10,16 +10,24 @@ export class BackendApiService {
   private backendListUrl = '/api/list';
   private backendWikiListUrl = '/api/wiki-list';
   private backendDetailUrl = '/api/detail';
+  private backendDataUrl = '/api/data';
   private listData;
 
   constructor (private  httpClient:  HttpClient) {}
 
-  // get("/api/contacts")
+  // /api/data/uri(with *s instead of /s)
+  getData(uri: string, lang: string) {
+    return this.httpClient.get(this.backendDataUrl+'/'+uri+'/'+lang)
+    .pipe(data => data);
+  }
+
+  // /api/contacts
   getList(lang) {
       return this.httpClient.get<ListModel>(this.backendListUrl+'/'+lang)
       .pipe(data => this.listData = data);
   }
 
+  // /api/detail/id/lang/leaveCaseAlone
   getDetail(detailId: string, lang: string, leaveCaseAlone: boolean) {
     return this.httpClient.get<DetailModel>(encodeURI(this.backendDetailUrl+'/'+detailId+'/'+lang+'/'+leaveCaseAlone))
       .pipe(data => data);

@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 5000
 const curator = require('art-curator');
 const https = require('https');
 const details = require('./endpoints/details');
+const dataRedirect = require('./endpoints/data-redirect');
 const detailsSimpleRedirect = require('./endpoints/details-simple-redirect');
 
 const allowedExt = [
@@ -118,6 +119,45 @@ express()
       });
     }
   })
+  .get('/api/data/:id/:lang', function(req, res) {
+    const wikiDataUrl = req.params.id.split('*').join('/');
+    const newUrl = wikiDataUrl.replace('http','https');
+    console.log('wikiDataUrl',newUrl);
+    https.get(newUrl, (wikiRes) => {
+      const statusCode = wikiRes.statusCode;
+      let error;
+      if (statusCode !== 200 && statusCode !== 303) {
+          error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
+;      }
+      if (error) {
+          console.error(error.message);
+          wikiRes.resume();
+          return;
+      }
+      let rawData = '';
+      wikiRes.on('data', (chunk) => { rawData += chunk; });
+      wikiRes.on('end', () => {
+        // find redirect uri
+        const marker = rawData.indexOf('<a href="');
+        const segment = rawData.substring(marker+'<a href="'.length,rawData.length);
+        console.log('segement',segment);
+        const marker2 = segment.indexOf('"');
+        const redirectUri = segment.substring(0,marker2);
+        console.log('redirectUri',redirectUri);
+        dataRedirect.redirect(redirectUri).then((result) => {
+          console.log('result',result);
+        }).catch((error) => {
+          console.log('error',error);
+        });
+        res.status(200).send(rawData);
+      });
+    }).on('error', (e) => {
+        console.error(`Got error: ${e.message}`);
+        if (typeof e.status !== 'undefined') {
+          res.status(e.status).send(e.message);
+        }
+    });
+  })
   .get('/api/detail/:id/:lang/:leaveCaseAlone', function(req, res) {
     const lang = req.params.lang;
     const id = req.params.id;
@@ -159,10 +199,14 @@ express()
             detailsSimpleRedirect.redirect(id, lang).then((secondResult) => {
               res.status(200).json(secondResult);
             }).catch((error) => {
-            console.log('No data in response ============')
-              console.log('wikiRes.headers',wikiRes.headers);
-              console.log('Url:',newUrl);
-              res.status(500).send('No data in response:'+wikiRes);
+              if (error === 'user-data-uri') {
+                res.status(300).send('Redirect to data uri value');
+              } else {
+                console.log('No data in response ============',error);
+                console.log('wikiRes.headers',wikiRes.headers);
+                console.log('Url:',newUrl);
+                res.status(500).send('No data in response:'+wikiRes);
+              }
             });
           }
       });
