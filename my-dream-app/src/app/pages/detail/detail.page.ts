@@ -42,7 +42,7 @@ export class DetailPage implements OnInit {
         if (typeof error['error'] !== 'undefined') {
           console.log('error msg',error['error']);
           if (error['error'] === 'Redirect to data uri value') {
-            console.log('backupTitle2',backupTitle);
+            this.message = error['error'];
             this.getWikiDataUriValue(listLanguage, backupTitle);
           }
         } else {
@@ -60,6 +60,12 @@ export class DetailPage implements OnInit {
     this.backendApiService.getData(backupTitle, listLanguage).subscribe(
       data => {
         console.log('data2',data);
+        this.showSpinner = false;
+        this.description = data;
+      }, error => {
+        console.log('error',error);
+        this.message = 'Redirect failed';
+        this.showSpinner = false;
       }
     )
   }

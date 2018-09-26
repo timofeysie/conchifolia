@@ -130,7 +130,7 @@ express()
           error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
 ;      }
       if (error) {
-          console.error(error.message);
+          console.error('error-0.5:',error.message);
           wikiRes.resume();
           return;
       }
@@ -140,19 +140,18 @@ express()
         // find redirect uri
         const marker = rawData.indexOf('<a href="');
         const segment = rawData.substring(marker+'<a href="'.length,rawData.length);
-        console.log('segement',segment);
         const marker2 = segment.indexOf('"');
-        const redirectUri = segment.substring(0,marker2);
-        console.log('redirectUri',redirectUri);
+        let redirectUri = segment.substring(0,marker2);
+        console.log('data redirectUri',redirectUri);
         dataRedirect.redirect(redirectUri).then((result) => {
-          console.log('result',result);
+          console.log('data result',result);
         }).catch((error) => {
-          console.log('error',error);
+          console.log('error-1:',error);
         });
         res.status(200).send(rawData);
       });
     }).on('error', (e) => {
-        console.error(`Got error: ${e.message}`);
+        console.error(`error-2: ${e.message}`);
         if (typeof e.status !== 'undefined') {
           res.status(e.status).send(e.message);
         }
@@ -184,15 +183,15 @@ express()
                 details.redirect(anchor).then((rug) => {
                   res.status(200).json(rug);
                 }).catch((errors) => {
-                  console.log('errors',errors);
+                  console.log('errors-3:',errors);
                   res.status(500).send('Error code:'+errors);
                 })
               } else {
-                  console.log('redirect without href?');
-                  res.status(500).json('redirect without href');
+                  console.log('4. redirect without href?');
+                  res.status(500).json('4. redirect without href');
               }
             } else {
-              console.log('When will this happen?');
+              console.log('5. When will this happen?');
               res.status(200).json(desc);
             }
           } catch (err) {
@@ -202,7 +201,7 @@ express()
               if (error === 'user-data-uri') {
                 res.status(300).send('Redirect to data uri value');
               } else {
-                console.log('No data in response ============',error);
+                console.log('6. No data in response ============',error);
                 console.log('wikiRes.headers',wikiRes.headers);
                 console.log('Url:',newUrl);
                 res.status(500).send('No data in response:'+wikiRes);
@@ -211,7 +210,7 @@ express()
           }
       });
     }).on('error', (e) => {
-        console.error(`Got error: ${e.message}`);
+        console.error(`error-7: ${e.message}`);
         res.status(e.status).send('server error',e.message);
     });
   })
@@ -226,8 +225,8 @@ express()
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
-  console.log("ERROR: " + reason);
-  res.status(code || 500).json({"error": message});
+  console.log('ERROR: ' + reason);
+  res.status(code || 500).json({'error-8:': message});
 }
 
 var getKeys = function(obj){

@@ -129,7 +129,7 @@ var DetailPage = /** @class */ (function () {
             if (typeof error['error'] !== 'undefined') {
                 console.log('error msg', error['error']);
                 if (error['error'] === 'Redirect to data uri value') {
-                    console.log('backupTitle2', backupTitle);
+                    _this.message = error['error'];
                     _this.getWikiDataUriValue(listLanguage, backupTitle);
                 }
             }
@@ -143,8 +143,15 @@ var DetailPage = /** @class */ (function () {
         });
     };
     DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {
+        var _this = this;
         this.backendApiService.getData(backupTitle, listLanguage).subscribe(function (data) {
             console.log('data2', data);
+            _this.showSpinner = false;
+            _this.description = data;
+        }, function (error) {
+            console.log('error', error);
+            _this.message = 'Redirect failed';
+            _this.showSpinner = false;
         });
     };
     /**

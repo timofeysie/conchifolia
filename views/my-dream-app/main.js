@@ -981,7 +981,10 @@ var BackendApiService = /** @class */ (function () {
     // /api/data/uri(with *s instead of /s)
     BackendApiService.prototype.getData = function (uri, lang) {
         return this.httpClient.get(this.backendDataUrl + '/' + uri + '/' + lang)
-            .pipe(function (data) { return data; });
+            .pipe(function (data) {
+            console.log(data.toPromise.toString());
+            return data;
+        });
     };
     // /api/contacts
     BackendApiService.prototype.getList = function (lang) {

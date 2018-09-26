@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ListModel } from '../models/list.model';
 import { DetailModel } from '../models/detail.model';
+import { resolve } from 'url';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,10 @@ export class BackendApiService {
   // /api/data/uri(with *s instead of /s)
   getData(uri: string, lang: string) {
     return this.httpClient.get(this.backendDataUrl+'/'+uri+'/'+lang)
-    .pipe(data => data);
+    .pipe((data) => {
+      console.log(data.toPromise.toString());
+      return data;
+    });
   }
 
   // /api/contacts

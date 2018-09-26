@@ -291,6 +291,72 @@ In the browser, ```https://www.wikidata.org/wiki/Special:EntityData/Q29598``` wi
 
 That's the same URL we requested first.  Anyhow, this is yet another http call.  Time to use a new endpoint module.
 
+The next issue is that the result comes back with length.  In the response it shows ``` buffer: BufferList { head: null, tail: null, length: 0 },```
+
+Actually, the error is this:
+```
+error: SyntaxError: Unexpected token < in JSON at position 0 at JSON.parse (<anonymous>) at XMLHttpRequest.onLoad (http://localhost:5000/vendor.js:7450:51) at ZoneDelegate.push../node_modules/zone.js/dist/zone.js.ZoneDelegate.invokeTask (http://localhost:5000/polyfills.js:2743:31) at Object.onInvokeTask (http://localhost:5000/vendor.js:36899:33) at ZoneDelegate.push../node_modules/zone.js/dist/zone.js.ZoneDelegate.invokeTask (http://localhost:5000/polyfills.js:2742:36) at Zone.push../node_modules/zone.js/dist/zone.js.Zone.runTask (http://localhost:5000/polyfills.js:2510:47) at ZoneTask.push../node_modules/zone.js/dist/zone.js.ZoneTask.invokeTask [as invoke] (http://localhost:5000/polyfills.js:2818:34) at invokeTask (http://localhost:5000/polyfills.js:3862:14) at XMLHttpRequest.globalZoneAwareCallback (http://localhost:5000/polyfills.js:3888:17
+```
+
+Another item that is failing the final re-direct is 확증편향.  But I'm not sure why there is no response to the second re-direct.  It seems like the second URI re-directs back to the first URI as shown above in the browser.  Looking at the complete result from the data/second redirect, it seems like this is what is happening:
+```
+    socket: [Circular],
+    connection: [Circular],
+    _header: 'GET /wiki/Special:EntityData/Q431498 HTTP/1.1\r\nHost: www.wikidata.org\r\nConnection: close\r\n\r\n',
+    _onPendingData: [Function: noopPendingOutput],
+    agent: [Agent],
+    socketPath: undefined,
+``` 
+
+In the browser console we get this:
+```
+error: {error: SyntaxError: Unexpected token < in JSON at position 0 at JSON.parse (<anonymous>) at XMLHttp…, text: "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">…EntityData/Q431498">here</a>.</p>↵</body></html>↵"}
+headers: HttpHeaders {normalizedNames: Map(0), lazyUpdate: null, lazyInit: ƒ}
+message: "Http failure during parsing for http://localhost:5000/api/data/http:**www.wikidata.org*entity*Q431498/ko"
+name: "HttpErrorResponse"
+ok: false
+status: 200
+statusText: "OK"
+url: "http://localhost:5000/api/data/http:**www.wikidata.org*entity*Q431498/ko"
+__proto__: HttpResponseBase
+```
+
+The only thing happening in the service is this:
+```
+  getData(uri: string, lang: string) {
+    return this.httpClient.get(this.backendDataUrl+'/'+uri+'/'+lang)
+    .pipe(data => data);
+  }
+```
+
+What are our options here?  It seems like we could just do this:
+```
+    .pipe((data) => {
+      console.log(data);
+    });
+```
+
+But TypeScript tells us this:
+```
+[ts]
+Argument of type '(data: Observable<Object>) => void' is not assignable to parameter of type 'OperatorFunction<any, any>'.
+  Type 'void' is not assignable to type 'Observable<any>'.
+(parameter) data: Observable<Object>
+```
+
+If we add a ```return data;``` after the console log there, the error goes away.  What we return however is the Observable itself.  We can see this part of the message:```
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">↵<html><head>↵<title>303 See Other</title>↵</head><body>↵<h1>See Other</h1>↵<p>The answer to your request is located <a href="https://www.wikidata.org/wiki/Special:EntityData/Q431498">here</a>.</p>↵</body></html>↵"
+```
+
+We are already making that call.  For fun, here is our list of redirects:
+```
+singlePageUrl http://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ED%99%95%EC%A6%9D%ED%8E%B8%ED%96%A5
+details simple redirect Url https://ko.wikipedia.org/wiki/확증편향
+wikiDataUrl https://www.wikidata.org/entity/Q431498
+data redirectUri https://www.wikidata.org/wiki/Special:EntityData/Q431498
+```
+
+At this point, I'm not sure why we're not getting to where we want to.  Maybe it's time to try the data service on a page that is not failing the redirect, for example to get a list of available languages.
 
 
 ## Automatic detail re-directs
