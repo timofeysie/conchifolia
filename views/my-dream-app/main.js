@@ -921,6 +921,7 @@ var ListPage = /** @class */ (function () {
         this.list[i].detailState = 'viewed';
         this.dataService.setItem(this.listLanguage + '-' + this.listName, this.list);
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
+        console.log('item', this.list[i]);
         if (typeof this.list[i]['backupTitle'] !== 'undefined') {
             var backupTitle = this.list[i]['backupTitle'];
             this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);

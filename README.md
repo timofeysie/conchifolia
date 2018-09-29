@@ -26,6 +26,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [Parsing WikiData subject pages](#parsing-WikiData-subject-pages)
 1. [Re-factoring the NodeJS app](#re-factoring-the-nodeJS-app)
 1. [Automatic detail re-directs](#Automatic-detail-re-directs)
 1. [Fixing the unit tests](#fixing-the-unit-tests)
@@ -71,6 +72,119 @@ Planned features include:
 1. done: allow user to clear the local storage
 1. Track how many times item desc and details have been used.  
 1. Export xAPI actions
+
+
+
+## Parsing WikiData subject pages
+
+Using the WikiData subject page to get language and potential backup links caused a bit of a problem while refactoring the NodeJS app.  At least two Korean items failed to find any valid re-direct despite having a potentially working link (that works in the browser).
+
+We can however get available languages from the WikiData subject page's Wikipedia section.  So before solving the Korean re-directs for some items, this is what we are working on.
+
+To accomplish this task we need for data page links.  Right now we only get those from the WikiData query results, not the WikiMedia section lists.  We should be able to get the Q-code from the sections also.  But actually, those Q-codes are not included on the list of cognitive biases Wikipedia page.  How about the Wikipedia detail page?
+
+Looking at the detail page for first item on the list:
+```
+http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=acquiescence_bias
+```
+
+We see this in the JSON:
+```
+"title":"Acquiescence bias",
+"pageid":9092040,
+```
+
+Using 9092040 as a possible Q-code/idm we get this:
+```
+wikiDataUrl https://www.wikidata.org/entity/9092040 = bad request
+data redirectUri https://www.wikidata.org/wiki/Special:EntityData/Q9092040
+Urup (disambiguation)
+Urup may refer to:
+Urup, one of the Kuril Islands north of Japan
+Urup, Afghanistan
+Urup River, a river in North Caucasus, Russia
+Urup (village), a former urban-type settlement in the Karachay–Cherkess Republic, Russia; since 1997—a village.
+```
+
+So, that's not what we're looking for.  Using the WikiData main page for a search shows the actual code for that item would be: Acquiescence bias (Q420693).
+
+So it looks like we're going to have to create a SPARQL query to get these codes/ids.  What we need to do is find an item based on it's label.
+
+Based on [this SO answer](https://stackoverflow.com/questions/38527828/how-to-query-wikidata-items-using-its-labels) it seems like this should work:
+```
+SELECT ?item ?itemLabel
+WHERE { 
+  ?item rdfs:label ?itemLabel. 
+  FILTER(CONTAINS(LCASE(?itemLabel), "Acquiescence bias"@en)). 
+} limit 10
+```
+
+But this query timesout:
+```
+java.util.concurrent.TimeoutException
+	at java.util.concurrent.FutureTask.get(FutureTask.java:205)
+```
+
+Nice to see they are using Java though!
+
+The working query is:
+```
+SELECT ?item ?itemLabel
+WHERE {  
+  ?item ?label "Acquiescence bias"@en.  
+  ?article schema:about ?item .
+  ?article schema:inLanguage "en" .
+  ?article schema:isPartOf <https://en.wikipedia.org/>. 
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+} 
+```
+
+This returns:
+```
+item wd:Q420693
+itemLabel Acquiescence bias
+```
+
+So what we can do is make this query on the server when a detail page is requested and add the item id to the response.  Optionally we could make the call for the user, slowing down the whole response and adding the list of languages and their links.  Probably we should let the client do that.
+
+Creating that query should be done in the curator lib.  After adding the createWikiDataItemUrl function with passing tests of course in the [art-curator]() lib, we need to start using version 2.2.0 by changing the version for the lib package.json and then running ```npm i```.
+
+Next we need to add a new endpoint to run the query and think about what to do next.  Or we could think about it now.  No, it's not everyday we get to add a new endpoint!~
+
+Welcome to the party, API endpoint /api/data/query/:label/:lang
+
+Running locally we can run this:
+```
+http://localhost:5000/api/data/query/Acquiescence%20bias/en
+```
+
+Unfortunately, using acquiescence_bias or even acquiescence%20bias doesn't work.  So basically, there is no point in returning the label.  Just looks nicer incase someone besides the app is reading the response and doesn't see the url (long shot).
+
+Now, we get to think about what comes next.  Next, of course we want to run the value rul and get a JSON response to parse for data.  The first data set we want is a list of available languages.  The second is we want to run the url from a requested langauge and get the description of the
+
+For example, go through this workflow:
+```
+http://localhost:5000/api/data/query/Acquiescence%20bias/en
+http://www.wikidata.org/entity/Q420693
+http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=acquiescence_bias
+```
+
+This would only be necessary if the method we have been using fails.  In the above example, we currently take the item title, lowercase it, replace the space with a underscore, and add it to the url ourselves.  
+
+The problem is, sometimes that page is a redirect, and sometimes that page doesn't exists, but does if you can find the correct item/Q-code id.
+
+This kind of exception came up while refactoring the NodeJS file to do those redirects without adding more code to the index file.  After all, best practice is to create functions that are one text editor page or less.
+
+The Korean item 현상유지편향 is actually a title with underscores:
+현상_유지_편향 (status quo bias for those interested).
+
+This difference can only be found by using the urll on the entity page.  Or so we thought.  Acutally, none of these are returning anything (except an empty array):
+```
+http://localhost:5000/api/data/query/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/en
+http://localhost:5000/api/data/query/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5/en
+http://localhost:5000/api/data/query/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/kr
+http://localhost:5000/api/data/query/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5/kr
+```
 
 
 ## Re-factoring the NodeJS app
@@ -344,8 +458,21 @@ Argument of type '(data: Observable<Object>) => void' is not assignable to param
 (parameter) data: Observable<Object>
 ```
 
-If we add a ```return data;``` after the console log there, the error goes away.  What we return however is the Observable itself.  We can see this part of the message:```
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">↵<html><head>↵<title>303 See Other</title>↵</head><body>↵<h1>See Other</h1>↵<p>The answer to your request is located <a href="https://www.wikidata.org/wiki/Special:EntityData/Q431498">here</a>.</p>↵</body></html>↵"
+If we add a ```return data;``` after the console log there, the error goes away.  What we return however is the Observable itself.  We can see this part of the message:
+```
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">↵
+    <html>
+        <head>↵
+            <title>303 See Other</title>↵
+        </head>
+        <body>↵
+            <h1>See Other</h1>↵
+            <p>The answer to your request is located 
+                <a href="https://www.wikidata.org/wiki/Special:EntityData/Q431498">
+                    here</a>.
+            </p>↵
+        </body>
+    </html>↵"
 ```
 
 We are already making that call.  For fun, here is our list of redirects:
@@ -357,6 +484,10 @@ data redirectUri https://www.wikidata.org/wiki/Special:EntityData/Q431498
 ```
 
 At this point, I'm not sure why we're not getting to where we want to.  Maybe it's time to try the data service on a page that is not failing the redirect, for example to get a list of available languages.
+
+This section has been about re-factoring the JodeJS server app.  Now we have two separate files with functions used by their respective API endpoints.  So we haven't take it so far yet, and honestly, the app is still finding its way, so a good start is all we can expect without doing things that will eventually not be needed.
+
+The more pressing problem is using the WikiData subject page to get language and potential backup links.
 
 
 ## Automatic detail re-directs

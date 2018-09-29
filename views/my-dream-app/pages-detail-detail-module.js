@@ -113,7 +113,8 @@ var DetailPage = /** @class */ (function () {
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         var backupTitle = this.route.snapshot.paramMap.get('title');
         console.log('backupTitle', backupTitle);
-        this.title = this.itemName.split('_').join(' ');
+        this.title = this.itemName.split('_').join(' '); // fix the title
+        this.getWikiDataUriValue(listLanguage, this.itemName); // temp
         this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
             _this.showSpinner = false;
             if (typeof data['description'] !== 'undefined') {
@@ -144,13 +145,15 @@ var DetailPage = /** @class */ (function () {
     };
     DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {
         var _this = this;
+        if (!backupTitle.indexOf('http')) {
+        }
         this.backendApiService.getData(backupTitle, listLanguage).subscribe(function (data) {
             console.log('data2', data);
             _this.showSpinner = false;
             _this.description = data;
         }, function (error) {
             console.log('error', error);
-            _this.message = 'Redirect failed';
+            //this.message = 'Redirect failed';
             _this.showSpinner = false;
         });
     };

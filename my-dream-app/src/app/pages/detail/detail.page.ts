@@ -25,7 +25,8 @@ export class DetailPage implements OnInit {
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     const backupTitle = this.route.snapshot.paramMap.get('title');
     console.log('backupTitle',backupTitle);
-    this.title = this.itemName.split('_').join(' ');
+    this.title = this.itemName.split('_').join(' '); // fix the title
+    this.getWikiDataUriValue(listLanguage,this.itemName); // temp
     this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
       data => {
         this.showSpinner = false;
@@ -57,6 +58,9 @@ export class DetailPage implements OnInit {
   }
 
   getWikiDataUriValue(listLanguage: string, backupTitle: string) {
+    if (!backupTitle.indexOf('http')) {
+      
+    }
     this.backendApiService.getData(backupTitle, listLanguage).subscribe(
       data => {
         console.log('data2',data);
@@ -64,7 +68,7 @@ export class DetailPage implements OnInit {
         this.description = data;
       }, error => {
         console.log('error',error);
-        this.message = 'Redirect failed';
+        //this.message = 'Redirect failed';
         this.showSpinner = false;
       }
     )

@@ -119,6 +119,46 @@ express()
       });
     }
   })
+  .get('/api/data/query/:label/:lang', function(req, res) {
+    if (req.method === 'OPTIONS') {
+      var headers = {};
+      // IE8 does not allow domains to be specified, just the *
+      //headers["Access-Control-Allow-Origin"] = req.headers.origin;
+      headers["Access-Control-Allow-Origin"] = "*";
+      headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+      headers["Access-Control-Allow-Credentials"] = true;
+      headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+      headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      res.writeHead(200, headers);
+      res.end();
+    } else {
+      const wikiDataUrl = curator.createWikiDataItemUrl(req.params.label, req.params.lang);
+      console.log('wikiDataUrl',wikiDataUrl);
+      https.get(wikiDataUrl, (wikiRes) => {
+        const statusCode = wikiRes.statusCode;
+        let error;
+        if (statusCode !== 200) {
+            error = new Error('Request Failed.\n' + `Status Code: ${statusCode}`);
+        }
+        if (error) {
+            console.error(error.message);
+            wikiRes.resume();
+            return;
+        }
+        let rawData = '';
+        wikiRes.on('data', (chunk) => { rawData += chunk; });
+        wikiRes.on('end', () => {
+          console.log('raw data',rawData);
+          res.status(200).send(rawData);
+        });
+      }).on('error', (e) => {
+          console.error(`Got error: ${e.message}`);
+          if (typeof e.status !== 'undefined') {
+            res.status(e.status).send(e.message);
+          }
+      });
+    }
+  })
   .get('/api/data/:id/:lang', function(req, res) {
     const wikiDataUrl = req.params.id.split('*').join('/');
     const newUrl = wikiDataUrl.replace('http','https');
