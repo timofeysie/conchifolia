@@ -19,6 +19,7 @@ export class BackendApiService {
 
   // /api/data/uri(with *s instead of /s)
   getData(label: string, lang: string) {
+    console.log('label',this.backendDataQuery+'/'+label+'/'+lang);
     return this.httpClient.get(this.backendDataQuery+'/'+label+'/'+lang)
     .pipe((data) => {
       return data;

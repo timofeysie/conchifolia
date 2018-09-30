@@ -2,7 +2,7 @@ const https = require('https');
 const curator = require('art-curator');
 exports.redirect = (id, lang) => {
     return new Promise((resolve, reject) => { 
-        let singlePageUrl = 'https://'+lang+'.wikipedia.org/wiki/'+id;
+        let singlePageUrl = 'https://'+lang+'.wikipedia.org/wiki/'+encodeURI(id);
         console.log('details simple redirect Url',singlePageUrl);
         https.get(singlePageUrl, (wikiRes) => {
             let rawData = '';

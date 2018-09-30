@@ -113,13 +113,11 @@ var DetailPage = /** @class */ (function () {
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         var backupTitle = this.route.snapshot.paramMap.get('title');
         var qCode = this.route.snapshot.paramMap.get('qCode');
-        console.log('backupTitle', backupTitle);
-        console.log('qCode', qCode);
         if (qCode === null) {
             this.getQCode(listLanguage);
         }
         this.title = this.itemName.split('_').join(' '); // fix the title
-        this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
+        this.backendApiService.getDetail(this.title, listLanguage, false).subscribe(function (data) {
             _this.showSpinner = false;
             if (typeof data['description'] !== 'undefined') {
                 _this.description = data['description'].toString();
@@ -132,10 +130,11 @@ var DetailPage = /** @class */ (function () {
         }, function (error) {
             console.error('error', error);
             if (typeof error['error'] !== 'undefined') {
+                _this.showSpinner = false;
                 console.log('error msg', error['error']);
                 if (error['error'] === 'Redirect to data uri value') {
                     _this.message = error['error'];
-                    //this.getWikiDataUriValue(listLanguage, backupTitle);
+                    _this.getWikiDataUriValue(listLanguage, backupTitle);
                 }
             }
             else {
@@ -148,9 +147,12 @@ var DetailPage = /** @class */ (function () {
         });
     };
     DetailPage.prototype.getQCode = function (listLanguage) {
+        var _this = this;
+        console.log('this.itemName', this.itemName);
         this.backendApiService.getData(this.itemName, listLanguage).subscribe(function (data) {
             console.log('qCode data', data);
         }, function (error) {
+            _this.showSpinner = false;
             console.error('qCode error', error);
         });
     };

@@ -2,10 +2,9 @@ const https = require('https');
 const curator = require('art-curator');
 const detailsSimpleRedirect = require('./details-simple-redirect');
 exports.redirect = (id, lang, leaveCaseAlone) => {
-    console.log('1st lang',req.params.id);
     return new Promise((resolve, reject) => { 
-        let singlePageUrl = curator.createSingleWikiMediaPageUrl(req.params.id, req.params.lang, leaveCaseAlone);
-        console.log('second redirect Url',singlePageUrl);
+        let singlePageUrl = curator.createSingleWikiMediaPageUrl(id, lang, leaveCaseAlone);
+        console.log('second detail redirect Url',singlePageUrl);
         let newUrl = singlePageUrl.replace('http','https');
         https.get(newUrl, (wikiRes) => {
             let rawData = '';

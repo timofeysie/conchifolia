@@ -25,13 +25,11 @@ export class DetailPage implements OnInit {
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     const backupTitle = this.route.snapshot.paramMap.get('title');
     const qCode = this.route.snapshot.paramMap.get('qCode');
-    console.log('backupTitle',backupTitle);
-    console.log('qCode',qCode);
     if (qCode === null) {
       this.getQCode(listLanguage);
     }
     this.title = this.itemName.split('_').join(' '); // fix the title
-    this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
+    this.backendApiService.getDetail(this.title,listLanguage, false).subscribe(
       data => {
         this.showSpinner = false;
         if (typeof data['description'] !== 'undefined') {
@@ -45,6 +43,7 @@ export class DetailPage implements OnInit {
       error => {
         console.error('error',error);
         if (typeof error['error'] !== 'undefined') {
+          this.showSpinner = false;
           console.log('error msg',error['error']);
           if (error['error'] === 'Redirect to data uri value') {
             this.message = error['error'];
@@ -62,10 +61,12 @@ export class DetailPage implements OnInit {
   }
 
   getQCode(listLanguage: string) {
+    console.log('this.itemName',this.itemName);
     this.backendApiService.getData(this.itemName,listLanguage).subscribe(data => {
       console.log('qCode data',data);
     },
     error => {
+      this.showSpinner = false;
       console.error('qCode error',error);
     })
   }

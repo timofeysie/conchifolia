@@ -146,7 +146,6 @@ export class ListPage implements OnInit  {
                   // finally sort the list and store it
                   this.list.sort(this.dynamicSort('sortName'));
                   this.dataService.setItem(this.listLanguage+'-'+this.listName,this.list);
-                  console.log('list',this.list);
             },
               error => {
                 console.error('error in 3',error);
@@ -440,9 +439,9 @@ export class ListPage implements OnInit  {
    */
   findQCode(item) {
     let qCode;
-    if (typeof item.cognitive_bias !== 'undefined') {
+    if (typeof item['cognitive_bias'] !== 'undefined') {
       // item has a q-code
-      let lastSlash = item.lastIndexOf('/');
+      let lastSlash = item['cognitive_bias'].lastIndexOf('/');
       qCode = item.cognitive_bias.substr(lastSlash,item.cognitive_bias.length);
     } else {
       // no q-code
@@ -462,7 +461,6 @@ export class ListPage implements OnInit  {
     this.list[i].detailState = 'viewed';
     this.dataService.setItem(this.listLanguage+'-'+this.listName, this.list);
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-    console.log('item',this.list[i]);
     if (typeof this.list[i]['backupTitle'] !== 'undefined') {
       let backupTitle = this.list[i]['backupTitle'];
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle+'/'+qCode]);

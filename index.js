@@ -132,7 +132,10 @@ express()
       res.writeHead(200, headers);
       res.end();
     } else {
-      const wikiDataUrl = curator.createWikiDataItemUrl(req.params.label, req.params.lang);
+      let label = encodeURI(req.params.label);
+      console.log('req.params.label',label);
+      console.log('req.params.lang',req.params.lang);
+      const wikiDataUrl = curator.createWikiDataItemUrl(label, req.params.lang);
       console.log('wikiDataUrl',wikiDataUrl);
       https.get(wikiDataUrl, (wikiRes) => {
         const statusCode = wikiRes.statusCode;
@@ -148,7 +151,6 @@ express()
         let rawData = '';
         wikiRes.on('data', (chunk) => { rawData += chunk; });
         wikiRes.on('end', () => {
-          console.log('raw data',rawData);
           res.status(200).send(rawData);
         });
       }).on('error', (e) => {
@@ -220,6 +222,7 @@ express()
                 if (anchorIndex !== -1) {
                 const anchorToEnd = preamblesRemoved.substring(anchorIndex+'<a href="/wiki/'.length, preamblesRemoved.length);
                 const anchor = anchorToEnd.substring(0, anchorToEnd.indexOf('"'));
+                console.log('singlePageUrl redirect anchor',anchor);
                 details.redirect(anchor).then((rug) => {
                   res.status(200).json(rug);
                 }).catch((errors) => {

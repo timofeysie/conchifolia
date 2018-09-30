@@ -250,8 +250,20 @@ itemLabel: {xml:lang: "en", type: "literal", value: "null"}
 
 Q204 is the number 0, and the other two are both the string 'null'.  
 
+It seems like our previously working redirection is now broken.
 
+singlePageUrl http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=actor-observer_bias
 
+This returns a redirect message telling us that we should be using this name:
+/wiki/Actor%E2%80%93observer_asymmetry\
+
+Instead we are going with this:
+details simple redirect Url https://en.wikipedia.org/wiki/Actor-observer%20bias
+
+In the browser this will work with a behind the scenes re-direct.  It actually looks like the correct name is getting gotL:
+singlePageUrl redirect anchor Actor%E2%80%93observer_asymmetry
+
+It was a simple error in our new /endpoints/details.js file which was getting the parameter id instead on the redirect anchor passed in.  After that, our redirects are back on the menu!
 
 
 ## Re-factoring the NodeJS app

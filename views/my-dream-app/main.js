@@ -631,7 +631,6 @@ var ListPage = /** @class */ (function () {
                         // finally sort the list and store it
                         _this.list.sort(_this.dynamicSort('sortName'));
                         _this.dataService.setItem(_this.listLanguage + '-' + _this.listName, _this.list);
-                        console.log('list', _this.list);
                     }, function (error) {
                         console.error('error in 3', error);
                     });
@@ -666,7 +665,6 @@ var ListPage = /** @class */ (function () {
      * @param section WIkiMedia section
      */
     ListPage.prototype.addItems = function (section) {
-        console.log('section', section);
         for (var i = 0; i < section.length; i++) {
             var itemName = section[i].name;
             var backupTitle = void 0;
@@ -918,9 +916,9 @@ var ListPage = /** @class */ (function () {
      */
     ListPage.prototype.findQCode = function (item) {
         var qCode;
-        if (typeof item.cognitive_bias !== 'undefined') {
+        if (typeof item['cognitive_bias'] !== 'undefined') {
             // item has a q-code
-            var lastSlash = item.lastIndexOf('/');
+            var lastSlash = item['cognitive_bias'].lastIndexOf('/');
             qCode = item.cognitive_bias.substr(lastSlash, item.cognitive_bias.length);
         }
         else {
@@ -940,7 +938,6 @@ var ListPage = /** @class */ (function () {
         this.list[i].detailState = 'viewed';
         this.dataService.setItem(this.listLanguage + '-' + this.listName, this.list);
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
-        console.log('item', this.list[i]);
         if (typeof this.list[i]['backupTitle'] !== 'undefined') {
             var backupTitle = this.list[i]['backupTitle'];
             this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle + '/' + qCode]);
@@ -1004,6 +1001,7 @@ var BackendApiService = /** @class */ (function () {
     }
     // /api/data/uri(with *s instead of /s)
     BackendApiService.prototype.getData = function (label, lang) {
+        console.log('label', this.backendDataQuery + '/' + label + '/' + lang);
         return this.httpClient.get(this.backendDataQuery + '/' + label + '/' + lang)
             .pipe(function (data) {
             return data;
