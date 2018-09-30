@@ -146,6 +146,7 @@ export class ListPage implements OnInit  {
                   // finally sort the list and store it
                   this.list.sort(this.dynamicSort('sortName'));
                   this.dataService.setItem(this.listLanguage+'-'+this.listName,this.list);
+                  console.log('list',this.list);
             },
               error => {
                 console.error('error in 3',error);
@@ -185,7 +186,6 @@ export class ListPage implements OnInit  {
    * @param section WIkiMedia section
    */
   addItems(section: any) {
-    console.log('section',section);
     for (let i = 0; i < section.length; i++) {
       let itemName = section[i].name;
       let backupTitle;
@@ -435,22 +435,42 @@ export class ListPage implements OnInit  {
   }
 
   /**
+   * 
+   * @param item @returns the q-code which is the last item in a URI http://www.wikidata.org/entity/Q4533272
+   */
+  findQCode(item) {
+    let qCode;
+    if (typeof item.cognitive_bias !== 'undefined') {
+      // item has a q-code
+      let lastSlash = item.lastIndexOf('/');
+      qCode = item.cognitive_bias.substr(lastSlash,item.cognitive_bias.length);
+    } else {
+      // no q-code
+      qCode = null;
+    }
+    return qCode;
+  }
+
+  /**
    * Go to the detail page.  If an item has a backup title, add that to the route.
    * @param item Set state as viewed, get language setting, create list name, and/or title
    * And pass on to the detail page.
    * @param i item index
    */
   navigateAction(item: string, i: number) {
+    let qCode = this.findQCode(this.list[i]);
     this.list[i].detailState = 'viewed';
     this.dataService.setItem(this.listLanguage+'-'+this.listName, this.list);
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
     console.log('item',this.list[i]);
     if (typeof this.list[i]['backupTitle'] !== 'undefined') {
       let backupTitle = this.list[i]['backupTitle'];
-      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);
-    } else {
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle+'/'+qCode]);
+    } else if (typeof this.list[i]['cognitive_bias'] !== 'undefined') {
       let backupTitle = this.list[i]['cognitive_bias'].replace(/\//g,'*');
-      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle]);    
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle+'/'+qCode]);    
+    } else {
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/null/'+qCode]); 
     }
   }
   

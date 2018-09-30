@@ -56,8 +56,8 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 var routes = [
-    { path: 'detail/:id/:listLanguage', loadChildren: './pages/detail/detail.module#DetailPageModule' },
-    { path: 'detail/:id/:listLanguage/:title', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+    { path: 'detail/:id/:listLanguage/:qCode', loadChildren: './pages/detail/detail.module#DetailPageModule' },
+    { path: 'detail/:id/:listLanguage/:title/:qCode', loadChildren: './pages/detail/detail.module#DetailPageModule' },
 ];
 var AppRoutingModule = /** @class */ (function () {
     function AppRoutingModule() {
@@ -631,6 +631,7 @@ var ListPage = /** @class */ (function () {
                         // finally sort the list and store it
                         _this.list.sort(_this.dynamicSort('sortName'));
                         _this.dataService.setItem(_this.listLanguage + '-' + _this.listName, _this.list);
+                        console.log('list', _this.list);
                     }, function (error) {
                         console.error('error in 3', error);
                     });
@@ -912,23 +913,44 @@ var ListPage = /** @class */ (function () {
         return title;
     };
     /**
+     *
+     * @param item @returns the q-code which is the last item in a URI http://www.wikidata.org/entity/Q4533272
+     */
+    ListPage.prototype.findQCode = function (item) {
+        var qCode;
+        if (typeof item.cognitive_bias !== 'undefined') {
+            // item has a q-code
+            var lastSlash = item.lastIndexOf('/');
+            qCode = item.cognitive_bias.substr(lastSlash, item.cognitive_bias.length);
+        }
+        else {
+            // no q-code
+            qCode = null;
+        }
+        return qCode;
+    };
+    /**
      * Go to the detail page.  If an item has a backup title, add that to the route.
      * @param item Set state as viewed, get language setting, create list name, and/or title
      * And pass on to the detail page.
      * @param i item index
      */
     ListPage.prototype.navigateAction = function (item, i) {
+        var qCode = this.findQCode(this.list[i]);
         this.list[i].detailState = 'viewed';
         this.dataService.setItem(this.listLanguage + '-' + this.listName, this.list);
         var itemRoute = item.replace(/\s+/g, '_').toLowerCase();
         console.log('item', this.list[i]);
         if (typeof this.list[i]['backupTitle'] !== 'undefined') {
             var backupTitle = this.list[i]['backupTitle'];
-            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle + '/' + qCode]);
+        }
+        else if (typeof this.list[i]['cognitive_bias'] !== 'undefined') {
+            var backupTitle = this.list[i]['cognitive_bias'].replace(/\//g, '*');
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle + '/' + qCode]);
         }
         else {
-            var backupTitle = this.list[i]['cognitive_bias'].replace(/\//g, '*');
-            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/' + backupTitle]);
+            this.router.navigate(['detail/' + itemRoute + '/' + this.listLanguage + '/null/' + qCode]);
         }
     };
     ListPage = __decorate([
@@ -978,12 +1000,12 @@ var BackendApiService = /** @class */ (function () {
         this.backendWikiListUrl = '/api/wiki-list';
         this.backendDetailUrl = '/api/detail';
         this.backendDataUrl = '/api/data';
+        this.backendDataQuery = '/api/data/query';
     }
     // /api/data/uri(with *s instead of /s)
-    BackendApiService.prototype.getData = function (uri, lang) {
-        return this.httpClient.get(this.backendDataUrl + '/' + uri + '/' + lang)
+    BackendApiService.prototype.getData = function (label, lang) {
+        return this.httpClient.get(this.backendDataQuery + '/' + label + '/' + lang)
             .pipe(function (data) {
-            console.log(data.toPromise.toString());
             return data;
         });
     };

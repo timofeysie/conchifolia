@@ -12,15 +12,15 @@ export class BackendApiService {
   private backendWikiListUrl = '/api/wiki-list';
   private backendDetailUrl = '/api/detail';
   private backendDataUrl = '/api/data';
+  private backendDataQuery = '/api/data/query';
   private listData;
 
   constructor (private  httpClient:  HttpClient) {}
 
   // /api/data/uri(with *s instead of /s)
-  getData(uri: string, lang: string) {
-    return this.httpClient.get(this.backendDataUrl+'/'+uri+'/'+lang)
+  getData(label: string, lang: string) {
+    return this.httpClient.get(this.backendDataQuery+'/'+label+'/'+lang)
     .pipe((data) => {
-      console.log(data.toPromise.toString());
       return data;
     });
   }

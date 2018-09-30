@@ -112,9 +112,13 @@ var DetailPage = /** @class */ (function () {
         this.itemName = this.route.snapshot.paramMap.get('id');
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         var backupTitle = this.route.snapshot.paramMap.get('title');
+        var qCode = this.route.snapshot.paramMap.get('qCode');
         console.log('backupTitle', backupTitle);
+        console.log('qCode', qCode);
+        if (qCode === null) {
+            this.getQCode(listLanguage);
+        }
         this.title = this.itemName.split('_').join(' '); // fix the title
-        this.getWikiDataUriValue(listLanguage, this.itemName); // temp
         this.backendApiService.getDetail(this.itemName, listLanguage, false).subscribe(function (data) {
             _this.showSpinner = false;
             if (typeof data['description'] !== 'undefined') {
@@ -131,7 +135,7 @@ var DetailPage = /** @class */ (function () {
                 console.log('error msg', error['error']);
                 if (error['error'] === 'Redirect to data uri value') {
                     _this.message = error['error'];
-                    _this.getWikiDataUriValue(listLanguage, backupTitle);
+                    //this.getWikiDataUriValue(listLanguage, backupTitle);
                 }
             }
             else {
@@ -141,6 +145,13 @@ var DetailPage = /** @class */ (function () {
                     _this.getAlternateTitle(listLanguage, backupTitle);
                 }
             }
+        });
+    };
+    DetailPage.prototype.getQCode = function (listLanguage) {
+        this.backendApiService.getData(this.itemName, listLanguage).subscribe(function (data) {
+            console.log('qCode data', data);
+        }, function (error) {
+            console.error('qCode error', error);
         });
     };
     DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {

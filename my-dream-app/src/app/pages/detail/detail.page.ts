@@ -24,9 +24,13 @@ export class DetailPage implements OnInit {
     this.itemName = this.route.snapshot.paramMap.get('id');
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
     const backupTitle = this.route.snapshot.paramMap.get('title');
+    const qCode = this.route.snapshot.paramMap.get('qCode');
     console.log('backupTitle',backupTitle);
+    console.log('qCode',qCode);
+    if (qCode === null) {
+      this.getQCode(listLanguage);
+    }
     this.title = this.itemName.split('_').join(' '); // fix the title
-    this.getWikiDataUriValue(listLanguage,this.itemName); // temp
     this.backendApiService.getDetail(this.itemName,listLanguage, false).subscribe(
       data => {
         this.showSpinner = false;
@@ -55,6 +59,15 @@ export class DetailPage implements OnInit {
         }
       }
     );
+  }
+
+  getQCode(listLanguage: string) {
+    this.backendApiService.getData(this.itemName,listLanguage).subscribe(data => {
+      console.log('qCode data',data);
+    },
+    error => {
+      console.error('qCode error',error);
+    })
   }
 
   getWikiDataUriValue(listLanguage: string, backupTitle: string) {

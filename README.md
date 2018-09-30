@@ -178,13 +178,80 @@ This kind of exception came up while refactoring the NodeJS file to do those red
 The Korean item 현상유지편향 is actually a title with underscores:
 현상_유지_편향 (status quo bias for those interested).
 
-This difference can only be found by using the urll on the entity page.  Or so we thought.  Acutally, none of these are returning anything (except an empty array):
+This difference can only be found by using the url on the entity page.  Or so we thought.  Actually, none of these are returning anything (except an empty array):
 ```
 http://localhost:5000/api/data/query/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/en
 http://localhost:5000/api/data/query/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5/en
 http://localhost:5000/api/data/query/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/kr
 http://localhost:5000/api/data/query/%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5/kr
 ```
+
+The goal so far has been to get the Q-codes from another query using the label as the key.  This is because Q-codes are not included on the list of cognitive biases Wikipedia page.  We have Q-codes for the 90 items on the WikiData list.  When the user chooses an item that is not part of that list, that's when we should be making use of our new feature, and see how many of them return results or not.
+
+So as a refresher, lets look at the data model for the three types of items we have.
+
+Not sure why but when adding the list to the console log to look at these, got this error:
+```
+ERROR in ./src/app/pages/list/list.page.scss
+Module build failed: Error: Missing binding /Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/my-dream-app/node_modules/node-sass/vendor/darwin-x64-48/binding.node
+Node Sass could not find a binding for your current environment: OS X 64-bit with Node.js 6.x
+Found bindings for the following environments:
+  - OS X 64-bit with Node.js 9.x
+This usually happens because your environment has changed since running `npm install`.
+Run `npm rebuild node-sass` to download the binding for your current environment.
+    at module.exports (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/my-dream-app/node_modules/node-sass/lib/binding.js:15:13)
+```
+
+It's easy to run `npm rebuild node-sass`, but why did this happen?  If it can happen so simply, then why doesn't it happen more often?
+
+Anyhow, back to what we were doing.  Currently there are three colors which are used to differentiate where the item data is coming from, green (WikiData only), orange (WikiMedia only), and black (both).  Don't get too attached to these styles.  The must be a better way to do this, and when someone comes up with that better way, this will be change.
+
+So here is one of each item:
+```
+Green (WikiData only)
+sortName: "Acquiescence bias"
+cognitive_bias: "http://www.wikidata.org/entity/Q420693"
+cognitive_biasLabel: "Acquiescence bias"
+lang: "en"
+
+Orange (WikiMedia only)
+sortName: "Actor-observer bias"
+wikiMedia_category: "Social biases"
+wikiMedia_description: "The tendency for explanations of other individuals' behaviors ..."
+wikiMedia_label: "Actor-observer bias"
+
+Black (both)
+sortName: "Ambiguity effect"
+cognitive_bias: "http://www.wikidata.org/entity/Q4533272"
+cognitive_biasLabel: "Ambiguity effect"
+lang: "en"
+wikiMedia_category: "Decision-making, belief, and behavioral biases"
+wikiMedia_description: "The tendency to avoid options for which missing information ..."
+wikiMedia_label: "Ambiguity effect"
+```
+
+Notice that WikiData only items have no descriptions (or not many).  The WikiMedia data is merged with the WikiData content when an item appears on both lists.  So it is for the orange items that appear on WikiMedia only items that need to use our new service to find the Q-codes.
+
+Items that do not have an *cognitive_bias* property need this to happen.
+
+Now, as far as the one we have been working on, the 'Actor-observer bias', we get no Q-code.  However, trying 'Anthropocentric thinking', we are getting more than expected:
+```
+results: bindings: Array(3)
+0:
+item: {type: "uri", value: "http://www.wikidata.org/entity/Q204"}
+itemLabel: {xml:lang: "en", type: "literal", value: "0"}
+1:
+item: {type: "uri", value: "http://www.wikidata.org/entity/Q16999388"}
+itemLabel: {xml:lang: "en", type: "literal", value: "null"}
+2:
+item: {type: "uri", value: "http://www.wikidata.org/entity/Q543287"}
+itemLabel: {xml:lang: "en", type: "literal", value: "null"}
+```
+
+Q204 is the number 0, and the other two are both the string 'null'.  
+
+
+
 
 
 ## Re-factoring the NodeJS app
