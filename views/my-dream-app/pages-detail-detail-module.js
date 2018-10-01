@@ -159,26 +159,26 @@ var DetailPage = /** @class */ (function () {
     };
     DetailPage.prototype.availableLanguages = function (qCode, listLanguage, label) {
         var _this = this;
-        console.log('qCode', qCode);
-        console.log('listLanguage', listLanguage);
-        console.log('label', label);
+        console.log('9. qCode', qCode);
         if (qCode === null) {
-            console.log('this.itemName', this.itemName);
-            console.log('label', label.split('_').join(' '));
+            console.log('10. this.itemName', this.itemName);
             var searchString = this.itemName;
             if (label) {
                 searchString = label.split('_').join(' ');
             }
+            console.log('11. availableLanguages searchString', searchString);
             this.backendApiService.getData(searchString, listLanguage).subscribe(function (data) {
-                console.log('10.qCode data', data);
+                console.log('12.qCode data', data);
+                // re-set the qCode from the data here 
             }, function (error) {
                 _this.showSpinner = false;
-                console.error('11.qCode error', error);
+                console.error('13.qCode error', error);
             });
         }
         else {
-            console.log('12.qCode is ', qCode);
+            console.log('14.qCode is  not null', qCode);
         }
+        // now we should have a q-code we can use to get the WikiData page
     };
     DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {
         var _this = this;
