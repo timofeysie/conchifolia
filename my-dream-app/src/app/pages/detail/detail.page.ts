@@ -19,56 +19,75 @@ export class DetailPage implements OnInit {
     private backendApiService: BackendApiService) { }
 
   ngOnInit() {
-    //this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
-    
     this.itemName = this.route.snapshot.paramMap.get('id');
     const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
-    const backupTitle = this.route.snapshot.paramMap.get('title');
-    const qCode = this.route.snapshot.paramMap.get('qCode');
-    if (qCode === null) {
-      this.getQCode(listLanguage);
-    }
+    let backupTitle = this.route.snapshot.paramMap.get('title');
+    let qCode = this.route.snapshot.paramMap.get('qCode').toString();
+    if (qCode === 'null') { qCode = null; }
     this.title = this.itemName.split('_').join(' '); // fix the title
     this.backendApiService.getDetail(this.title,listLanguage, false).subscribe(
       data => {
         this.showSpinner = false;
+        if (typeof data['redirectTitle'] !== 'undefined') {
+          console.log('1.redirectTitle',data['redirectTitle'] );
+          backupTitle = data['redirectTitle'];
+        }
         if (typeof data['description'] !== 'undefined') {
           this.description = data['description'].toString();
+          console.log('2. data[descriptio] !== undefined')
         } else {
+          console.log('3. else');
           this.description = data.toString();
         }
         this.description = this.description.split('href="/wiki/')
             .join('href="https://en.wikipedia.org/wiki/');
+        this.availableLanguages(qCode, listLanguage, backupTitle);
       },
       error => {
-        console.error('error',error);
+        console.error('4. error',error);
         if (typeof error['error'] !== 'undefined') {
           this.showSpinner = false;
-          console.log('error msg',error['error']);
+          console.log('5. error msg',error['error']);
           if (error['error'] === 'Redirect to data uri value') {
             this.message = error['error'];
+            console.log('6. Redirect to data uri value');
             this.getWikiDataUriValue(listLanguage, backupTitle);
           }
         } else {
           this.message = error.status+': trying to redirect to ';
           if (backupTitle) {
             this.message += backupTitle;
+            console.log('7. if backup');
             this.getAlternateTitle(listLanguage, backupTitle);
+          } else {
+            console.log('8. else nothing')
           }
         }
       }
     );
   }
 
-  getQCode(listLanguage: string) {
-    console.log('this.itemName',this.itemName);
-    this.backendApiService.getData(this.itemName,listLanguage).subscribe(data => {
-      console.log('qCode data',data);
-    },
-    error => {
-      this.showSpinner = false;
-      console.error('qCode error',error);
-    })
+  availableLanguages(qCode: string, listLanguage: string, label: string) {
+    console.log('9. qCode',qCode);
+    if (qCode === null) {
+      console.log('10. this.itemName',this.itemName);
+      let searchString = this.itemName;
+      if (label) {
+        searchString = label.split('_').join(' ');
+      }
+      console.log('11. availableLanguages searchString',searchString);
+      this.backendApiService.getData(searchString,listLanguage).subscribe(data => {
+        console.log('12.qCode data',data);
+        // re-set the qCode from the data here 
+      },  
+      error => {
+        this.showSpinner = false;
+        console.error('13.qCode error',error);
+      })
+    } else {
+      console.log('14.qCode is  not null',qCode);
+    }
+    // now we should have a q-code we can use to get the WikiData page
   }
 
   getWikiDataUriValue(listLanguage: string, backupTitle: string) {
@@ -77,11 +96,11 @@ export class DetailPage implements OnInit {
     }
     this.backendApiService.getData(backupTitle, listLanguage).subscribe(
       data => {
-        console.log('data2',data);
+        console.log('13.data',data);
         this.showSpinner = false;
         this.description = data;
       }, error => {
-        console.log('error',error);
+        console.log('14.error',error);
         //this.message = 'Redirect failed';
         this.showSpinner = false;
       }
@@ -101,9 +120,10 @@ export class DetailPage implements OnInit {
         this.description = this.description.split('href="/wiki/')
           .join('href="https://en.wikipedia.org/wiki/');
         this.showSpinner = false;
+        console.log('15. data description')
       },
       error => {
-        console.error('redirect error',error);
+        console.error('16. redirect error',error);
         this.showSpinner = false;
         this.message = error.status+' '+backupTitle+' redirect error '+error.statusText;
       }

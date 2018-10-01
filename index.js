@@ -132,7 +132,7 @@ express()
       res.writeHead(200, headers);
       res.end();
     } else {
-      let label = encodeURI(req.params.label);
+      let label = req.params.label.replace('%20',' ');
       console.log('req.params.label',label);
       console.log('req.params.lang',req.params.lang);
       const wikiDataUrl = curator.createWikiDataItemUrl(label, req.params.lang);

@@ -107,33 +107,40 @@ var DetailPage = /** @class */ (function () {
         this.showSpinner = true;
     }
     DetailPage.prototype.ngOnInit = function () {
-        //this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
         var _this = this;
         this.itemName = this.route.snapshot.paramMap.get('id');
         var listLanguage = this.route.snapshot.paramMap.get('listLanguage');
         var backupTitle = this.route.snapshot.paramMap.get('title');
-        var qCode = this.route.snapshot.paramMap.get('qCode');
-        if (qCode === null) {
-            this.getQCode(listLanguage);
+        var qCode = this.route.snapshot.paramMap.get('qCode').toString();
+        if (qCode === 'null') {
+            qCode = null;
         }
         this.title = this.itemName.split('_').join(' '); // fix the title
         this.backendApiService.getDetail(this.title, listLanguage, false).subscribe(function (data) {
             _this.showSpinner = false;
+            if (typeof data['redirectTitle'] !== 'undefined') {
+                console.log('1.redirectTitle', data['redirectTitle']);
+                backupTitle = data['redirectTitle'];
+            }
             if (typeof data['description'] !== 'undefined') {
                 _this.description = data['description'].toString();
+                console.log('2. data[descriptio] !== undefined');
             }
             else {
+                console.log('3. else');
                 _this.description = data.toString();
             }
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
+            _this.availableLanguages(qCode, listLanguage, backupTitle);
         }, function (error) {
-            console.error('error', error);
+            console.error('4. error', error);
             if (typeof error['error'] !== 'undefined') {
                 _this.showSpinner = false;
-                console.log('error msg', error['error']);
+                console.log('5. error msg', error['error']);
                 if (error['error'] === 'Redirect to data uri value') {
                     _this.message = error['error'];
+                    console.log('6. Redirect to data uri value');
                     _this.getWikiDataUriValue(listLanguage, backupTitle);
                 }
             }
@@ -141,31 +148,48 @@ var DetailPage = /** @class */ (function () {
                 _this.message = error.status + ': trying to redirect to ';
                 if (backupTitle) {
                     _this.message += backupTitle;
+                    console.log('7. if backup');
                     _this.getAlternateTitle(listLanguage, backupTitle);
+                }
+                else {
+                    console.log('8. else nothing');
                 }
             }
         });
     };
-    DetailPage.prototype.getQCode = function (listLanguage) {
+    DetailPage.prototype.availableLanguages = function (qCode, listLanguage, label) {
         var _this = this;
-        console.log('this.itemName', this.itemName);
-        this.backendApiService.getData(this.itemName, listLanguage).subscribe(function (data) {
-            console.log('qCode data', data);
-        }, function (error) {
-            _this.showSpinner = false;
-            console.error('qCode error', error);
-        });
+        console.log('qCode', qCode);
+        console.log('listLanguage', listLanguage);
+        console.log('label', label);
+        if (qCode === null) {
+            console.log('this.itemName', this.itemName);
+            console.log('label', label.split('_').join(' '));
+            var searchString = this.itemName;
+            if (label) {
+                searchString = label.split('_').join(' ');
+            }
+            this.backendApiService.getData(searchString, listLanguage).subscribe(function (data) {
+                console.log('10.qCode data', data);
+            }, function (error) {
+                _this.showSpinner = false;
+                console.error('11.qCode error', error);
+            });
+        }
+        else {
+            console.log('12.qCode is ', qCode);
+        }
     };
     DetailPage.prototype.getWikiDataUriValue = function (listLanguage, backupTitle) {
         var _this = this;
         if (!backupTitle.indexOf('http')) {
         }
         this.backendApiService.getData(backupTitle, listLanguage).subscribe(function (data) {
-            console.log('data2', data);
+            console.log('13.data', data);
             _this.showSpinner = false;
             _this.description = data;
         }, function (error) {
-            console.log('error', error);
+            console.log('14.error', error);
             //this.message = 'Redirect failed';
             _this.showSpinner = false;
         });
@@ -183,8 +207,9 @@ var DetailPage = /** @class */ (function () {
             _this.description = _this.description.split('href="/wiki/')
                 .join('href="https://en.wikipedia.org/wiki/');
             _this.showSpinner = false;
+            console.log('15. data description');
         }, function (error) {
-            console.error('redirect error', error);
+            console.error('16. redirect error', error);
             _this.showSpinner = false;
             _this.message = error.status + ' ' + backupTitle + ' redirect error ' + error.statusText;
         });

@@ -463,12 +463,16 @@ export class ListPage implements OnInit  {
     let itemRoute = item.replace(/\s+/g, '_').toLowerCase();
     if (typeof this.list[i]['backupTitle'] !== 'undefined') {
       let backupTitle = this.list[i]['backupTitle'];
+      console.log('1.this.list[i][backupTitle]',backupTitle);
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle+'/'+qCode]);
     } else if (typeof this.list[i]['cognitive_bias'] !== 'undefined') {
       let backupTitle = this.list[i]['cognitive_bias'].replace(/\//g,'*');
+ 
+      console.log('2.this.list[i][cognitive_bias].replace()',backupTitle);
       this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+backupTitle+'/'+qCode]);    
     } else {
-      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/null/'+qCode]); 
+      console.log('3.else sortName',this.list[i].sortName);
+      this.router.navigate(['detail/'+itemRoute+'/'+this.listLanguage+'/'+this.list[i].sortName+'/'+qCode]); 
     }
   }
   
