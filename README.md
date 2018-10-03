@@ -571,6 +571,109 @@ If you put "Actor–observer asymmetry" into the WikiData website search field, 
 
 That should be done on the server.  We decided some time back that the server should handle the redirects if it can.  The business login in the detail page is now getting out of control and needs to be simplified.
 
+We find ourselves having to look at the redirect markup again:
+```
+<div class="mw-parser-output">
+    <div class="redirectMsg">
+        <p>Redirect to:</p>
+        <ul class="redirectText">
+            <li><a href="/wiki/Actor%E2%80%93observer_asymmetry" title="Actor–observer asymmetry">Actor–observer asymmetry</a></li>
+        </ul>
+    </div>
+    <ul>
+        <li><b><a href="/wiki/Category:Redirects_from_modifications" title="Category:Redirects from modifications">From a modification</a></b>: This is a redirect from a modification of the target's title or a closely related title. For example, the words may be rearranged, or punctuation may be different.
+            <ul>
+                <li>In cases of modification from distinctly longer or shorter names, please use &#123;&#123;<a href="/wiki/Template:R_from_long_name" title="Template:R from long name">R from long name</a>&#125;&#125; or &#123;&#123;<a href="/wiki/Template:R_from_short_name" title="Template:R from short name">R from short name</a>&#125;&#125;, respectively.</li>
+                <li>Use this <a href="/wiki/Wikipedia:Rcat" class="mw-redirect" title="Wikipedia:Rcat">rcat</a> instead of &#123;&#123;<a href="/wiki/Template:R_from_other_capitalisation" title="Template:R from other capitalisation">R from other capitalisation</a>&#125;&#125; and &#123;&#123;<a href="/wiki/Template:R_from_plural" title="Template:R from plural">R from plural</a>&#125;&#125; in namespaces other than <a href="/wiki/Wikipedia:Mainspace" class="mw-redirect" title="Wikipedia:Mainspace">mainspace</a> for those types of modification.</li>
+            </ul>
+        </li>
+    </ul>
+```
+
+This really is not working out well due to the confusing re-directs and with their error catching and all that.  The whole thing needs to be simplified.  Anyhow, we are still getting a redirect error even after using the new re-direct string for the WikiMedia parse query URL.
+```
+Listening on 5000
+singlePageUrl http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=actor-observer_bias
+singlePageUrl redirect anchor Actor%E2%80%93observer_asymmetry
+1.second detail redirect Url http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=actor-observer_asymmetry
+marker 103
+segment  class=\"redirectMsg\"><p>Redirect to:</p><ul class=\"redirectText\"><li><a href=\"/wiki/Actor%E2%80%93observer_asymmetry\" title=\"Actor\u2013observer asymmetry\">Actor\u2013observer asymmetry</a></li></ul></div><ul><li><b><a href=\"/wiki/Category:Redirects_from_modifications\" title=\"Category:Redirects from modifications\">From a modification</a></b>: This is a redirect from a modification of the target's title or a closely related title.  For example, the words may be rearranged, or punctuation may be different.\n<ul><li>In cases of modification from distinctly longer or shorter names, please use &#123;&#123;<a href=\"/wiki/Template:R_from_long_name\" title=\"Template:R from long name\">R from long name</a>&#125;&#125; or &#123;&#123;<a href=\"/wiki/Template:R_from_short_name\" title=\"Template:R from short name\">R from short name</a>&#125;&#125;, respectively.</li>\n<li>Use this <a href=\"/wiki/Wikipedia:Rcat\" class=\"mw-redirect\" title=\"Wikipedia:Rcat\">rcat</a> instead of &#123;&#123;<a href=\"/wiki/Template:R_from_other_capitalisation\" title=\"Template:R from other capitalisation\">R from other capitalisation</a>&#125;&#125; and &#123;&#123;<a href=\"/wiki/Template:R_from_plural\" title=\"Template:R from plural\">R from plural</a>&#125;&#125; in namespaces other than <a href=\"/wiki/Wikipedia:Mainspace\" class=\"mw-redirect\" title=\"Wikipedia:Mainspace\">mainspace</a> for those types of modification.</li></ul></li></ul>\n\n<!-- \nNewPP limit report\nParsed by mw2220\nCached time: 20181002114933\nCache expiry: 1900800\nDynamic content: false\nCPU time usage: 0.028 seconds\nReal time usage: 0.036 seconds\nPreprocessor visited node count: 43/1000000\nPreprocessor generated node count: 0/1500000\nPost\u2010expand include size: 2744/2097152 bytes\nTemplate argument size: 146/2097152 bytes\nHighest expansion depth: 5/40\nExpensive parser function count: 0/500\nUnstrip recursion depth: 0/20\nUnstrip post\u2010expand size: 0/5000000 bytes\nNumber of Wikibase entities loaded: 0/400\nLua time usage: 0.007/10.000 seconds\nLua memory usage: 588 KB/50 MB\n-->\n<!--\nTransclusion expansion time report (%,ms,calls,template)\n100.00%   29.634      1 Template:R_from_modification\n100.00%   29.634      1 -total\n 91.84%   27.217      1 Template:Redirect_template\n  5.59%    1.656      4 Template:Tl\n-->\n</div>"}}}
+```
+
+For some reason, now the escaped quotation marks were interfering with our fragile scraping methods.  But actually, that was not even necessary, as we already had the new re-direct string.
+
+Let's back up and think this through.
+This is the Wikipedia URL:
+```
+https://en.wikipedia.org/wiki/Actor%E2%80%93observer_asymmetry
+```
+
+This should be the parse action URL:
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=Actor-observer_asymmetry
+```
+
+But it returns, in part, this:
+```
+<p>Redirect to:
+    </p>
+        <ul class=\"redirectText\">
+            <li>
+                <a href=\"/wiki/Actor%E2%80%93observer_asymmetry\" 
+                    title=\"Actor\u2013observer asymmetry\">Actor\u2013observer asymmetry
+                </a>
+            </li>
+            ...
+```
+
+What's the difference between these?
+```
+Actor-observer_asymmetry
+Actor%E2%80%93observer_asymmetry
+```
+
+I guess we need to encode the URI?  Tried it.  Doesn't work.
+
+On the [UTF-8 encoding table and Unicode characters](https://www.utf8-chartable.de/unicode-utf8-table.pl?start=8192&number=128) that would correspond to 
+```
+Unicode code point: U+2013	
+character: -	
+UTF-8 (hex.): e2 80 93
+Name: EN DASH
+```
+
+So how do we get from a dash character to what is assumed to be an encoded UTF-8 (hex) value?
+Don't we get the correct redirect string in the first place?  We did, and if you recalled previously we converted the dash like this:
+```
+const label = id.replace('%E2%80%93','-');
+```
+
+That was just a test to see if the re-direct would work then, which it didn't, and then we forgot to get rid of that.  However, the result we get using the unvoncerted string:
+
+This is what we are trying now:
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=Actor%25E2%2580%2593observer_asymmetry
+```
+
+It returns this wonderful message:
+```
+{"error":{"code":"invalidtitle","info":"Bad title \"Actor%E2%80%93observer_asymmetry\" ...
+```
+
+But this is the one that will work:
+```
+https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=Actor%E2%80%93observer_asymmetry
+```
+
+It seems like the Curator lib is creating %25E2%2580%2593 from this %E2%80%93.
+That's neither the unicode code point *or* the hex.  After culling some more useless code, and duplicating some from the index to the details file, the automatic re-directs are working again.  Testing the first page of list items shows they all work.  That's worth a commit.
+
+The whole details server functionality needs a re-write.  But the goal has been to get everything working properly for the Loranthifolia version one MVP, so the re-write is not going to happen for a while, sorry.
+
+
+
+
+
 
 ## Re-factoring the NodeJS app
 

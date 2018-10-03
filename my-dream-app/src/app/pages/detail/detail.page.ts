@@ -34,7 +34,7 @@ export class DetailPage implements OnInit {
         }
         if (typeof data['description'] !== 'undefined') {
           this.description = data['description'].toString();
-          console.log('2. data[descriptio] !== undefined')
+          console.log('2. data[description] !== undefined');
         } else {
           console.log('3. else');
           this.description = data.toString();

@@ -234,6 +234,7 @@ express()
                   res.status(500).json('4. redirect without href');
               }
             } else {
+              // this happens for automation_bias
               console.log('5. When will this happen?');
               res.status(200).json(desc);
             }
