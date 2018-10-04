@@ -282,27 +282,19 @@ The detail content for the page says it itself: *Actor–observer asymmetry (als
 It's work looking at the markup for the entire description.  We can get a better idea of what else is available there.
 ```
 <div class="mw-parser-output">
-    <table class="plainlinks metadata ambox ambox-content ambox-multiple_issues compact-ambox" 
-        role="presentation">
+    <table class="plainlinks metadata ambox ambox-content ambox-multiple_issues compact-ambox" role="presentation">
         <tbody>
             <tr>
                 <td class="mbox-image">
                     <div style="width:52px">
-                        <img alt=""    
-                            src="//upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png" 
-                            width="40" height="40" 
-                            srcset="//upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png 2x" 
-                            data-file-width="40" 
-                            data-file-height="40" />
+                        <img alt="" src="//upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png" width="40" height="40" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/...Ambox_important.svg.png 2x" data-file-width="40" data-file-height="40" />
                     </div>
                 </td>
                 <td class="mbox-text">
-                <div class="mbox-text-span">
-                    <div class="mw-collapsible" 
-                        style="width:95%; margin: 0.2em 0;">
-                        <b>This article has multiple issues.</b> 
-                        Please help 
-                        <b>
+                    <div class="mbox-text-span">
+                        <div class="mw-collapsible" style="width:95%; margin: 0.2em 0;">
+                            <b>This article has multiple issues.</b> Please help
+                            <b>
                             <a class="external text" 
                                 href="//en.wikipedia.org/w/index.php?title=Actor%E2%80%93observer_asymmetry&amp;action=edit">
                                 improve it
@@ -310,45 +302,36 @@ It's work looking at the markup for the entire description.  We can get a better
                         </b> or discuss these issues on the <b>
                         <a href="/wiki/Talk:Actor%E2%80%93observer_asymmetry" 
                             title="Talk:Actor–observer asymmetry">talk page</a>
-                        </b>. 
-                        <small>
+                        </b>.
+                            <small>
                             <i>(
                                 <a href="/wiki/Help:Maintenance_template_removal" 
                                 title="Help:Maintenance template removal">
                                 Learn how and when to remove these template messages</a>)
                             </i>
                         </small>
-                        <div class="mw-collapsible-content" 
-                            style="margin-top: 0.3em;">
-                            <table class="plainlinks metadata ambox ambox-style ambox-More_footnotes" 
-                                role="presentation">
-                                <tbody>
-                                    <tr>
-                                        <td class="mbox-image">
-                                            <div style="width:52px">
-                                                <img alt=""     
-                                                    src="...Text_document_with_red_question_mark" 
-                                                    width="40" height="40" 
-                                                    srcset="...Text_document_with_red_question_mark" 
-                                                    data-file-width="48" 
-                                                    data-file-height="48" />
-                                            </div>
-                                        </td>
-                                    <td class="mbox-text">
-                                        <div class="mbox-text-span">
-                                            This article includes a 
-                                            <a href="/wiki/Wikipedia:Citing_sources" 
-                                                title="Wikipedia:Citing sources">
-                                                list of references</a>, but 
-                                            <b>its sources remain unclear</b> 
-                                            because it has 
-                                            <b>insufficient 
+                            <div class="mw-collapsible-content" style="margin-top: 0.3em;">
+                                <table class="plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="mbox-image">
+                                                <div style="width:52px">
+                                                    <img alt="" src="...Text_document_with_red_question_mark" width="40" height="40" srcset="...Text_document_with_red_question_mark" data-file-width="48" data-file-height="48" />
+                                                </div>
+                                            </td>
+                                            <td class="mbox-text">
+                                                <div class="mbox-text-span">
+                                                    This article includes a
+                                                    <a href="/wiki/Wikipedia:Citing_sources" title="Wikipedia:Citing sources">
+                                                list of references</a>, but
+                                                    <b>its sources remain unclear</b> because it has
+                                                    <b>insufficient 
                                                 <a href="/wiki/Wikipedia:Citing_sources#Inline_citations" 
                                                     title="Wikipedia:Citing sources">
                                                     inline citations
                                                 </a>
                                             </b>.
-                                            <span class="hide-when-compact"> 
+                                                    <span class="hide-when-compact"> 
                                                 Please help to 
                                                 <a href="/wiki/Wikipedia:WikiProject_Fact_and_Reference_Check" 
                                                     title="Wikipedia:WikiProject Fact and Reference Check">
@@ -360,11 +343,11 @@ It's work looking at the markup for the entire description.  We can get a better
                                                     introducing
                                                 </a> 
                                                 more precise citations.
-                                            </span>  
-                                            <small>
+                                            </span>
+                                                    <small>
                                                 <i>(June 2012)</i>
                                             </small>
-                                            <small class="hide-when-compact">
+                                                    <small class="hide-when-compact">
                                                 <i> (
                                                     <a href="/wiki/Help:Maintenance_template_removal" 
                                                         title="Help:Maintenance template removal">
@@ -372,42 +355,35 @@ It's work looking at the markup for the entire description.  We can get a better
                                                     </a>)
                                                 </i>
                                             </small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="plainlinks metadata ambox ambox-content" 
-                            role="presentation">
-                        <tbody>
-                            <tr>
-                                <td class="mbox-image">
-                                    <div style="width:52px">
-                                        <a href="/wi   ki/File:Crystal_Clear_app_kedit.svg" 
-                                            class="image">
-                                            <img alt="Crystal Clear app kedit.svg"  
-                                                src="...Crystal_Clear_app_kedit.svg.png" 
-                                                width="40" height="40" 
-                                                srcset="...Crystal_Clear_app_kedit.svg.png 2x" 
-                                                data-file-width="128" 
-                                                data-file-height="128" />
-                                        </a>
-                                    </div>
-                                </td>
-                                <td class="mbox-text">
-                                    <div class="mbox-text-span">
-                                        This article may need to be <b>rewritten entirely</b> to comply with Wikipedia's <a href="/wiki/Wikipedia:Manual_of_Style" title="Wikipedia:Manual of Style">quality standards</a>.<span class="hide-when-compact"> <a class="external text" href="//en.wikipedia.org/w/index.php?title=Actor%E2%80%93observer_asymmetry&amp;action=edit">You can help</a>. The <a href="/wiki/Talk:Actor%E2%80%93observer_asymmetry" title="Talk:Actor–observer asymmetry">discussion page</a> may contain suggestions.</span>  
-                                        <small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="plainlinks metadata ambox ambox-content" role="presentation">
+                                    <tbody>
+                                        <tr>
+                                            <td class="mbox-image">
+                                                <div style="width:52px">
+                                                    <a href="/wi   ki/File:Crystal_Clear_app_kedit.svg" class="image">
+                                                        <img alt="Crystal Clear app kedit.svg" src="...Crystal_Clear_app_kedit.svg.png" width="40" height="40" srcset="...Crystal_Clear_app_kedit.svg.png 2x" data-file-width="128" data-file-height="128" />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td class="mbox-text">
+                                                <div class="mbox-text-span">
+                                                    This article may need to be <b>rewritten entirely</b> to comply with Wikipedia's <a href="/wiki/Wikipedia:Manual_of_Style" title="Wikipedia:Manual of Style">quality standards</a>.<span class="hide-when-compact"> <a class="external text" href="//en.wikipedia.org/w/index.php?title=Actor%E2%80%93observer_asymmetry&amp;action=edit">You can help</a>. The <a href="/wiki/Talk:Actor%E2%80%93observer_asymmetry" title="Talk:Actor–observer asymmetry">discussion page</a> may contain suggestions.</span>
+                                                    <small>
                                             <i>(February 2015)</i>
                                         </small>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <small class="hide-when-compact">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <small class="hide-when-compact">
                 <i> (
                     <a href="/wiki/Help:Maintenance_template_removal" 
                         title="Help:Maintenance template removal">
@@ -415,76 +391,46 @@ It's work looking at the markup for the entire description.  We can get a better
                     </a>)
                 </i>
             </small>
-        </div>
-    </td>
-</tr>
-</tbody>
-</table>
-<p>
-    <b>Actor–observer asymmetry</b> 
-    (also <b><a href="#bias">actor–observer bias</a></b>
-    ) explains the errors that one makes when forming attributions about the behavior of others (
-        <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett 1971</a>
-        ). When people judge their own behavior, and they are the actor, they are more likely 
-        to attribute their actions to the particular situation than to a generalization about 
-        their personality. Yet when an observer is explaining the behavior of another person 
-        (the actor), they are more likely to attribute this behavior to the actors' overall 
-        disposition rather than to situational factors. This frequent error shows the bias that 
-        people hold in their evaluations of behavior (
-        <a href="#CITEREFMillerNorman1975">Miller &amp; Norman 1975</a>
-        ). Because people are better acquainted with the situational (external) factors affecting 
-        their own decisions, they are more likely to see their own behavior as affected by the 
-        social situation they are in. However, because the situational effects of anothers' behavior 
-        are less accessible to the observer, observers see the actor's behavior as influenced more 
-        by the actor's overall personality. The actor-observer asymmetry is a component of the 
-        <a href="/wiki/Ultimate_attribution_error" 
-            title="Ultimate attribution error">
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+        <b>Actor–observer asymmetry</b> (also <b><a href="#bias">actor–observer bias</a></b> ) explains the errors that one makes when forming attributions about the behavior of others (
+        <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett 1971</a> ). When people judge their own behavior, and they are the actor, they are more likely to attribute their actions to the particular situation than to a generalization about their personality. Yet when an observer is explaining the behavior of another person (the actor), they are more likely to attribute this behavior to the actors' overall disposition rather than to situational factors. This frequent error shows the bias that people hold in their evaluations of behavior (
+        <a href="#CITEREFMillerNorman1975">Miller &amp; Norman 1975</a> ). Because people are better acquainted with the situational (external) factors affecting their own decisions, they are more likely to see their own behavior as affected by the social situation they are in. However, because the situational effects of anothers' behavior are less accessible to the observer, observers see the actor's behavior as influenced more by the actor's overall personality. The actor-observer asymmetry is a component of the
+        <a href="/wiki/Ultimate_attribution_error" title="Ultimate attribution error">
             ultimate attribution error
-        </a>.
-    Sometimes the Actor–observer asymmetry is defined as the fundamental attribution error 
-    <sup id="cite_ref-1" class="reference">
+        </a>. Sometimes the Actor–observer asymmetry is defined as the fundamental attribution error
+        <sup id="cite_ref-1" class="reference">
     <a href="#cite_note-1">&#91;1&#93;</a>
     </sup> which is when people tend to focus on the internal, personal characteristic or disposition as cause of a behavior rather than the external factors or situational influences.<sup id="cite_ref-2" class="reference"><a href="#cite_note-2">&#91;2&#93;
     </a></sup> The actor-observer asymmetry tends to happen in event where people express behavioral emotion, such a first meeting, a blind date, a shopping at a supermarket etc... (Jones &amp; Nisbett, 1972). From a study by Jhonson and Sheldon (1993) when asking people which object they have noticed when talking with another person, their common answers were based on their own thought and the other person appearance <sup id="cite_ref-3" class="reference"><a href="#cite_note-3">&#91;3&#93;
     </a>
     </sup>
-</p>
-<p>This term falls under "<a href="/wiki/Attribution_(psychology)" 
-title="Attribution (psychology)">attribution
-</a>" or "<a href="/wiki/Attribution_theory" class="mw-redirect" 
-title="Attribution theory">attribution theory
-</a>". The specific hypothesis of an actor-observer asymmetry in 
-attribution (explanations of behavior) was originally proposed by 
-<a href="/wiki/Edward_E._Jones" title="Edward E. Jones">Jones
+    </p>
+    <p>This term falls under "<a href="/wiki/Attribution_(psychology)" title="Attribution (psychology)">attribution
+</a>" or "<a href="/wiki/Attribution_theory" class="mw-redirect" title="Attribution theory">attribution theory
+</a>". The specific hypothesis of an actor-observer asymmetry in attribution (explanations of behavior) was originally proposed by
+        <a href="/wiki/Edward_E._Jones" title="Edward E. Jones">Jones
 </a> and <a href="/wiki/Richard_E._Nisbett" title="Richard E. Nisbett">
 Nisbett
-</a> (1971), when they claimed that "actors tend to attribute the causes 
-of their behavior to stimuli inherent in the situation, while observers 
-tend to attribute behavior to stable dispositions of the actor” (
-    <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett 1971
+</a> (1971), when they claimed that "actors tend to attribute the causes of their behavior to stimuli inherent in the situation, while observers tend to attribute behavior to stable dispositions of the actor” (
+        <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett 1971
 phenomenon of <a href="/wiki/Social_cognition" 
 title="Social cognition">social cognition</a>.
-</p><p>However, a <a href="/wiki/Meta-analysis" 
-title="Meta-analysis">meta-analysis
-</a> of all the published tests of the hypothesis between 1971 and 2004 
-(<a href="#CITEREFMalle2006">Malle 2006
-</a>) yielded a contradictory finding: there was no actor-observer asymmetry 
-of the sort <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett (1971)
+    </p>
+    <p>However, a <a href="/wiki/Meta-analysis" title="Meta-analysis">meta-analysis
+</a> of all the published tests of the hypothesis between 1971 and 2004 (
+        <a href="#CITEREFMalle2006">Malle 2006
+</a>) yielded a contradictory finding: there was no actor-observer asymmetry of the sort <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett (1971)
 </a> had proposed. <a href="#CITEREFMalle2006">Malle (2006)
-</a> interpreted this result not so much as proof that actors and observers 
-explained behavior exactly the same way but as evidence that the original 
-hypothesis was fundamentally flawed in the way it framed people's explanations 
-of behavior—namely, as attributions to either stable dispositions or to the 
-situation. Against the background of a different theory of explanation, 
-<a href="#CITEREFMalle_et_al.2007">Malle et al. (2007)
-</a> tested an alternative 
-set of three actor-observer asymmetries and found consistent support for 
-all of them. Thus, the actor-observer asymmetry does not exist in one theoretical 
-formulation (traditional attribution theory) but does exist in the new 
-alternative theoretical formulation. <a href="#CITEREFMalle2011">Malle (2011)
-</a> argues that this favors the alternative theoretical formulation, but 
-current textbooks have not yet fully addressed this theoretical challenge.
-<sup class="noprint Inline-Template" style="white-space:nowrap;">&#91;
+</a> interpreted this result not so much as proof that actors and observers explained behavior exactly the same way but as evidence that the original hypothesis was fundamentally flawed in the way it framed people's explanations of behavior—namely, as attributions to either stable dispositions or to the situation. Against the background of a different theory of explanation,
+        <a href="#CITEREFMalle_et_al.2007">Malle et al. (2007)
+</a> tested an alternative set of three actor-observer asymmetries and found consistent support for all of them. Thus, the actor-observer asymmetry does not exist in one theoretical formulation (traditional attribution theory) but does exist in the new alternative theoretical formulation. <a href="#CITEREFMalle2011">Malle (2011)
+</a> argues that this favors the alternative theoretical formulation, but current textbooks have not yet fully addressed this theoretical challenge.
+        <sup class="noprint Inline-Template" style="white-space:nowrap;">&#91;
 <i><a href="/wiki/Wikipedia:Manual_of_Style/Dates_and_numbers#Chronological_items" 
 title="Wikipedia:Manual of Style/Dates and numbers"><span title="The time
  period mentioned near this tag is ambiguous. (June 2016)">when?
@@ -493,47 +439,47 @@ title="Wikipedia:Manual of Style/Dates and numbers"><span title="The time
  </i>
  &#93;
  </sup>
-</p><p>
-Considerations of actor-observer differences can be found in other disciplines as well, such as philosophy (e.g. 
-<a href="/wiki/Privileged_access" title="Privileged access">privileged access
+    </p>
+    <p>
+        Considerations of actor-observer differences can be found in other disciplines as well, such as philosophy (e.g.
+        <a href="/wiki/Privileged_access" title="Privileged access">privileged access
 </a>, <a href="/wiki/Incorrigibility" title="Incorrigibility">incorrigibility
-</a>), management studies, artificial intelligence, semiotics, anthropology, 
-and political science.<sup id="cite_ref-4" class="reference">
-<a href="#cite_note-4">&#91;4&#93;
-</a>
+</a>), management studies, artificial intelligence, semiotics, anthropology, and political science.<sup id="cite_ref-4" class="reference">
+<a href="#cite_note-4">&#91;4&#93;</a>
 </sup>
-</p>
-<div class="mw-references-wrap">
-<ol class="references">
-<li id="cite_note-1"><span class="mw-cite-backlink">
-<b><a href="#cite_ref-1">^</a></b></span> 
-<span class="reference-text">"Fundamental Attribution Error." 
-The Concise Corsini Encyclopedia of Psychology and Behavioral Science, 
-edited by W. Edward Craighead, and Charles B. Nemeroff, Wiley, 3rd edition, 2004.
-</span>
-</li>
-<li id="cite_note-2"><span class="mw-cite-backlink"><b><a href="#cite_ref-2">^
-</a>
-</b>
-</span> 
-<span class="reference-text">McCornack Steven and Joseph Ortiz. Choices and 
+    </p>
+    <div class="mw-references-wrap">
+        <ol class="references">
+            <li id="cite_note-1"><span class="mw-cite-backlink">
+                <b><a href="#cite_ref-1">^</a></b></span>
+                                <span class="reference-text">"Fundamental Attribution Error." 
+                The Concise Corsini Encyclopedia of Psychology and Behavioral Science, 
+                edited by W. Edward Craighead, and Charles B. Nemeroff, Wiley, 3rd edition, 2004.
+                </span>
+                            </li>
+                            <li id="cite_note-2"><span class="mw-cite-backlink"><b><a href="#cite_ref-2">^
+                </a>
+                </b>
+                </span>
+                <span class="reference-text">McCornack Steven and Joseph Ortiz. Choices and 
 connections 2nd edition, Bedford, 2016</span>
-</li>
-<li id="cite_note-3"><span class="mw-cite-backlink"><b><a href="#cite_ref-3">^
-</a>
-</b>
-</span> 
-<span class="reference-text">Forgas, Joseph P, and Kipling D. Williams. 
-The Social Self: Cognitive, Interpersonal and Inter-group Perspectives. 
-Hoboken: Taylor and Francis, 2014. Internet resource.</span>
-</li>
-<li id="cite_note-4"><span class="mw-cite-backlink"><b><a href="#cite_ref-4">^
-</a>
-</b>
-</span> <span class="reference-text">See <a href="#CITEREFMalle_et_al.2007">
-Malle et al. 2007</a> for relevant references.</span>
-</li>
-</ol></div>
+            </li>
+            <li id="cite_note-3"><span class="mw-cite-backlink"><b><a href="#cite_ref-3">^
+                </a>
+                </b>
+                </span>
+                                <span class="reference-text">Forgas, Joseph P, and Kipling D. Williams. 
+                The Social Self: Cognitive, Interpersonal and Inter-group Perspectives. 
+                Hoboken: Taylor and Francis, 2014. Internet resource.</span>
+                            </li>
+                            <li id="cite_note-4"><span class="mw-cite-backlink"><b><a href="#cite_ref-4">^
+                </a>
+                </b>
+                </span> <span class="reference-text">See <a href="#CITEREFMalle_et_al.2007">
+                Malle et al. 2007</a> for relevant references.</span>
+            </li>
+        </ol>
+    </div>
 </div>
 ```
 
