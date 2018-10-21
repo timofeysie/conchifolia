@@ -26,6 +26,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 1. [Setup and Workflow](#setup-and-sorkflow)
 1. [Planned features](#planned-features)
+1. [The Experimenter's bias redirect](#the-Experimenters-bias-redirect)
 1. [Parsing WikiData subject pages](#parsing-WikiData-subject-pages)
 1. [Re-factoring the NodeJS app](#re-factoring-the-nodeJS-app)
 1. [Automatic detail re-directs](#Automatic-detail-re-directs)
@@ -47,6 +48,8 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 1. [Documentation](#documentation)
 
 #
+
+
 
 ## Setup and Workflow
 
@@ -72,6 +75,36 @@ Planned features include:
 1. done: allow user to clear the local storage
 1. Track how many times item desc and details have been used.  
 1. Export xAPI actions
+1. Add options for the list colors
+
+
+
+## The Experimenter's bias redirect
+
+Currently you will get this if you choose *Experimenter's*:
+```
+[object Object]
+Redirect to data uri value
+```
+
+Not a great look.
+Experimenter's -> Experimenter's bias
+
+That is the backup title.  The WikiData page
+```
+item:
+    type: "uri"
+    value: "http://www.wikidata.org/entity/Q2556417"
+itemLabel:
+    type: "literal"
+    value: "observer-expectancy effect"
+    xml:lang: "en"
+```
+
+To get to the detail page for this item, we first check if the item.value is a url with a q-code at the bottom.  If so, then use the itemLabel in a WikiMedia request that will return the description.  It takes a bit to do this as we want to be as open as possible for other lists that might not contain the same types of data.
+
+Anyhow, this method works, but we get a large *Part of a series on
+Psychology* preamble, so the next task is to get rid of that.  I think we did that in Loranthifolia, which also needs our backup title functionality, so its back there for a bit.
 
 
 
@@ -687,7 +720,7 @@ Moral credential effect -> Moral credential
 Zero-sum bias -> Zero-sum thinking
 ```
 
-So, yeah, -1 is not on, and actor-observer bias is missing.  Testing Courtesy bias shows it still re-directs (on the client side) to the Shy Tory Factor.  Along with this list and the proper value for form function, these are the missing title from our old list when the feature was being developed:
+So, yeah, -1 is not on, and actor-observer bias is missing.  Testing Courtesy bias shows it still re-directs (on the client side) to the Shy Tory Factor.  Along with this list and the proper value for form function, these are the missing titles from our old list when the feature was being developed:
 ```
 Form function attribution bias -> Form function attribution bias (page does not exist)
 Framing effect -> Framing effect (psychology)

@@ -67,6 +67,79 @@ export class DetailPage implements OnInit {
     );
   }
 
+  /**
+   * If the backup title is used to fetch a re-direct detail  with the
+   * backendApiService.getData() function and the result is something like this:
+   * item:
+   *  type: "uri"
+   * value: "http://www.wikidata.org/entity/Q2556417"
+   * itemLabel:
+   *   type: "literal"
+   * value: "observer-expectancy effect"
+   * xml:lang: "en"
+   *
+   * Then we want to grab that itemLabel.value and use THAT as the re-direct.
+   *  
+   * @param data 
+   */
+  checkForItemCodeAsValue(data) {
+    if (typeof data.value !== 'undefined') {
+      const possibleQCode = this.findQCodeFromUrl(data.value);
+      if (possibleQCode === null) {
+        return null;
+      } else {
+        // we have a q-code
+        return possibleQCode;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Extract a Q-code from a URI like this:
+   * value: "http://www.wikidata.org/entity/Q2556417"
+   * @param value 
+   */
+  findQCodeFromUrl(uri: string) {
+    const lastSlash = uri.lastIndexOf('/');
+    const possibleQCode = uri.substr(lastSlash+1, uri.length);
+    console.log('8.1. possible',possibleQCode);
+    if (lastSlash !== -1) {
+      let first = possibleQCode.substr(0,1);
+      let second = parseInt(possibleQCode.substr(1,2));
+      if (first === 'Q' && !isNaN(second) || typeof possibleQCode === 'undefined') {
+          // we have a QCode
+          console.log('8.2. Q-code confirmed');
+          return possibleQCode;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Get the item label value and use that as a redirect
+   * @param data 
+   */
+  itemCodeValueRedirect(data) {
+    if (typeof data.itemLabel !== 'undefined') {
+      const itemValue = data.itemLabel.value;
+      console.log('8.3. itemValue to use as re-direct',itemValue);
+        this.showSpinner = false;
+        const listLanguage = this.route.snapshot.paramMap.get('listLanguage');
+        this.backendApiService.getDetail(itemValue,listLanguage, false).subscribe(
+          data => {
+            this.description = data['description'];
+            this.showSpinner = false;
+          })
+    } else {
+      console.log('8.4. data',data);
+    }
+  }
+
   availableLanguages(qCode: string, listLanguage: string, label: string) {
     console.log('9. qCode',qCode);
     if (qCode === null) {
@@ -77,15 +150,15 @@ export class DetailPage implements OnInit {
       }
       console.log('11. availableLanguages searchString',searchString);
       this.backendApiService.getData(searchString,listLanguage).subscribe(data => {
-        console.log('12.qCode data',data);
+        console.log('12. qCode data',data);
         // re-set the qCode from the data here 
       },  
       error => {
         this.showSpinner = false;
-        console.error('13.qCode error',error);
+        console.error('13. qCode error',error);
       })
     } else {
-      console.log('14.qCode is  not null',qCode);
+      console.log('14. qCode is  not null',qCode);
     }
     // now we should have a q-code we can use to get the WikiData page
   }
@@ -96,11 +169,22 @@ export class DetailPage implements OnInit {
     }
     this.backendApiService.getData(backupTitle, listLanguage).subscribe(
       data => {
-        console.log('13.data',data);
-        this.showSpinner = false;
-        this.description = data;
+        console.log('15. data',data);
+        
+        //this.showSpinner = false;
+        
+        if (typeof data['results']['bindings'] !== 'undefined') {
+          const bindings = data['results']['bindings'];
+          const possibleItem = bindings[0];
+          console.log('15.1. possibleItem',possibleItem);
+          if (this.checkForItemCodeAsValue(possibleItem.item) !== null) {
+            this.itemCodeValueRedirect(data['results']['bindings'][0]); 
+          } else {
+            this.description = data['results']['bindings'][0];
+          }
+        }
       }, error => {
-        console.log('14.error',error);
+        console.log('16. error',error);
         //this.message = 'Redirect failed';
         this.showSpinner = false;
       }
@@ -120,10 +204,10 @@ export class DetailPage implements OnInit {
         this.description = this.description.split('href="/wiki/')
           .join('href="https://en.wikipedia.org/wiki/');
         this.showSpinner = false;
-        console.log('15. data description')
+        console.log('17. data description')
       },
       error => {
-        console.error('16. redirect error',error);
+        console.error('18. redirect error',error);
         this.showSpinner = false;
         this.message = error.status+' '+backupTitle+' redirect error '+error.statusText;
       }

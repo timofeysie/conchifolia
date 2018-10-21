@@ -234,8 +234,9 @@ express()
                   res.status(500).json('4. redirect without href');
               }
             } else {
-              // this happens for automation_bias
-              console.log('5. When will this happen?');
+              // this happens for automation_bias & the
+              // page=observer-expectancy_effect WikiData item value re-direct
+              console.log('5. WikiData item value re-direct?');
               res.status(200).json(desc);
             }
           } catch (err) {
