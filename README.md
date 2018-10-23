@@ -106,6 +106,65 @@ To get to the detail page for this item, we first check if the item.value is a u
 Anyhow, this method works, but we get a large *Part of a series on
 Psychology* preamble, so the next task is to get rid of that.  I think we did that in Loranthifolia, which also needs our backup title functionality, so its back there for a bit.
 
+Even after this however, we have the *Form function attribution bias* re-direct failing.  Here is the output from the console while using the deployed Heroku app:
+```
+label /api/data/query/Form function attribution bias
+/en
+zone.js:2969 GET https://radiant-springs-38893.herokuapp.com/api/data/query/Form%20function%20attribution%20bias%0A/en 503 (Service Unavailable)
+scheduleTask @ zone.js:2969
+push../node_modules/zone.js/dist/zone.js.ZoneDelegate.scheduleTask @ zone.js:407
+onScheduleTask @ zone.js:297
+push../node_modules/zone.js/dist/zone.js.ZoneDelegate.scheduleTask @ zone.js:401
+...
+(anonymous) @ pages-detail-detail-module.js:1
+detail.page.ts:187 16. error HttpErrorResponse {headers: HttpHeaders, status: 503, statusText: "Service Unavailable", url: "https://radiant-springs-38893.herokuapp.com/api/da…/query/Form%20function%20attribution%20bias%0A/en", ok: false, …}
+```
+
+Running ```heroku logs``` shows this output:
+```
+
+2018-10-22T19:49:32.042566+00:00 app[web.1]: req.params.lang en
+2018-10-22T19:49:32.044788+00:00 app[web.1]: wikiDataUrl https://query.wikidata.org/sparql?format=json&query=%0A%20%20%20%20%20%20%20%20SELECT%20%3Fitem%20%3FitemLabel%0A%20%20%20%20%20%20%20%20WHERE%20%7B%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Fitem%20%3Flabel%20%22Form%20function%20attribution%20bias%0A%22%40en.%20%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Farticle%20schema%3Aabout%20%3Fitem%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Farticle%20schema%3AinLanguage%20%22en%22%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Farticle%20schema%3AisPartOf%20%3Chttps%3A%2F%2Fen.wikipedia.org%2F%3E.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%20%20%20%20%20%20%20%20%7D%20
+2018-10-22T19:49:32.296101+00:00 app[web.1]: Request Failed.
+2018-10-22T19:49:32.296113+00:00 app[web.1]: Status Code: 400
+2018-10-22T19:50:02.032555+00:00 heroku[router]: at=error code=H12 desc="Request timeout" method=GET path="/api/data/query/Form%20function%20attribution%20bias%0A/en" host=radiant-springs-38893.herokuapp.com request_id=ddc60b15-a2f1-4023-8680-2e92197b0ead fwd="49.195.74.170" dyno=web.1 connect=0ms service=30001ms status=503 bytes=0 protocol=https
+```
+
+Putting the SPARQL URI into the browser shows this response:
+```
+SPARQL-QUERY: queryStr=
+        SELECT ?item ?itemLabel
+        WHERE {  
+            ?item ?label "Form function attribution bias
+"@en.  
+            ?article schema:about ?item .
+            ?article schema:inLanguage "en" .
+            ?article schema:isPartOf <https://en.wikipedia.org/>. 
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        } 
+java.util.concurrent.ExecutionException: org.openrdf.query.MalformedQueryException: Lexical error at line 4, column 57.  Encountered: "\n" (10), after : "\"Form function attribution bias"
+	at java.util.concurrent.FutureTask.report(FutureTask.java:122)
+```
+
+It does look like a new line after the title there.  After getting rid of that, we have no detail page.  The problem is now not a problem.  There is no detail page for items like *Form function attribution bias*, *Frequency illusion* and *Regressive bias*.  We just have to set the message to this possibility (at least until other lists are tried and this is confirmed behavior).
+
+Actually, we should be able to indicate on the list which items have no detail page by their WikiMedia listing, right?  Add that to the list of issues to do, and triage it with the rest!
+
+Well, we thought we were done here, but this error shows up on the server and kills it:
+```
+singlePageUrl http://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=form_function_attribution_bias_
+error-7: getaddrinfo ENOTFOUND en.wikipedia.org en.wikipedia.org:443
+express deprecated res.send(status, body): Use res.status(status).send(body) instead index.js:259:30
+_http_server.js:201
+    throw new errors.RangeError('ERR_HTTP_INVALID_STATUS_CODE',
+    ^
+
+RangeError [ERR_HTTP_INVALID_STATUS_CODE]: Invalid status code: server error
+    at ServerResponse.writeHead (_http_server.js:201:11)
+    at ServerResponse._implicitHeader (_http_server.js:192:8)
+```
+
+Restarting the server shows that our no page exists method works, so not sure what happened there.  If this shows up again we can deal with it then when we have a little more to go on.
 
 
 ## Parsing WikiData subject pages

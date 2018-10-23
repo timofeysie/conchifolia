@@ -139,7 +139,7 @@ var DetailPage = /** @class */ (function () {
                 _this.showSpinner = false;
                 console.log('5. error msg', error['error']);
                 if (error['error'] === 'Redirect to data uri value') {
-                    _this.message = error['error'];
+                    _this.message = 'Possibly no page exists for this item.';
                     console.log('6. Redirect to data uri value');
                     _this.getWikiDataUriValue(listLanguage, backupTitle);
                 }
@@ -265,12 +265,18 @@ var DetailPage = /** @class */ (function () {
             if (typeof data['results']['bindings'] !== 'undefined') {
                 var bindings = data['results']['bindings'];
                 var possibleItem = bindings[0];
-                console.log('15.1. possibleItem', possibleItem);
-                if (_this.checkForItemCodeAsValue(possibleItem.item) !== null) {
-                    _this.itemCodeValueRedirect(data['results']['bindings'][0]);
+                if (possibleItem && typeof possibleItem !== 'undefined') {
+                    console.log('15.1. possibleItem', possibleItem);
+                    if (_this.checkForItemCodeAsValue(possibleItem.item) !== null) {
+                        _this.itemCodeValueRedirect(data['results']['bindings'][0]);
+                    }
+                    else {
+                        _this.description = data['results']['bindings'][0];
+                    }
                 }
                 else {
-                    _this.description = data['results']['bindings'][0];
+                    console.log('Form function attribution bias, what do we have now?', bindings);
+                    _this.message = 'No detail page exists for this item.';
                 }
             }
         }, function (error) {

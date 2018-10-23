@@ -19,8 +19,10 @@ export class BackendApiService {
 
   // /api/data/uri(with *s instead of /s)
   getData(label: string, lang: string) {
-    console.log('label',this.backendDataQuery+'/'+label+'/'+lang);
-    return this.httpClient.get(encodeURI(this.backendDataQuery+'/'+label+'/'+lang))
+    const newLines = /\r?\n|\r/g
+    const newLabel = label.replace(newLines,'');
+    console.log('label',this.backendDataQuery+'/'+newLabel+'/'+lang);
+    return this.httpClient.get(encodeURI(this.backendDataQuery+'/'+newLabel+'/'+lang))
     .pipe((data) => {
       return data;
     });

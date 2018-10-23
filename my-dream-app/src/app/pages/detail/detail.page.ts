@@ -49,7 +49,7 @@ export class DetailPage implements OnInit {
           this.showSpinner = false;
           console.log('5. error msg',error['error']);
           if (error['error'] === 'Redirect to data uri value') {
-            this.message = error['error'];
+            this.message = 'Possibly no page exists for this item.';
             console.log('6. Redirect to data uri value');
             this.getWikiDataUriValue(listLanguage, backupTitle);
           }
@@ -176,11 +176,16 @@ export class DetailPage implements OnInit {
         if (typeof data['results']['bindings'] !== 'undefined') {
           const bindings = data['results']['bindings'];
           const possibleItem = bindings[0];
-          console.log('15.1. possibleItem',possibleItem);
-          if (this.checkForItemCodeAsValue(possibleItem.item) !== null) {
-            this.itemCodeValueRedirect(data['results']['bindings'][0]); 
+          if (possibleItem && typeof possibleItem !== 'undefined') {
+            console.log('15.1. possibleItem',possibleItem);
+            if (this.checkForItemCodeAsValue(possibleItem.item) !== null) {
+              this.itemCodeValueRedirect(data['results']['bindings'][0]); 
+            } else {
+              this.description = data['results']['bindings'][0];
+            }
           } else {
-            this.description = data['results']['bindings'][0];
+            console.log('Form function attribution bias is empty',bindings);
+            this.message = 'No detail page exists for this item.';
           }
         }
       }, error => {

@@ -1004,8 +1004,10 @@ var BackendApiService = /** @class */ (function () {
     }
     // /api/data/uri(with *s instead of /s)
     BackendApiService.prototype.getData = function (label, lang) {
-        console.log('label', this.backendDataQuery + '/' + label + '/' + lang);
-        return this.httpClient.get(encodeURI(this.backendDataQuery + '/' + label + '/' + lang))
+        var newLines = /\r?\n|\r/g;
+        var newLabel = label.replace(newLines, '');
+        console.log('label', this.backendDataQuery + '/' + newLabel + '/' + lang);
+        return this.httpClient.get(encodeURI(this.backendDataQuery + '/' + newLabel + '/' + lang))
             .pipe(function (data) {
             return data;
         });
