@@ -1019,15 +1019,62 @@ A long time later, we are back here again.  We left the available langauges feat
 
 But now, after fixing a broken re-direct for 노출 효과, we are getting the missing title error again.  It causes the server to crash and restart.
 
-This is the server response for the second item on the list, 과잉정당화 효과:
+This is the server response on the Loranthifolia client for the second item on the list, 과잉정당화 효과 is:
 ```
 message: "Http failure response for https://radiant-springs-38893.herokuapp.com/api/detail/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/ko/false: 500 Internal Server Error"
 name: "HttpErrorResponse"
 ok: false
 ```
 
-However, this works locally.  Maybe we just didn't push the latest to Heroku?
+However, this works locally.  Maybe we just didn't push the latest to Heroku?  Well, no after pushing the code to Heroku, the client Angular app also reports
 
+과잉정당화 효과 (Overjustification effect)
+
+The one that fails is: 현상유지편향.
+
+Looking at the list locally and on the server, they are different. 
+
+Locally it's:
+```
+ 골렘 효과
+ 과잉정당화 효과
+ 귀인 편견
+```
+
+On the server it's:
+```
+ 호손 효과
+ 현상유지편향
+ 주술적 사고
+```
+
+How does that happen.  Same code isn't it?  Searching for the failing item locally, it's down near the bottom of the list (although the list is not simply revered).  Here is the full server output:
+```
+singlePageUrl http://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5
+singlePageUrl redirect anchor %ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
+singlePageUrl newUrl https://en.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ed%98%84%ec%83%81_%ec%9c%a0%ec%a7%80_%ed%8e%b8%ed%96%a5
+2.errData, trying detailsSimpleRedirect missingtitle
+details simple redirect Url https://undefined.wikipedia.org/wiki/%25ED%2598%2584%25EC%2583%2581_%25EC%259C%25A0%25EC%25A7%2580_%25ED%258E%25B8%25ED%2596%25A5
+errors-3: missingtitle
+events.js:165
+      throw er; // Unhandled 'error' event
+      ^
+Error: getaddrinfo ENOTFOUND undefined.wikipedia.org undefined.wikipedia.org:443
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:67:26)
+Emitted 'error' event at:
+    at TLSSocket.socketErrorListener (_http_client.js:395:9)
+    at TLSSocket.emit (events.js:180:13)
+    at emitErrorNT (internal/streams/destroy.js:64:8)
+```
+
+Sometimes in all the mess of console outputs, it's hard to see the problem right away.  Can you see the undefined there?  ```https://undefined.wikipedia.org```.  That's right where the language should be.  Loranthifolia and Conchifolia are two separate code bases, why would they have the same problem?  Well, no, it must be on the server.  We can see above the ko in the first url changes to an en in the second, and then to undefined.
+
+Doing this shows it is some Korean content:
+```
+https://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
+```
+
+We weren't passing the lang and leave case alone args into the details.redirect function.  Duh!
 
 ## Automatic detail re-directs
 

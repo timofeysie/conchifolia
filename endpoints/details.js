@@ -2,6 +2,7 @@ const https = require('https');
 const curator = require('art-curator');
 const detailsSimpleRedirect = require('./details-simple-redirect');
 exports.redirect = (label, lang, leaveCaseAlone) => {
+    console.log('problem lang',lang)
     return new Promise((resolve, reject) => { 
         let singlePageUrl = curator.createSingleWikiMediaPageUrl(label, lang, leaveCaseAlone);
         let newUrl = singlePageUrl.replace('http','https');

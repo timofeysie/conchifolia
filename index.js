@@ -223,7 +223,7 @@ express()
                 const anchorToEnd = preamblesRemoved.substring(anchorIndex+'<a href="/wiki/'.length, preamblesRemoved.length);
                 const anchor = anchorToEnd.substring(0, anchorToEnd.indexOf('"'));
                 console.log('singlePageUrl redirect anchor',anchor);
-                details.redirect(anchor).then((rug) => {
+                details.redirect(anchor, lang, leaveCaseAlone).then((rug) => {
                   res.status(200).json(rug);
                 }).catch((errors) => {
                   console.log('errors-3:',errors);
