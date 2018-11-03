@@ -1011,9 +1011,22 @@ data redirectUri https://www.wikidata.org/wiki/Special:EntityData/Q431498
 
 At this point, I'm not sure why we're not getting to where we want to.  Maybe it's time to try the data service on a page that is not failing the redirect, for example to get a list of available languages.
 
-This section has been about re-factoring the JodeJS server app.  Now we have two separate files with functions used by their respective API endpoints.  So we haven't take it so far yet, and honestly, the app is still finding its way, so a good start is all we can expect without doing things that will eventually not be needed.
+This section has been about re-factoring the NodeJS server app.  Now we have two separate files with functions used by their respective API endpoints.  So we haven't take it so far yet, and honestly, the app is still finding its way, so a good start is all we can expect without doing things that will eventually not be needed.
 
 The more pressing problem is using the WikiData subject page to get language and potential backup links.
+
+A long time later, we are back here again.  We left the available langauges feature for after the first release since it's not really part of the MVP which is only a list and detail pages in English and Korean.
+
+But now, after fixing a broken re-direct for 노출 효과, we are getting the missing title error again.  It causes the server to crash and restart.
+
+This is the server response for the second item on the list, 과잉정당화 효과:
+```
+message: "Http failure response for https://radiant-springs-38893.herokuapp.com/api/detail/%ED%98%84%EC%83%81%EC%9C%A0%EC%A7%80%ED%8E%B8%ED%96%A5/ko/false: 500 Internal Server Error"
+name: "HttpErrorResponse"
+ok: false
+```
+
+However, this works locally.  Maybe we just didn't push the latest to Heroku?
 
 
 ## Automatic detail re-directs
