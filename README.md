@@ -1074,7 +1074,12 @@ Doing this shows it is some Korean content:
 https://ko.wikipedia.org/w/api.php?action=parse&section=0&prop=text&format=json&page=%ED%98%84%EC%83%81_%EC%9C%A0%EC%A7%80_%ED%8E%B8%ED%96%A5
 ```
 
-We weren't passing the lang and leave case alone args into the details.redirect function.  Duh!
+We weren't passing the lang and leave case alone args into the details.redirect function.  Duh!  But even after making that change and pushing the result to Heroku, now ALL the detail pages in the Loranthifolia client app are showing "300 multiple choices failed" errors.
+
+Maybe there was some network issues or caching of old code?  Anyhow, now all the Korean redirects seem to be working.  Loranthifolia might finally be ready for it's first release.
+
+
+
 
 ## Automatic detail re-directs
 
