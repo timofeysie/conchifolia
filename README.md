@@ -60,23 +60,20 @@ Start the server with ```npm start```.  Build the Angular project served in the 
 
 Planned features include:
 
-1. settings page
-1. done: language change option
-1. bookmark the last viewed item
-1. let the user build a short description
-1. swipe right to see short description
-1. swipe up/down on the short description to send the item to the top/bottom of the list
-1. swipe right to remove it from the list
-1. metrics for the list (number of removed items out of total items)
-1. detail page metrics (number of preambles, expand/contract preambles, footnotes)
-1. create a new category
-1. component style library shared by all the app
-1. capture link title and create an 'also known as' section from other sources.
-1. done: allow user to clear the local storage
-1. Track how many times item desc and details have been used.  
-1. Export xAPI actions
-1. Add options for the list colors
-
+1. Language change for app labels
+1. Bookmark the last viewed item
+1. Let the user build a short description
+1. Swipe up/down on the short description to send the item to the top/bottom of the list
+1. Swipe right to remove it from the list
+1. Metrics for the list (number of removed items out of total items, descriptions viewed, etc)
+1. Detail page metrics (number of preambles, expand/contract preambles, footnotes)
+1. Create a new category (list of fallacies)
+1. Component style library shared by all the apps
+1. Capture link title and create an 'also known as' section from other sources.
+1. Export xAPI actions.
+1. Add options for the list colors.
+1. Compare lists when refreshed and alert user of deletions/additions.
+1. Free version bundled with a static list and detail content.
 
 
 ## The Experimenter's bias redirect
