@@ -25,7 +25,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 ## Table of Contents
 
 1. [Setup and Workflow](#setup-and-sorkflow)
-1. [Planned features](#planned-features)
+1. [Node best practices](#node-best-practices)
 1. [The Experimenter's bias redirect](#the-Experimenters-bias-redirect)
 1. [Parsing WikiData subject pages](#parsing-WikiData-subject-pages)
 1. [Re-factoring the NodeJS app](#re-factoring-the-nodeJS-app)
@@ -56,24 +56,118 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
 
-## Planned features
+## Node best practices
 
-Planned features include:
+In an effort to better define the code in the server app, we're going to be applying the Node best practices described [here](https://github.com/i0natan/nodebestpractices).  Below are some notes to get started with.
 
-1. Language change for app labels
-1. Bookmark the last viewed item
-1. Let the user build a short description
-1. Swipe up/down on the short description to send the item to the top/bottom of the list
-1. Swipe right to remove it from the list
-1. Metrics for the list (number of removed items out of total items, descriptions viewed, etc)
-1. Detail page metrics (number of preambles, expand/contract preambles, footnotes)
-1. Create a new category (list of fallacies)
-1. Component style library shared by all the apps
-1. Capture link title and create an 'also known as' section from other sources.
-1. Export xAPI actions.
-1. Add options for the list colors.
-1. Compare lists when refreshed and alert user of deletions/additions.
-1. Free version bundled with a static list and detail content.
+### Code structure
+
+Put modules/libraries in a folder, place an index.js file that exposes the module's internals so every consumer will pass through it. This serves as an 'interface' and eases future changes without breaking the contract.
+
+Instead of this:
+```
+module.exports.SMSProvider = require('./SMSProvider/SMSProvider.js');
+module.exports.SMSNumberResolver = require('./SMSNumberResolver/SMSNumberResolver.js');
+```
+
+Do this:
+```
+module.exports.SMSProvider = require('./SMSProvider');
+module.exports.SMSNumberResolver = require('./SMSNumberResolver');
+```
+
+Component folder example
+```
+index
+model
+modelAPI
+modelController
+modelDAL
+modelError
+modelService
+modelTesting
+```
+
+Separate the Express definition to at least two files: 
+1. the API declaration (app.js) 
+2. the networking concerns (WWW). 
+
+Locate API declarations within components.
+
+keys can be read from file and from environment variable.
+secrets are kept outside committed code
+config is hierarchical for easier findability. 
+(example packages: rc, nconf and config)
+
+
+
+### Async error handling
+Async-await instead enables a much more compact code syntax like try-catch.
+
+```
+var userDetails;
+function initialize() {
+    // Setting URL and headers for request
+    var options = {
+        url: 'https://api.github.com/users/narenaryan',
+        headers: {
+            'User-Agent': 'request'
+        }
+    };
+    // Return new promise 
+    return new Promise(function(resolve, reject) {
+     // Do async job
+        request.get(options, function(err, resp, body) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(JSON.parse(body));
+            }
+        })
+    })
+}
+```
+[[source](https://medium.com/@tkssharma/writing-neat-asynchronous-node-js-code-with-promises-async-await-fa8d8b0bcd7c)]
+
+
+### Use async/await and promises
+
+Add some helper functions
+```
+throwError = (code, errorType, errorMessage) => error => {
+  if (!error) error = new Error(errorMessage || 'Default Error')
+  error.code = code
+  error.errorType = errorType
+  throw error
+}
+throwIf = (fn, code, errorType, errorMessage) => result => {
+  if (fn(result)) {
+    return throwError(code, errorType, errorMessage)()
+  }
+  return result
+}
+sendSuccess = (res, message) => data => {
+  res.status(200).json({type: 'success', message, data})
+}
+sendError = (res, status, message) => error => {
+  res.status(status || error.status).json({
+    type: 'error', 
+    message: message || error.message, 
+    error
+  })
+}
+// handle both Not Found and Error cases in one command
+const user = await User
+  .findOne({where: {login: req.body.login}})
+  .then(
+    throwIf(r => !r, 400, 'not found', 'User Not Found'),
+    throwError(500, 'sequelize error')
+  )
+//<-- After that we can use `user` variable, it's not empty
+```
+[[source](https://codeburst.io/node-express-async-code-and-error-handling-121b1f0e44ba)]
+```
+
 
 
 ## The Experimenter's bias redirect
