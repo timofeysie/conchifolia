@@ -275,7 +275,7 @@ var DetailPage = /** @class */ (function () {
                     }
                 }
                 else {
-                    console.log('Form function attribution bias, what do we have now?', bindings);
+                    console.log('Form function attribution bias is empty', bindings);
                     _this.message = 'No detail page exists for this item.';
                 }
             }

@@ -24,7 +24,7 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 ## Table of Contents
 
-1. [Setup and Workflow](#setup-and-sorkflow)
+1. [Setup and Workflow](#setup-and-workflow)
 1. [Node best practices](#node-best-practices)
 1. [The Experimenter's bias redirect](#the-Experimenters-bias-redirect)
 1. [Parsing WikiData subject pages](#parsing-WikiData-subject-pages)
@@ -55,6 +55,15 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
+## Bootstrap
+
+
+```
+npm i bootstrap jquery popper (forgot the -save!)
+└── UNMET PEER DEPENDENCY popper.js@^1.14.6
+npm WARN bootstrap@4.2.1 requires a peer of popper.js@^1.14.6 but none was installed.
+$ npm install popper.js --save
+```
 
 ## Node best practices
 
