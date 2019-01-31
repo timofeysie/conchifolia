@@ -1,4 +1,4 @@
-<div class="header">
+<nav class="header navbar navbar-expand-lg navbar-light bg-light">
   <div class="left">
     <span *ngIf="list"> {{ list.length }}</span> 
       {{ title }} 
@@ -12,16 +12,17 @@
     <option value="en" selected="{{listLanguage === 'en'}}">English</option>
     <option value="ko" selected="{{listLanguage === 'ko'}}">Korean</option>
   </select>
-</div>
+</nav>
 <app-spinner *ngIf="!list"></app-spinner>
-<div class="list list-group">
+<div class="list-group">
   <div *ngFor="let item of list; let i = index">
     <div class="list-group-item" 
         *ngIf="item.cognitive_biasLabel || item.wikiMedia_label">
-        <button data-toggle="collapse" data-target="#description"
-            (toggle)="detailsToggle()">
-            <span (click)="navigateAction(item.sortName, i)"
-                [ngClass]="{
+        <div data-toggle="collapse" [attr.data-target]="'#' + i"
+            (click)="item.isCollapsed = !item.isCollapsed"
+            [attr.aria-expanded]="!item.isCollapsed" 
+            aria-controls="collapse">
+            <span [ngClass]="{
                     'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
                     'list__text-wikimedia': !item.cognitive_biasLabel,
                     'list__item--viewed': item.detailState ==='viewed'}"
@@ -30,8 +31,10 @@
                 <span *ngIf="item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1">
                 ({{ item.backupTitle }})</span>
             </span>
-        </button>
-        <p id="description" class="description collapse">
+        </div>
+        <p (click)="navigateAction(item.sortName, i)"
+            [attr.id]="i" class="description collapse"
+            [ngbCollapse]="!item.isCollapsed">
             <span>{{ item.cognitive_biasDescription }} 
             {{ item.wikiMedia_description }}
             </span>

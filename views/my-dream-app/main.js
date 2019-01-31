@@ -156,12 +156,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_list_list_module__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/list/list.module */ "./src/app/pages/list/list.module.ts");
 /* harmony import */ var angular_webstorage_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! angular-webstorage-service */ "./node_modules/angular-webstorage-service/bundles/angular-webstorage-service.es5.js");
 /* harmony import */ var _components_shared_module__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/shared-module */ "./src/app/components/shared-module.ts");
+/* harmony import */ var _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ng-bootstrap/ng-bootstrap */ "./node_modules/@ng-bootstrap/ng-bootstrap/fesm5/ng-bootstrap.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -186,7 +188,8 @@ var AppModule = /** @class */ (function () {
                 _app_routing_module__WEBPACK_IMPORTED_MODULE_6__["AppRoutingModule"],
                 _pages_list_list_module__WEBPACK_IMPORTED_MODULE_7__["ListPageModule"],
                 angular_webstorage_service__WEBPACK_IMPORTED_MODULE_8__["StorageServiceModule"],
-                _components_shared_module__WEBPACK_IMPORTED_MODULE_9__["SharedModule"]
+                _components_shared_module__WEBPACK_IMPORTED_MODULE_9__["SharedModule"],
+                _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_10__["NgbModule"]
             ],
             providers: [_services_backend_api_service__WEBPACK_IMPORTED_MODULE_3__["BackendApiService"], _services_data_service__WEBPACK_IMPORTED_MODULE_4__["DataService"]],
             bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"]]
@@ -417,12 +420,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
 /* harmony import */ var _list_page__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./list.page */ "./src/app/pages/list/list.page.ts");
 /* harmony import */ var _components_shared_module__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/shared-module */ "./src/app/components/shared-module.ts");
+/* harmony import */ var _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ng-bootstrap/ng-bootstrap */ "./node_modules/@ng-bootstrap/ng-bootstrap/fesm5/ng-bootstrap.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -436,6 +441,7 @@ var ListPageModule = /** @class */ (function () {
             imports: [
                 _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"],
                 _components_shared_module__WEBPACK_IMPORTED_MODULE_4__["SharedModule"],
+                _ng_bootstrap_ng_bootstrap__WEBPACK_IMPORTED_MODULE_5__["NgbModule"],
                 _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterModule"].forChild([
                     {
                         path: '',
@@ -460,7 +466,7 @@ var ListPageModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</div>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<div class=\"list list-group\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <div class=\"list-group-item\" \n        *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n        <button data-toggle=\"collapse\" data-target=\"#description\"\n            (toggle)=\"detailsToggle()\">\n            <span (click)=\"navigateAction(item.sortName, i)\"\n                [ngClass]=\"{\n                    'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n                    'list__text-wikimedia': !item.cognitive_biasLabel,\n                    'list__item--viewed': item.detailState ==='viewed'}\"\n                class=\"list__text\">\n                {{ item.sortName }}\n                <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n                ({{ item.backupTitle }})</span>\n            </span>\n        </button>\n        <p id=\"description\" class=\"description collapse\">\n            <span>{{ item.cognitive_biasDescription }} \n            {{ item.wikiMedia_description }}\n            </span>\n        </p>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<nav class=\"header navbar navbar-expand-lg navbar-light bg-light\">\n  <div class=\"left\">\n    <span *ngIf=\"list\"> {{ list.length }}</span> \n      {{ title }} \n    <span class=\"header__refreshIcon\">\n      <app-icon (click)=\"refreshList()\"></app-icon>\n    </span>\n  </div>\n  <select name=\"listLang\" \n    class=\"right\"\n    (change)=\"onLanguageChange($event.target.value)\">\n    <option value=\"en\" selected=\"{{listLanguage === 'en'}}\">English</option>\n    <option value=\"ko\" selected=\"{{listLanguage === 'ko'}}\">Korean</option>\n  </select>\n</nav>\n<app-spinner *ngIf=\"!list\"></app-spinner>\n<div class=\"list-group\">\n  <div *ngFor=\"let item of list; let i = index\">\n    <div class=\"list-group-item\" \n        *ngIf=\"item.cognitive_biasLabel || item.wikiMedia_label\">\n        <div data-toggle=\"collapse\" [attr.data-target]=\"'#' + i\"\n            (click)=\"item.isCollapsed = !item.isCollapsed\"\n            [attr.aria-expanded]=\"!item.isCollapsed\" \n            aria-controls=\"collapse\">\n            <span [ngClass]=\"{\n                    'list__both': item.cognitive_biasLabel && item.wikiMedia_label, \n                    'list__text-wikimedia': !item.cognitive_biasLabel,\n                    'list__item--viewed': item.detailState ==='viewed'}\"\n                class=\"list__text\">\n                {{ item.sortName }}\n                <span *ngIf=\"item.backupTitle !== undefined && item.sortName !== item.backupTitle && item.backupTitle.length > 1\">\n                ({{ item.backupTitle }})</span>\n            </span>\n        </div>\n        <p (click)=\"navigateAction(item.sortName, i)\"\n            [attr.id]=\"i\" class=\"description collapse\"\n            [ngbCollapse]=\"!item.isCollapsed\">\n            <span>{{ item.cognitive_biasDescription }} \n            {{ item.wikiMedia_description }}\n            </span>\n        </p>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -471,7 +477,7 @@ module.exports = "<div class=\"header\">\n  <div class=\"left\">\n    <span *ngI
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ".header {\n  text-align: center;\n  border-bottom: 1px solid black;\n  padding-bottom: 25px;\n  position: fixed;\n  left: -1px;\n  width: 100%;\n  margin-top: 5px;\n  margin-top: -16px;\n  padding-top: 5px;\n  background-color: beige;\n  position: fixed; }\n\n.header__refreshIcon {\n  position: relative;\n  top: -17px;\n  right: -90px; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text {\n  position: relative;\n  top: -5px; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list {\n  top: 20px;\n  left: -40px;\n  position: relative; }\n\n.list li {\n    list-style-type: none;\n    color: green; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.left {\n  position: absolute;\n  margin-left: 5px; }\n\n.right {\n  position: absolute;\n  right: 0;\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  padding: 5px 0;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 1; }\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n\nsummary {\n  outline: none; }\n\ndetails summary::-webkit-details-marker {\n  color: Gainsboro;\n  font-size: 2em; }\n\n.description {\n  color: LightSlateGray;\n  position: relative;\n  left: 10px; }\n"
+module.exports = ".header {\n  text-align: center;\n  background-color: beige; }\n\n.small_arrow {\n  font-size: 1em; }\n\nion-item-options {\n  background-color: tomato; }\n\n.version_text {\n  font-size: 0.4em; }\n\n.list__text {\n  list-style-type: none;\n  color: green;\n  position: relative;\n  top: -5px; }\n\n.list__text::first-letter {\n  text-transform: capitalize; }\n\n.list__both {\n  color: black; }\n\n.list__text-wikimedia {\n  color: LightSalmon; }\n\n.list__item--viewed {\n  opacity: 0.3; }\n\n.right {\n  border: 0px;\n  outline: 0px;\n  background-color: beige; }\n\n.right:focus, select:focus {\n  outline: none; }\n\n.tooltip {\n  position: relative;\n  display: inline-block; }\n\n.tooltip .tooltiptext {\n  visibility: hidden;\n  width: 80vw;\n  background-color: whitesmoke;\n  text-align: center;\n  padding: 5px 0;\n  border-radius: 6px;\n  position: absolute;\n  z-index: 1; }\n\n.tooltip:hover .tooltiptext {\n  visibility: visible; }\n\nsummary {\n  outline: none; }\n\ndetails summary::-webkit-details-marker {\n  color: Gainsboro;\n  font-size: 2em; }\n\n.description {\n  color: LightSlateGray;\n  position: relative;\n  left: 10px; }\n"
 
 /***/ }),
 

@@ -1,20 +1,11 @@
 .header {
     text-align:center;
-    border-bottom: 1px solid black;
-    padding-bottom: 25px;
-    position: fixed;
-    left: -1px;
-    width: 100%;
-    margin-top: 5px;
-    margin-top: -16px;
-    padding-top: 5px;
     background-color: beige;
-    position: fixed;
 }
 .header__refreshIcon {
-    position: relative;
-    top: -17px;
-    right: -90px;
+    // position: relative;
+    // top: -17px;
+    // right: -90px;
 }
 .small_arrow {
     font-size: 1em;
@@ -26,20 +17,13 @@ ion-item-options {
     font-size: 0.4em;
 }
 .list__text {
+    list-style-type: none;
+    color: green;
     position: relative;
     top: -5px;
 }
 .list__text::first-letter {
     text-transform: capitalize;
-}
-.list {
-    top: 20px;
-    left: -40px;
-    position: relative;
-    li {
-        list-style-type: none;
-        color: green;
-    }
 }
 .list__both {
     color: black;
@@ -51,12 +35,12 @@ ion-item-options {
     opacity: 0.3;
 }
 .left {
-    position: absolute;
-    margin-left: 5px;
+    // position: absolute;
+    // margin-left: 5px;
 }
 .right {
-    position: absolute;
-    right: 0;
+    // position: absolute;
+    // right: 0;
     border:0px;
     outline:0px;
     background-color: beige;

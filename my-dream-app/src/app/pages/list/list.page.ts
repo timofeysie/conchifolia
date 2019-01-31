@@ -21,8 +21,7 @@ export class ListPage implements OnInit  {
   constructor(
     private backendApiService: BackendApiService,
     private router: Router,
-    private dataService: DataService) {
-     }
+    private dataService: DataService) { }
   
   /**
    *  Get the options find the current language settings, then get the list from storage.

@@ -8,6 +8,7 @@ import { AppRoutingModule } from './/app-routing.module';
 import { ListPageModule } from './pages/list/list.module';
 import { StorageServiceModule } from 'angular-webstorage-service';
 import { SharedModule } from './components/shared-module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { SharedModule } from './components/shared-module';
     AppRoutingModule,
     ListPageModule,
     StorageServiceModule,
-    SharedModule
+    SharedModule,
+    NgbModule
   ],
   providers: [BackendApiService,DataService],
   bootstrap: [AppComponent]
