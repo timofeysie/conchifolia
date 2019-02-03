@@ -18,6 +18,7 @@ const allowedExt = [
   '.woff',
   '.ttf',
   '.svg',
+  '.map',
 ];
 
 const allowCrossDomain = function(req, res, next) {
@@ -260,10 +261,12 @@ express()
     });
   })
   .get('*', (req, res) => {
-    if (allowedExt.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
-      res.sendFile(path.resolve(`views/my-dream-app/${req.url}`));
+    if (req.url.indexOf('bootstrap.min.css.map') !== -1) {
+        res.sendFile(path.resolve(`views/my-dream-app/node_modules/${req.url}`));
+    } else if (allowedExt.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
+        res.sendFile(path.resolve(`views/my-dream-app/${req.url}`));
     } else {
-      res.sendFile(path.resolve('views/my-dream-app/index.html'));
+        res.sendFile(path.resolve('views/my-dream-app/index.html'));
     }
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))

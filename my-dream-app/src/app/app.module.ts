@@ -9,6 +9,7 @@ import { ListPageModule } from './pages/list/list.module';
 import { StorageServiceModule } from 'angular-webstorage-service';
 import { SharedModule } from './components/shared-module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ListPageModule,
     StorageServiceModule,
     SharedModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule
   ],
   providers: [BackendApiService,DataService],
   bootstrap: [AppComponent]

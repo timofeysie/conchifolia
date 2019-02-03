@@ -57,13 +57,76 @@ Start the server with ```npm start```.  Build the Angular project served in the 
 
 ## Bootstrap
 
+Trying out Bootstrap after quite some time of using mainly Ionic or self rolled styles.  If it was up to me and I was forced to use a framework, it would be Angular Material.
 
+Bootstrap used to be the best way to get responsive layouts without doing too much work, especially for JavaScript engineers who did not come from a design perspective.  Usually the time you spend working on the framework is the same amount of time you would spend creating your own.  This example shows why.
+
+Bootstrap requires jQuery, and popper, whatever that is.
 ```
 npm i bootstrap jquery popper (forgot the -save!)
 └── UNMET PEER DEPENDENCY popper.js@^1.14.6
 npm WARN bootstrap@4.2.1 requires a peer of popper.js@^1.14.6 but none was installed.
 $ npm install popper.js --save
 ```
+
+The result: "bootstrap": "^4.2.1”,
+
+Ng_bootstrap is needed to get Bootstrap to work well in an Angular app.
+```
+npm install --save @ng-bootstrap/ng-bootstrap
+```
+
+There is some more setup in the style angular.config file.  Starting with the list, trying to create a collapse component was easy enough.  There had to be some mods for it to work inside an ngFor iteration.
+
+Using ```[attr.data-target]="'#' + i"``` on the item and ```[attr.id]="i"``` for the collapsing content works.
+
+But, there is no transition animation.
+The [problem is detailed here](https://stackoverflow.com/questions/40142922/ng-bootstrap-collapse-how-to-apply-animations).  This issue was opened on 29 Jun 2016 · 59 comments, still open.
+
+A [related issue](https://github.com/ng-bootstrap/ng-bootstrap/issues/295) which when closed should fix the problem.  Until then in an attempt to try and get the height transition to work.
+
+There was something about using the '!' for the starting point of the height on [this plunker](https://next.plnkr.co/edit/pZamSqPX9Vb4J6JL721u?p=preview&preview).  But this code:
+```
+  animations: [
+    trigger('expandCollapse', [
+        state('open', style({height: '100%', opacity: 1})),
+        state('closed', style({height: 0, opacity: 0})),
+        transition('* => void', [
+            style({ height: '!', opacity: 1 }),
+            animate(1000, style({ height: 0, opacity: 0 }))
+          ]),
+          transition('void => *', [
+            style({ height: 0, opacity: 0 }),
+            animate(1000, style({ height: '*', opacity: 1 }))
+          ])
+    ]),
+```
+
+Caused this error on the server side:
+```
+Error: ENOENT: no such file or directory, stat '/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/views/my-dream-app/bootstrap.min.css.map'
+```
+
+If it can't find Bootstrap, then where are the bootstrap styles coming from?  What's not working is the animations.
+
+In the build and test sections of the angular.json file, we have the reference to Bootstrap like this:
+```
+"styles": [
+    "node_modules/bootstrap/dist/css/bootstrap.min.css",
+    "src/styles.css"
+],
+```
+
+After reading [this issue](https://github.com/angular/angular-cli/issues/9438), tried ading ```../``` and ```./``` in from of the node modules but to no avail.  Interesting how the error message does not include the ```node_modules/bootstrap``` part of the path.
+
+The server is sending files like this:
+```
+res.sendFile(path.resolve(`views/my-dream-app/${req.url}`));
+```
+
+Really, we shouldn't be trying to serve a big Angular app using Node anyhow.  It is good for short dynamic and async tasks, but is busy sending big files because, well there is just one thread
+
+
 
 ## Node best practices
 

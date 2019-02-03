@@ -34,9 +34,10 @@
         </div>
         <p (click)="navigateAction(item.sortName, i)"
             [attr.id]="i" class="description collapse"
-            [ngbCollapse]="!item.isCollapsed">
+            [ngbCollapse]="!item.isCollapsed"
+            [@expandCollapse]="item.isCollapsed ? 'open' : 'closed'">
             <span>{{ item.cognitive_biasDescription }} 
-            {{ item.wikiMedia_description }}
+                {{ item.wikiMedia_description }}
             </span>
         </p>
     </div>

@@ -3,11 +3,26 @@ import { BackendApiService } from '../../services/backend-api.service';
 import { DetailModel } from '../../models/detail.model';
 import { Router } from '@angular/router';
 import { DataService } from '../../services/data.service';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-page-list',
   templateUrl: 'list.page.html',
-  styleUrls: ['list.page.scss'],
+  styleUrls: ['list.page.scss'],  animations: [
+    trigger('expandCollapse', [
+        state('open', style({height: '100%', opacity: 1})),
+        state('closed', style({height: 0, opacity: 0})),
+        transition('* => void', [
+            style({ height: '!', opacity: 1 }),
+            animate(1000, style({ height: 0, opacity: 0 }))
+          ]),
+          transition('void => *', [
+            style({ height: 0, opacity: 0 }),
+            animate(1000, style({ height: '*', opacity: 1 }))
+          ])
+    ]),
+ ]
+
 })
 export class ListPage implements OnInit  {
   title = 'Cognitive Biases';
