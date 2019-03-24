@@ -7,6 +7,7 @@ const https = require('https');
 const details = require('./endpoints/details');
 const dataRedirect = require('./endpoints/data-redirect');
 const detailsSimpleRedirect = require('./endpoints/details-simple-redirect');
+const cognitive_bias = require('./routes/cognitive_bias.route');
 
 const allowedExt = [
   '.js',
@@ -38,6 +39,7 @@ express()
   .use(allowCrossDomain)
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs')
+  .use('/cognitive_bias', cognitive_bias)
   .get('/api/list/:lang', function(req, res) {
     const lang = req.params.lang;
     const wikiUrl = curator.createWikiDataUrl(lang);

@@ -85,6 +85,74 @@ This is his first tutorial, but this is a pretty mature and clean way to organis
 
 Right now we just have an 'endpoints' directory to hold what can be considered controllers.  It's time to refactor that into the above MVC structure and add the MongoDB component.  This work will be done in the development branch until it's ready to replace the master version deployed to Heroku.
 
+Getting started.
+```
+npm install --save mongoose
+```
+
+Add the following directories:
+```
+controllers
+models
+routes
+```
+
+And files:
+```
+cognitive_bias.controller.js
+cognitive_bias.model.js
+cognitive_bias.route.js
+```
+
+A test endpoint to get things started.
+http://localhost:5000/cognitive_bias/test
+
+
+### Fixing the tests
+
+When refactoring, it's good to have at least a few working tests to see first of all confirm the working state, then show the problems as they come up, and finally, when things are working again.
+
+The tests for this project were from the original Heroku starter.  Since then, they have not been updated.  On the first run, the initial error is:
+```
+TAP version 13
+# responds to requests
+not ok 1 plan != count
+  ---
+    operator: fail
+    expected: 4
+    actual:   0
+    at: process.<anonymous> (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/node_modules/tape/index.js:90:19)
+    stack: |-
+      Error: plan != count
+          at Test.assert [as _assert] (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/node_modules/tape/lib/test.js:224:54)
+          at Test.bound [as _assert] (/Users/tim/repos/loranthifolia-teretifolia-curator/conchifolia/node_modules/tape/lib/test.js:76:32)
+```
+
+The line in the test file is this:
+```
+test('responds to requests', (t) => {
+```
+
+In [this Heroku NodeJS article](https://codeburst.io/node-js-on-heroku-a-more-complete-tutorial-part-3-dcd83888939b) we can find a similar setup.
+
+The test should start up the web service, make a request to it, and then validates the result.  I am new to [Tape](https://github.com/substack/tape) testing.  The above link follows the Heroku node-js-getting-started example and uses this light-weight Tape testing harness.
+
+We have these installed already:
+```
+"request": "^2.81.0",
+"tape": "^4.7.0"
+```
+
+Our error is from the plan call.  What does plan do?
+*t.plan() is to plan out how many assertions you are going to run*
+
+The error in the test is pointing to a line inside node_modules at /tape/index.js:90:19.
+Great.  Looking at all available Google results with that string and error, and not any closer to solving this.  The next steps would be to A. read the whole getting started with NodeJS on Heroku again paying attention to the testing with Tape section, or read all the Tape docs until a solution appears.  Both of these take us further away from getting Mongo set up to track changes in out list.  The Node on Heroku provides a simple test with no explaination.  The sample test they show gives the same error as we are having, so that's not helpful either.  It would have to be now either A. start over with testing in another framework, or B. start to learn about Tape from the beginning.
+
+Wait, this is an open source project!  Just wait for on of the lurking developers to fix it...
+
+One of the big problems with starting testing late in a project are that, you know the app works, but can't figure out why the tests fail.  Another reason to start TDD/BDD out of the box...
+
 
 ## Node best practices
 
