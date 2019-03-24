@@ -1,11 +1,15 @@
 # Conchifolia
 
 
-A NodeJS server app with a combined Angular client.
+A NodeJS server app to query WikiData and parse WikiMedia for extra content.
 
-The app is available at [this location](https://radiant-springs-38893.herokuapp.com/).
+The referecne implementation app showing the results is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
-This the pure Angular version of the WikiData parsing project that has an identical implementations in Ionic 4, React Native, and now Angular 6.  Next will be a pure React 16 version of the app.
+The link above points to an Angular version of the project which has a functionally similar implementations written in Ionic, React Native, React.  The other client projects are listed below.
+
+
+[React/Redux version](https://github.com/timofeysie/viracocha)
+
 
 [React Native version](https://github.com/timofeysie/teretifolia)
 
@@ -13,18 +17,19 @@ This the pure Angular version of the WikiData parsing project that has an identi
 [Ionic 4 version](https://github.com/timofeysie/loranthifolia)
 
 
-This is the Angular 6 version
+The Angular version is built into the views directory.  We might do the same with the React app just for development convenience.  But really the client should be a separate project.  Node should just be for handling API requests and getting data from WikiData and a MondoDb.
 
-All of these apps rely on the [Curator](https://github.com/timofeysie/curator), a [npm library](https://npms.io/search?q=art-curator) that provides shared tools for working with WikiData and WikiMedia content.
+All of these apps rely on the [Curator](https://github.com/timofeysie/curator), an [npm library](https://npms.io/search?q=art-curator) that provides shared tools for working with WikiData and WikiMedia content.
 
-
+The [component library](https://github.com/timofeysie/socius) is underway and will be used by the various clients listed above.  It is written in [StencilJS](https://stenciljs.com/) which has a lot in common with React, but uses the compiler to generate standards-compliant web components which can be used in any front-end project.
 
 
 #
 
 ## Table of Contents
 
-1. [Setup and Workflow](#setup-and-sorkflow)
+1. [Setup and Workflow](#setup-and-workflow)
+1. [Looking for changes in the list](#looking-for-changes-in-the-list)
 1. [Node best practices](#node-best-practices)
 1. [The Experimenter's bias redirect](#the-Experimenters-bias-redirect)
 1. [Parsing WikiData subject pages](#parsing-WikiData-subject-pages)
@@ -56,9 +61,55 @@ All of these apps rely on the [Curator](https://github.com/timofeysie/curator), 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
 
+## Looking for changes in the list
+
+Since this project started when there were only 192 biases on the list, we now have 198.  The number went down to 191 at one point, and someone had to compare the lists manually to see that the bystander effect was no longer now.
+
+Initially we will store the list on MLab and use the Mongoose connector to provide our CRUD functions.
+
+This does not mean that we will start to store user created content there.  That debate is still happening.  If the app becomes popular, we want to insulate ourselves from the cost with a paywall, which will be another chapter.
+
+
+### MVC design pattern
+
+In [the article](https://codeburst.io/writing-a-crud-app-with-node-js-and-mongodb-e0827cbbdafb) by Eslam Maged, the project structure is broken into a few directories:
+```
+controllers (mongoose.Schema Product fn()s like findByIdAndUpdate/findById/etc...)
+models      (exports mongoose.model('Product', Schema))
+routes      (router.get('/:id', controller.product_details))
+views       (front end app)
+app.js
+```
+
+This is his first tutorial, but this is a pretty mature and clean way to organise the project.  It is pretty much in line with the Node best practices.
+
+Right now we just have an 'endpoints' directory to hold what can be considered controllers.  It's time to refactor that into the above MVC structure and add the MongoDB component.  This work will be done in the development branch until it's ready to replace the master version deployed to Heroku.
+
+
 ## Node best practices
 
 In an effort to better define the code in the server app, we're going to be applying the Node best practices described [here](https://github.com/i0natan/nodebestpractices).  Below are some notes to get started with.
+
+After going through and implementing much of these practices, I have learned quite a bit about other options to use as starting points.  One direction is [NestJS](https://nestjs.com/) which as their blurb says, is a *progressive Node.js framework for building efficient, reliable and scalable server-side applications.*.
+
+On top of this you could use [Nrwl](https://nrwl.io/) which is a great implementation of Nest combined with Cypress, Jest, and Prettier all from their CLI.
+
+Cypress is an e2e test runner, Jest we all know, and Prettier is an opinionated code formatter.
+
+We chose the AirBnB linting with our [Strumosa-pipe](https://github.com/timofeysie/strumosa-pipe) which is an Azure DevOps CI/CD project.  That is definately a great setup, but limited by their outdated Docker images.  It would be good to create a similarly functioning CI/CD pipline using Heroku tools here.  On the job front, it's great to have projects that use Azure/AWS during an interview, but when a project isn't making any money, it shouldn't be costing any either.  So far the Azure pipeline is only costing cents a month, but that will change in the future when this project is advertised.  Another reason to go with the free tools for now.
+
+Getting back to best practices, the Nrwl approach was developed for Angular enterprise projects.  Since we are focusing on React/Redux right now, it's not the best way to go.  Also, when trying out the official [MERN stack](http://mern.io/), it's clear that when you don't know everything that a scaffolding CLI is creating for you, it's best to roll your own so that you understand everything that's going on.
+
+Nrwl makes a good point in it's React docs which we need to take note of.  I will repeat it here for reference:
+*Creating a new shared library can take from several hours to even weeks: a new repo needs to be provisioned, CI needs to be set up, etc.. In an Nx Workspace it takes minutes.
+
+You can share React components between multiple React applications. You can also share web components between React and Angular applications. You can even share code between the backend and the frontend. All can be done without any unnecessary ceremony.
+
+Nx can verify that a code change to a reusable library does not break any applications and libraries depending on it by using its dependency graph to rebuild and retest the minimal number of projects necessary. Without this the repo won't scale beyond a handful of projects.*
+
+If this ever becomes a commercially viable thing, it's really something to think about.  For now we will roll our own.
+
+
 
 ### Code structure
 
@@ -88,15 +139,15 @@ modelService
 modelTesting
 ```
 
-Separate the Express definition to at least two files: 
-1. the API declaration (app.js) 
-2. the networking concerns (WWW). 
+Separate the Express definition to at least two files:
+1. the API declaration (app.js)
+2. the networking concerns (WWW).
 
 Locate API declarations within components.
 
 keys can be read from file and from environment variable.
 secrets are kept outside committed code
-config is hierarchical for easier findability. 
+config is hierarchical for easier findability.
 (example packages: rc, nconf and config)
 
 
@@ -114,7 +165,7 @@ function initialize() {
             'User-Agent': 'request'
         }
     };
-    // Return new promise 
+    // Return new promise
     return new Promise(function(resolve, reject) {
      // Do async job
         request.get(options, function(err, resp, body) {
@@ -151,8 +202,8 @@ sendSuccess = (res, message) => data => {
 }
 sendError = (res, status, message) => error => {
   res.status(status || error.status).json({
-    type: 'error', 
-    message: message || error.message, 
+    type: 'error',
+    message: message || error.message,
     error
   })
 }
@@ -230,9 +281,9 @@ SPARQL-QUERY: queryStr=
 "@en.  
             ?article schema:about ?item .
             ?article schema:inLanguage "en" .
-            ?article schema:isPartOf <https://en.wikipedia.org/>. 
+            ?article schema:isPartOf <https://en.wikipedia.org/>.
             SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-        } 
+        }
 java.util.concurrent.ExecutionException: org.openrdf.query.MalformedQueryException: Lexical error at line 4, column 57.  Encountered: "\n" (10), after : "\"Form function attribution bias"
 	at java.util.concurrent.FutureTask.report(FutureTask.java:122)
 ```
@@ -296,9 +347,9 @@ So it looks like we're going to have to create a SPARQL query to get these codes
 Based on [this SO answer](https://stackoverflow.com/questions/38527828/how-to-query-wikidata-items-using-its-labels) it seems like this should work:
 ```
 SELECT ?item ?itemLabel
-WHERE { 
-  ?item rdfs:label ?itemLabel. 
-  FILTER(CONTAINS(LCASE(?itemLabel), "Acquiescence bias"@en)). 
+WHERE {
+  ?item rdfs:label ?itemLabel.
+  FILTER(CONTAINS(LCASE(?itemLabel), "Acquiescence bias"@en)).
 } limit 10
 ```
 
@@ -317,9 +368,9 @@ WHERE {
   ?item ?label "Acquiescence bias"@en.  
   ?article schema:about ?item .
   ?article schema:inLanguage "en" .
-  ?article schema:isPartOf <https://en.wikipedia.org/>. 
+  ?article schema:isPartOf <https://en.wikipedia.org/>.
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-} 
+}
 ```
 
 This returns:
@@ -478,17 +529,17 @@ It's work looking at the markup for the entire description.  We can get a better
                         <div class="mw-collapsible" style="width:95%; margin: 0.2em 0;">
                             <b>This article has multiple issues.</b> Please help
                             <b>
-                            <a class="external text" 
+                            <a class="external text"
                                 href="//en.wikipedia.org/w/index.php?title=Actor%E2%80%93observer_asymmetry&amp;action=edit">
                                 improve it
                             </a>
                         </b> or discuss these issues on the <b>
-                        <a href="/wiki/Talk:Actor%E2%80%93observer_asymmetry" 
+                        <a href="/wiki/Talk:Actor%E2%80%93observer_asymmetry"
                             title="Talk:Actor–observer asymmetry">talk page</a>
                         </b>.
                             <small>
                             <i>(
-                                <a href="/wiki/Help:Maintenance_template_removal" 
+                                <a href="/wiki/Help:Maintenance_template_removal"
                                 title="Help:Maintenance template removal">
                                 Learn how and when to remove these template messages</a>)
                             </i>
@@ -508,23 +559,23 @@ It's work looking at the markup for the entire description.  We can get a better
                                                     <a href="/wiki/Wikipedia:Citing_sources" title="Wikipedia:Citing sources">
                                                 list of references</a>, but
                                                     <b>its sources remain unclear</b> because it has
-                                                    <b>insufficient 
-                                                <a href="/wiki/Wikipedia:Citing_sources#Inline_citations" 
+                                                    <b>insufficient
+                                                <a href="/wiki/Wikipedia:Citing_sources#Inline_citations"
                                                     title="Wikipedia:Citing sources">
                                                     inline citations
                                                 </a>
                                             </b>.
-                                                    <span class="hide-when-compact"> 
-                                                Please help to 
-                                                <a href="/wiki/Wikipedia:WikiProject_Fact_and_Reference_Check" 
+                                                    <span class="hide-when-compact">
+                                                Please help to
+                                                <a href="/wiki/Wikipedia:WikiProject_Fact_and_Reference_Check"
                                                     title="Wikipedia:WikiProject Fact and Reference Check">
                                                     improve
-                                                </a> 
-                                                this article by 
-                                                <a href="/wiki/Wikipedia:When_to_cite" 
+                                                </a>
+                                                this article by
+                                                <a href="/wiki/Wikipedia:When_to_cite"
                                                     title="Wikipedia:When to cite">
                                                     introducing
-                                                </a> 
+                                                </a>
                                                 more precise citations.
                                             </span>
                                                     <small>
@@ -532,7 +583,7 @@ It's work looking at the markup for the entire description.  We can get a better
                                             </small>
                                                     <small class="hide-when-compact">
                                                 <i> (
-                                                    <a href="/wiki/Help:Maintenance_template_removal" 
+                                                    <a href="/wiki/Help:Maintenance_template_removal"
                                                         title="Help:Maintenance template removal">
                                                         Learn how and when to remove this template message
                                                     </a>)
@@ -568,7 +619,7 @@ It's work looking at the markup for the entire description.  We can get a better
                         </div>
                         <small class="hide-when-compact">
                 <i> (
-                    <a href="/wiki/Help:Maintenance_template_removal" 
+                    <a href="/wiki/Help:Maintenance_template_removal"
                         title="Help:Maintenance template removal">
                         Learn how and when to remove this template message
                     </a>)
@@ -601,7 +652,7 @@ It's work looking at the markup for the entire description.  We can get a better
 Nisbett
 </a> (1971), when they claimed that "actors tend to attribute the causes of their behavior to stimuli inherent in the situation, while observers tend to attribute behavior to stable dispositions of the actor” (
         <a href="#CITEREFJonesNisbett1971">Jones &amp; Nisbett 1971
-phenomenon of <a href="/wiki/Social_cognition" 
+phenomenon of <a href="/wiki/Social_cognition"
 title="Social cognition">social cognition</a>.
     </p>
     <p>However, a <a href="/wiki/Meta-analysis" title="Meta-analysis">meta-analysis
@@ -614,7 +665,7 @@ title="Social cognition">social cognition</a>.
 </a> tested an alternative set of three actor-observer asymmetries and found consistent support for all of them. Thus, the actor-observer asymmetry does not exist in one theoretical formulation (traditional attribution theory) but does exist in the new alternative theoretical formulation. <a href="#CITEREFMalle2011">Malle (2011)
 </a> argues that this favors the alternative theoretical formulation, but current textbooks have not yet fully addressed this theoretical challenge.
         <sup class="noprint Inline-Template" style="white-space:nowrap;">&#91;
-<i><a href="/wiki/Wikipedia:Manual_of_Style/Dates_and_numbers#Chronological_items" 
+<i><a href="/wiki/Wikipedia:Manual_of_Style/Dates_and_numbers#Chronological_items"
 title="Wikipedia:Manual of Style/Dates and numbers"><span title="The time
  period mentioned near this tag is ambiguous. (June 2016)">when?
  </span>
@@ -635,8 +686,8 @@ title="Wikipedia:Manual of Style/Dates and numbers"><span title="The time
         <ol class="references">
             <li id="cite_note-1"><span class="mw-cite-backlink">
                 <b><a href="#cite_ref-1">^</a></b></span>
-                                <span class="reference-text">"Fundamental Attribution Error." 
-                The Concise Corsini Encyclopedia of Psychology and Behavioral Science, 
+                                <span class="reference-text">"Fundamental Attribution Error."
+                The Concise Corsini Encyclopedia of Psychology and Behavioral Science,
                 edited by W. Edward Craighead, and Charles B. Nemeroff, Wiley, 3rd edition, 2004.
                 </span>
                             </li>
@@ -644,15 +695,15 @@ title="Wikipedia:Manual of Style/Dates and numbers"><span title="The time
                 </a>
                 </b>
                 </span>
-                <span class="reference-text">McCornack Steven and Joseph Ortiz. Choices and 
+                <span class="reference-text">McCornack Steven and Joseph Ortiz. Choices and
 connections 2nd edition, Bedford, 2016</span>
             </li>
             <li id="cite_note-3"><span class="mw-cite-backlink"><b><a href="#cite_ref-3">^
                 </a>
                 </b>
                 </span>
-                                <span class="reference-text">Forgas, Joseph P, and Kipling D. Williams. 
-                The Social Self: Cognitive, Interpersonal and Inter-group Perspectives. 
+                                <span class="reference-text">Forgas, Joseph P, and Kipling D. Williams.
+                The Social Self: Cognitive, Interpersonal and Inter-group Perspectives.
                 Hoboken: Taylor and Francis, 2014. Internet resource.</span>
                             </li>
                             <li id="cite_note-4"><span class="mw-cite-backlink"><b><a href="#cite_ref-4">^
@@ -670,8 +721,8 @@ connections 2nd edition, Bedford, 2016</span>
 Unfortunately, there is no indication that this is the real title.
 ```
 <p>
-    <b>Actor–observer asymmetry</b> 
-    (also 
+    <b>Actor–observer asymmetry</b>
+    (also
     <b>
         <a href="#bias">actor–observer bias</a>
     </b>
@@ -748,7 +799,7 @@ But it returns, in part, this:
     </p>
         <ul class=\"redirectText\">
             <li>
-                <a href=\"/wiki/Actor%E2%80%93observer_asymmetry\" 
+                <a href=\"/wiki/Actor%E2%80%93observer_asymmetry\"
                     title=\"Actor\u2013observer asymmetry\">Actor\u2013observer asymmetry
                 </a>
             </li>
@@ -763,10 +814,10 @@ Actor%E2%80%93observer_asymmetry
 
 I guess we need to encode the URI?  Tried it.  Doesn't work.
 
-On the [UTF-8 encoding table and Unicode characters](https://www.utf8-chartable.de/unicode-utf8-table.pl?start=8192&number=128) that would correspond to 
+On the [UTF-8 encoding table and Unicode characters](https://www.utf8-chartable.de/unicode-utf8-table.pl?start=8192&number=128) that would correspond to
 ```
-Unicode code point: U+2013	
-character: -	
+Unicode code point: U+2013
+character: -
 UTF-8 (hex.): e2 80 93
 Name: EN DASH
 ```
@@ -1037,7 +1088,7 @@ Another item that is failing the final re-direct is 확증편향.  But I'm not s
     _onPendingData: [Function: noopPendingOutput],
     agent: [Agent],
     socketPath: undefined,
-``` 
+```
 
 In the browser console we get this:
 ```
@@ -1084,7 +1135,7 @@ If we add a ```return data;``` after the console log there, the error goes away.
         </head>
         <body>↵
             <h1>See Other</h1>↵
-            <p>The answer to your request is located 
+            <p>The answer to your request is located
                 <a href="https://www.wikidata.org/wiki/Special:EntityData/Q431498">
                     here</a>.
             </p>↵
@@ -1123,7 +1174,7 @@ However, this works locally.  Maybe we just didn't push the latest to Heroku?  W
 
 The one that fails is: 현상유지편향.
 
-Looking at the list locally and on the server, they are different. 
+Looking at the list locally and on the server, they are different.
 
 Locally it's:
 ```
@@ -1314,7 +1365,7 @@ The first test result goes:
 ```
 Failed: Template parse errors:
 'router-outlet' is not a known element:
-1. If 'router-outlet' is an Angular component ... 
+1. If 'router-outlet' is an Angular component ...
 ```
 
 To fix this just import the RouterTestingModule and then add it to imports.
@@ -1330,8 +1381,8 @@ The app.component tests which were made to test the sample DOM that the App was 
 
 ```
 DetailPage should create
-Error: StaticInjectorError(DynamicTestModule)[DetailPage -> ActivatedRoute]: 
-  StaticInjectorError(Platform: core)[DetailPage -> ActivatedRoute]: 
+Error: StaticInjectorError(DynamicTestModule)[DetailPage -> ActivatedRoute]:
+  StaticInjectorError(Platform: core)[DetailPage -> ActivatedRoute]:
     NullInjectorError: No provider for ActivatedRoute!
 ```
 
@@ -1435,8 +1486,8 @@ So import the token, and now in our providers array we have all this junk:
 
 ```
 BackendApiService should be created
-Error: StaticInjectorError(DynamicTestModule)[BackendApiService -> HttpClient]: 
-  StaticInjectorError(Platform: core)[BackendApiService -> HttpClient]: 
+Error: StaticInjectorError(DynamicTestModule)[BackendApiService -> HttpClient]:
+  StaticInjectorError(Platform: core)[BackendApiService -> HttpClient]:
     NullInjectorError: No provider for HttpClient!
 ```
 
@@ -1465,7 +1516,7 @@ Another answer not marked as correct suggested choosing the 'Debug' button on th
 ```
 list.page.ts:91 error TypeError: _this.handler.handle is not a function
     at MergeMapSubscriber.project (_karma_webpack_/webpack:/node_modules/@angular/common/fesm5/http.js:974)
-    at 
+    at
 ```
 
 That line is for the list page backendApiService.getList() error handler.  Our error however is for the detail page.
@@ -1509,7 +1560,7 @@ This will not work.  Have burnt up about four hours now on this.  And people won
 
 I take that back.  This is time well spent.  Now we have a (mostly) passing suite of tests.  It's time to write a new one to highlight the issue with some items on the list that show the "(psychology)" category, which indicates that the link should be that in the title that includes the category, otherwise we will be served the disambiguation page.
 
-This includes first creating a test list that has some sample names including a psychology redirect page. 
+This includes first creating a test list that has some sample names including a psychology redirect page.
 
 More good news is that with test passing, we can refactor the parseSectionList function down to about 20 lines.  More refactoring to follow as we move to include the entire DOM element from the table row into the list and use those directly to create the links for the detail page.
 
@@ -1539,7 +1590,7 @@ wikiRes.headers { date: 'Sat, 25 Aug 2018 21:26:00 GMT',
   'x-cache': 'cp1083 pass, cp2013 pass, cp5010 pass, cp5010 pass',
   'x-cache-status': 'pass',
   'strict-transport-security': 'max-age=106384710; includeSubDomains; preload',
-  'set-cookie': 
+  'set-cookie':
    [ 'WMF-Last-Access=25-Aug-2018;Path=/;HttpOnly;secure;Expires=Wed, 26 Sep 2018 12:00:00 GMT',
      'WMF-Last-Access-Global=25-Aug-2018;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Wed, 26 Sep 2018 12:00:00 GMT',
      'GeoIP=AU:NSW:Yagoona:-33.90:151.02:v4; Path=/; secure; Domain=.wikipedia.org' ],
@@ -1570,7 +1621,7 @@ The raw data from the server shows the link:
 ```
 <tr>
     <td>
-        <a href=\"/wiki/Zero-sum_thinking\" 
+        <a href=\"/wiki/Zero-sum_thinking\"
             title=\"Zero-sum thinking\">Zero-sum bias</a>
     </td>
 </tr>
@@ -1599,11 +1650,11 @@ Naïve realism -> Naïve realism (psychology)
 
 A note about the routing here, we need to add a second route to pass a conditional parameter.  It looks like this:
 ```
-{ 
-    path: 'detail/:id/:listLanguage', 
+{
+    path: 'detail/:id/:listLanguage',
     loadChildren: './pages/detail/detail.module#DetailPageModule' },
-{ 
-    path: 'detail/:id/:listLanguage/:title', 
+{
+    path: 'detail/:id/:listLanguage/:title',
     loadChildren: './pages/detail/detail.module#DetailPageModule' }
 ```
 
@@ -1642,7 +1693,7 @@ Bumped curator to version 2.1.0.  The flag is not optional without creating anot
 
 If the third param to that function is true, then the case is left alone.  Now we have to change the back-end API service and then the server app to pass that preference along.
 
-Now the first item on our naughty list, 
+Now the first item on our naughty list,
 
 The second item however is bad news again.
 *Experimenter'* appears on the list with the backup title of *Experimenter's bias*
@@ -1677,7 +1728,7 @@ Taking out the backup title and link functions helps a bit.  The current problem
 title = Form function attribution bias (page does not exist)
 ```
 
-The new function returns a backup link of 
+The new function returns a backup link of
 ```
 index.php?title=Form_function_attribution_bias&action=edit&redlink=1
 ```
@@ -1745,7 +1796,7 @@ Combine that with the styles that get added or removed based on the change:
 ```
 <span class="ion-list__defaultItem"
     [ngClass]="{
-        'list__both': item.cognitive_biasLabel && item.wikiMedia_label, 
+        'list__both': item.cognitive_biasLabel && item.wikiMedia_label,
         'list__text-wikimedia': !item.cognitive_biasLabel,
         'list__item--viewed': item.detailState ==='viewed'}">
 ```
@@ -1797,7 +1848,7 @@ Then we import that in the app.module, as well as the other child modules, and w
 <app-spinner *ngIf="showSpinner"></app-spinner>
 ```
 
-With the spinner chosen, a more fitting name might be the 'pulsator'. 
+With the spinner chosen, a more fitting name might be the 'pulsator'.
 
 
 
@@ -1981,7 +2032,7 @@ wikiRes.headers { date: 'Wed, 22 Aug 2018 00:54:12 GMT',
   'x-cache': 'cp1085 pass, cp2013 pass, cp5009 pass, cp5010 pass',
   'x-cache-status': 'pass',
   'strict-transport-security': 'max-age=106384710; includeSubDomains; preload',
-  'set-cookie': 
+  'set-cookie':
    [ 'WMF-Last-Access=22-Aug-2018;Path=/;HttpOnly;secure;Expires=Sun, 23 Sep 2018 00:00:00 GMT',
      'WMF-Last-Access-Global=22-Aug-2018;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Sun, 23 Sep 2018 00:00:00 GMT',
      'GeoIP=AU:NSW:Yagoona:-33.90:151.02:v4; Path=/; secure; Domain=.wikipedia.org' ],
@@ -2083,7 +2134,7 @@ After removing the CORS headers from the service in that project, the detail API
 
 Right now, the list is reloaded each time the user navigates back to the list page.  There are ways to cache this, such as another service which holds the complete list, but since we will need to persist the state of each item as part of planned features, it would be better to address this need now.
 
-The first option to consider is [Async local storage for Angular](https://github.com/cyrilletuzi/angular-async-local-storage) 
+The first option to consider is [Async local storage for Angular](https://github.com/cyrilletuzi/angular-async-local-storage)
 
 The author of this repo,  puts the situation well:
 
@@ -2148,7 +2199,7 @@ core.js:1671 ERROR TypeError: Cannot read property 'length' of undefined
     at ListPage.push../src/app/pages/list/list.page.ts.ListPage.addItems (list.page.ts:85)
     at SafeSubscriber._next (list.page.ts:49)
     at SafeSubscriber.push../node_modules/rxjs/_esm5/internal/Subscriber.js.SafeSubscriber.__tryOrUnsub (Subscriber.js:195)
-    at 
+    at
 ```
 
 Line 85 is in the addItems function.
@@ -2215,7 +2266,7 @@ https://en.wikipedia.org/wiki/Women_are_wonderful_effect
 Another problem:
 ```
 id dunning–kruger_effect
-raw data 
+raw data
 undefined:1
 SyntaxError: Unexpected end of JSON input
     at JSON.parse (<anonymous>)
@@ -2284,7 +2335,7 @@ sanitizer.bypassSecurityTrustStyle(value);
 
 ## Implementing detail page routing
 
-Using the CLI to create the routing module like this: 
+Using the CLI to create the routing module like this:
 ```
 ng generate module app-routing --flat --module=app
 ```
@@ -2321,7 +2372,7 @@ But we still get the same mismatch error.  Tried again, but despite using sudo:
 ```
 $ sudo npm install -g angular-cli
 ...
-gyp ERR! configure error 
+gyp ERR! configure error
 gyp ERR! stack Error: EACCES: permission denied, mkdir '/Users/tim/.nvm/versions/node/v8.9.4/lib/node_modules/angular-cli/node_modules/node-sass/build'
 gyp ERR! System Darwin 14.5.0
 ```
@@ -2389,12 +2440,12 @@ Error: Cannot match any routes. URL Segment: 'detail'
 There is now a double 'list/list' in the url.  Changing this:
 ```path: 'list',``` to ```path: '',``` in the module, and for detail.  That's how we had it in the loranthifolia project.  Doesn't help.  Maybe we need this: ```path: 'detail/:id',```.  That didn't help.  Then while offline testing, it seems that since the ids are sent thru with spaces in them.  I think the curator lib replaces spaces with a dash, so if we do that here, it should all work.
 
-We can either create a pipe, or more simply use a function to route the app to the details page and do it programmatically.  Now refresh one's memory as to how that's done. 
+We can either create a pipe, or more simply use a function to route the app to the details page and do it programmatically.  Now refresh one's memory as to how that's done.
 
 ```
 import { Router } from '@angular/router';
 ...
-constructor(private router: Router) { 
+constructor(private router: Router) {
 ...
 navigateAction(item: string) {
   this.router.navigate(['detail/'+itemRoute]);
@@ -2424,7 +2475,7 @@ Also create two models for a list and details that can be used to check the resp
 Since we are using http now we also need to import the HttpClientModule and add it to the imports array in the app.module.ts or we will get a "no provider for" error.
 
 Things have changed a bit in Angular and the first problem here is the difference between using these:
-``` 
+```
 import { Http, Response } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 ```
