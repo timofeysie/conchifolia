@@ -150,6 +150,7 @@ containerObject
   WikiDataObject
     cognitive_bias
     cognitive_biasLabel
+    cognitive_biasDescription
   WikiMediaObject
     wikiMedia_category
     wikiMedia_description
@@ -157,6 +158,23 @@ containerObject
 ```
 
 Previously we just combined these in a flat list.  However, it's probably a good idea to separate out these two schema objects for all the reasons we want to separate concerns, such as cleaner code and testibility.
+
+For now, we need to start with the WikiData list, and just save separate objects that match that scheme in the db to get the ball rolling.  We can refactor into the above set up as we go.
+
+In the end, went with utilities/mongoose.utils.js.  It's not the worst name.  When a better one presents itself, it can be changed.  At least it's in it's own "layer" now.
+
+The new API endpoint will be http://localhost:5000/cognitive_bias/get_wikidata?lang=en
+
+Will have to change that to wikida_changes or something.  We will need a report object which can be filled out and cached on the first call made every 24 hours or something.  That name can stay for now, because eventually the endpoint directory functions will be refactored into this format.
+
+The change report might look like this:
+```
+previous_count
+new_items
+removed_items
+```  
+
+Changes in the descriptions can also be tracked, but that can be done later.  It's not really part of the MVS (minimum viable sprint; I just made that up).
 
 
 ### The config files

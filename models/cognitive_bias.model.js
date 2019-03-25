@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 let CognitiveBiasSchema = new Schema({
     cognitive_bias: {type: String, requred: true, max: 300},
     cognitive_biasLabel: {type: String, required: false, max: 300},
+    cognitive_biasDescription: {type: String, required: false, max: 300},
     lang: {type: String, required: false, max: 50}
 });
 

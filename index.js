@@ -8,6 +8,7 @@ const details = require('./endpoints/details');
 const dataRedirect = require('./endpoints/data-redirect');
 const detailsSimpleRedirect = require('./endpoints/details-simple-redirect');
 const cognitive_bias = require('./routes/cognitive_bias.route');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const allowedExt = [
@@ -35,9 +36,7 @@ const allowCrossDomain = function(req, res, next) {
 };
 
 // Set up mongoose connection
-const mongoose = require('mongoose');
-let mongoDB = process.env.MONGODB_URI;
-mongoose.connect(mongoDB);
+mongoose.connect(process.env.MONGODB_URI);
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
