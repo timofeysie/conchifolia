@@ -4,4 +4,6 @@ const router = express.Router();
 const cognitive_bias_controller = require('../controllers/cognitive_bias.controller');
 
 router.get('/test', cognitive_bias_controller.test);
+router.post('/create', cognitive_bias_controller.bias_create);
+
 module.exports = router;

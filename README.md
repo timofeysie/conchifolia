@@ -107,6 +107,100 @@ cognitive_bias.route.js
 A test endpoint to get things started.
 http://localhost:5000/cognitive_bias/test
 
+Next, given the separation of concerns in the MVC pattern above, we still have an inconsistency between this and the Node best practices of separating Express and the support functions.  Our notes say *Separate the Express definition to at least two files*
+
+First, we want to separate Express from our helper functions.
+
+In the Node [best practices]() guide section 1.2 "Layer your components", is says *keep Express within its boundaries*.  
+
+The example shown for this is:
+*Keep Express in the web layer only.*
+```
+var express = require('Express'),
+    util = require ('util'),
+    router = express.Router(),
+    usersService = require('./usersService'),
+    usersDBAccess = require('./usersDAL'),
+    logger = require('logger');
+router.get('/', (req, res, next) => {
+    const contextObject = {
+        user: req.user,
+            transactionId: UUID.new(),
+            otherProperties: 'some other properties'
+    };
+    new DAL(contextObject);
+    usersDBAccess.getByID(1);
+});
+module.exports = router;
+```
+
+I'm all for adding a new directory called either service or db_access.  The second looks ugly but is more descriptive of what we want.  Or we could create it like this:
+```
+services/cognitive_bias.db_access.js
+```
+
+A service reminds me too much of an Angular service which provides data from an API request.  I know that's a front end thing, but still...
+
+The problem is here we are going to be getting a list of WikiData cognitive bias objects from a query for which will adhere to a schema.  So it will be a list schema, which contains those objects.  The list will then be merged with the WikiMedia results which are parsed and for which we will need to impose our own schema on.
+
+What we really need is a container object which holds those two types of schema objects.  We don't want to repeat data within the objects such as the language used, so it might looks something like this:
+```
+containerObject
+  lang
+  WikiDataObject
+    cognitive_bias
+    cognitive_biasLabel
+  WikiMediaObject
+    wikiMedia_category
+    wikiMedia_description
+    wikiMedia_label
+```
+
+Previously we just combined these in a flat list.  However, it's probably a good idea to separate out these two schema objects for all the reasons we want to separate concerns, such as cleaner code and testibility.
+
+
+### The config files
+
+We need to store keys can be read from file and from environment variable and keep them outside committed code (example packages: rc, nconf and config).  In this case we want to keep the db username and password out off our repo.
+
+Since we are running the app for production on Heroku, we can use their [config vars](https://devcenter.heroku.com/articles/config-vars).  This can be done using the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+
+On a Mac, we can use brew to install this:
+```
+brew tap heroku/brew && brew install heroku  
+```
+
+Available commands for this are:
+```
+heroku config
+heroku config:get <KEY>
+heroku config:set <KEY>=<value>
+```
+
+In the code we could then do this:
+```
+let secrets = process.env.<KEY>;
+```
+
+Since we already have the MONGODB_URI in our code, that will be the key used on the server.  What we need is a local development equivalent that is stored in the project but kep out of the repo (ie: in the .gitignore file).
+
+We could use the Herku command to copy those values also.
+```
+heroku config:get MONGODB_URI -s  >> .env
+```
+
+Instead of using fs to read the file and manually get the var, we will use an npm package to save time:
+```
+npm install dotenv --save
+```
+
+Then all we need to do is this:
+```
+require('dotenv').config();
+```
+
+Now anything we put in our .env file will be added to the Node process.env vars and we are good to go.
+
 
 ### Fixing the tests
 
@@ -285,7 +379,6 @@ const user = await User
 //<-- After that we can use `user` variable, it's not empty
 ```
 [[source](https://codeburst.io/node-express-async-code-and-error-handling-121b1f0e44ba)]
-```
 
 
 

@@ -52,3 +52,4 @@ my-dream-app/typings
 my-dream-app/.DS_Store
 my-dream-app/Thumbs.db
 
+.env
