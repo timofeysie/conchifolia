@@ -15,15 +15,22 @@ exports.bias_create = function (item) {
     });
 };
 
-exports.find_bias = function (item) {
-    CognitiveBias.find({cognitive_bias: item.cognitive_bias}, function (err, found) {
+exports.find_bias = async function (item) {
+    await CognitiveBias.find({cognitive_bias: item.cognitive_bias}, function (err, found) {
         if (err) {
           console.log('error',err.message);
           //return next(err);
-          return null;
+          return 'not found';
         } else {
           console.log('found',item.cognitive_biasLabel);
-          return 'found'+item.cognitive_biasLabel;
+          return 'found';
         }
     })
 };
+
+exports.count_biases = async function() {
+  await CognitiveBias.count({}).then(number => {
+      console.log(JSON.stringify({number}));
+      return number
+  });
+}

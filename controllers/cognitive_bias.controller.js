@@ -7,7 +7,7 @@ exports.test = function (req, res) {
     res.send('Acknowledge the test controller');
 };
 
-exports.get_wikidata = exports.product_create = function (req, res) {
+exports.get_wikidata = function (req, res) {
   const lang = req.params.lang;
   const wikiUrl = curator.createWikiDataUrl(lang);
     console.log('wikiUrl',wikiUrl);
@@ -24,9 +24,11 @@ exports.get_wikidata = exports.product_create = function (req, res) {
         }
         let rawData = '';
         wikiRes.on('data', (chunk) => { rawData += chunk; });
-        wikiRes.on('end', () => {
+        wikiRes.on('end', async () => {
             let result = JSON.parse(rawData)['results']['bindings'];
-            let resultArray = [];
+            let previous_number = await mongoose_utils.count_biases();
+            let found = [];
+            let not_found = [];
             for (let i = 0; i < result.length; i++) {
               let desc = result[i]['cognitive_biasDescription'];
               if (typeof desc !== 'undefined') { desc = result[i]['cognitive_biasDescription']['value']; }
@@ -36,10 +38,19 @@ exports.get_wikidata = exports.product_create = function (req, res) {
                 cognitive_biasDescription: desc,
                 lang: result[i]['cognitive_biasLabel']['xml:lang'],
               }
-              let report = mongoose_utils.find_bias(item);
-              resultArray.push(report);
+              let report = await mongoose_utils.find_bias(item);
+              if (report === 'found') {
+                found.push(report);
+              } else if (report === 'not found') {
+                not_found.push(report);
+                // need to create a new entry here
+              }
             }
-            let finalResult = { list: resultArray }
+            let finalResult = {
+              "found": found.length,
+              "not_found": not_found.length,
+              "previous_number": previous_number
+            }
             res.status(200).json(finalResult);
         });
     }).on('error', (e) => {

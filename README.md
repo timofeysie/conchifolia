@@ -177,6 +177,39 @@ removed_items
 Changes in the descriptions can also be tracked, but that can be done later.  It's not really part of the MVS (minimum viable sprint; I just made that up).
 
 
+### {"found":0,"not_found":0}
+
+Having some trouble getting the result from the mongoose.utils function.  The logging from the function shows that it's getting the correct information:
+```
+found Hawthorne effect
+found status quo bias
+found magical thinking
+...
+```
+
+But then when it's time to put the results together, this code
+```
+let finalResult = {
+  "found": found.length,
+  "not_found": not_found.length,
+  "previous_number": previous_number
+}
+```
+
+Results in this:
+```
+{"found":0,"not_found":0}
+```
+
+Using async await on the functions seems to be failing.  We have this call:
+```
+let report = await mongoose_utils.find_bias(item);
+```
+
+But despite the await, it's not waiting.  However, this is a really slow function.  Querying MLab for every item on the list is really inefficient.  It's time to get back to the original idea of storing the entire list as one entity.  There will be a WikiData entity, and a WikiMedia entity to keep the shcemas separate.  The front end has been responsible for merging the two lists previously.  But here, we are looking for changes in the list, so without trying to tackle that now, each list will track changes separately.
+
+
+
 ### The config files
 
 We need to store keys can be read from file and from environment variable and keep them outside committed code (example packages: rc, nconf and config).  In this case we want to keep the db username and password out off our repo.
