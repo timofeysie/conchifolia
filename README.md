@@ -60,6 +60,22 @@ The [component library](https://github.com/timofeysie/socius) is underway and wi
 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
+### API endpoints
+
+Work in progress for a properly layered set of APIs that include Mongo records to track changes over time:
+```
+/cognitive_bias/get_wikidata:lang
+```
+
+Currently used APIs to get WikiData & WikiMedia lists and detail views:
+```
+/api/list/:lang
+/api/wiki-list/:id/:lang
+/api/data/query/:label/:lang
+/api/data/:id/:lang
+/api/detail/:id/:lang/:leaveCaseAlone
+```
+
 
 ## Looking for changes in the list
 
@@ -157,7 +173,7 @@ containerObject
     wikiMedia_label
 ```
 
-Previously we just combined these in a flat list.  However, it's probably a good idea to separate out these two schema objects for all the reasons we want to separate concerns, such as cleaner code and testibility.
+Previously we just combined these in a flat list.  However, it's probably a good idea to separate out these two schema objects for all the reasons we want to separate concerns, such as cleaner code and testability.
 
 For now, we need to start with the WikiData list, and just save separate objects that match that scheme in the db to get the ball rolling.  We can refactor into the above set up as we go.
 
@@ -207,6 +223,29 @@ let report = await mongoose_utils.find_bias(item);
 ```
 
 But despite the await, it's not waiting.  However, this is a really slow function.  Querying MLab for every item on the list is really inefficient.  It's time to get back to the original idea of storing the entire list as one entity.  There will be a WikiData entity, and a WikiMedia entity to keep the shcemas separate.  The front end has been responsible for merging the two lists previously.  But here, we are looking for changes in the list, so without trying to tackle that now, each list will track changes separately.
+
+Another reason for not storing each item separately is that we want to be able to support other subjects in the future.  In this case we would need a more involved data model that included categories.  If we just store each list as a whole table, then each list is it's own category out of the box.
+
+The issue then, is do we need a data model for the list?  We really want to send a complete list of merged WikiData and WikiMedia items to the client, but there are several cons to doing this.
+
+One is that if the app gets a lot of hits, someone will have to pay for the hosting and data usage of the server.
+
+The pros of keeping all the work on the client is that there will be no cost.  Instead of letting each user separately create their own content, a better solution is to have someone (myself) fill out the WikiData descriptions so that the user wont have to create their own.  Then create a UX/UI that allows for more than one or two lines.  
+
+There are however good reasons to let a serious user create their own content, if it will become a serious study app, and someone wants to learn lists of people that include non-standard names, then they should be able to do that.  This could always be a pro paid for feature.
+
+Or we could push the responsibility onto the user to create their content on Wikipedia so that it can be used in the app.  That is the direction we're heading in at this point.  Focus on one thing in this app, as it's a side project, adding too much to it will doom the whole endeavour.
+
+Glad we had this talk, but what are the actionable items here?
+
+Store WikiData and WikiMedia results separately?  Look for changes in a loop?  Loops are the new goto statements.  What's the functional approach to diffing to JSON results?  That's an actionable item!
+
+Next, do we let the front end combine the lists?  Do we scrap the whole server and create a library the relies on a proxy only to push the processing responsibility on the client?  It's worth giving that a try.  For example, the React Native app had no issues with CORS.  Since we aren't doing hybrid mobile work anymore, just a plain React/Angular app that uses Socius as the component library built with Stencil (so Ionic can stay relevant after all!) and Curator as the JavaSript utility code library would be the leanest approach.
+
+The most useful approach would also include using Redux in both frameworks to highlight the differences in their usage.  Anything that can be framework agnostic and shared between the two frameworks should be shared.  We have Tiwanaku and Vilacocha already underway...
+
+But wait, what does this mean for diffing the lists?  We will have to use a PWA approach to be able to save the previous lists in the browser local storage and do all the work on the client.  OK then.  Make it so.
+
 
 
 
