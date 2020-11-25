@@ -1,16 +1,18 @@
 # Conchifolia
 
-A NodeJS server app to query WikiData and parse WikiMedia for extra content.
+A NodeJS server app to query WikiData and parse WikiMedia for extra content and provide a CORS freindly API to consume the results.
 
-The referecne implementation app showing the results is available at [this location](https://radiant-springs-38893.herokuapp.com/).
+A reference implementation app showing the results is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
 The link above points to an Angular version of the project which has a functionally similar implementations written in Ionic, React Native, React.  The other client projects are listed below.
 
-[React/Redux version](https://github.com/timofeysie/viracocha)
+[React Redux version](https://github.com/timofeysie/viracocha)
 
 [React Native version](https://github.com/timofeysie/teretifolia)
 
-[Ionic 4 version](https://github.com/timofeysie/loranthifolia)
+[Ionic React version](https://github.com/timofeysie/xexenes)
+
+[Ionic Angular version](https://github.com/timofeysie/loranthifolia)
 
 The Angular version is built into the views directory.  We might do the same with the React app just for development convenience.  But really the client should be a separate project.  Node should just be for handling API requests and getting data from WikiData and a MondoDb.
 
@@ -499,7 +501,8 @@ Anyhow, this method works, but we get a large *Part of a series on
 Psychology* preamble, so the next task is to get rid of that.  I think we did that in Loranthifolia, which also needs our backup title functionality, so its back there for a bit.
 
 Even after this however, we have the *Form function attribution bias* re-direct failing.  Here is the output from the console while using the deployed Heroku app:
-```
+
+```txt
 label /api/data/query/Form function attribution bias
 /en
 zone.js:2969 GET https://radiant-springs-38893.herokuapp.com/api/data/query/Form%20function%20attribution%20bias%0A/en 503 (Service Unavailable)
@@ -2921,11 +2924,12 @@ Your app should now be running on [localhost:5000](http://localhost:5000/).
 
 ## Deploying to Heroku (#Deploying-to-Heroku)
 
-```
+```txt
 $ heroku create
 $ git push heroku master
 $ heroku open
 ```
+
 or
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
