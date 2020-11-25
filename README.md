@@ -1,30 +1,22 @@
 # Conchifolia
 
-
 A NodeJS server app to query WikiData and parse WikiMedia for extra content.
 
 The referecne implementation app showing the results is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
 The link above points to an Angular version of the project which has a functionally similar implementations written in Ionic, React Native, React.  The other client projects are listed below.
 
-
 [React/Redux version](https://github.com/timofeysie/viracocha)
-
 
 [React Native version](https://github.com/timofeysie/teretifolia)
 
-
 [Ionic 4 version](https://github.com/timofeysie/loranthifolia)
-
 
 The Angular version is built into the views directory.  We might do the same with the React app just for development convenience.  But really the client should be a separate project.  Node should just be for handling API requests and getting data from WikiData and a MondoDb.
 
 All of these apps rely on the [Curator](https://github.com/timofeysie/curator), an [npm library](https://npms.io/search?q=art-curator) that provides shared tools for working with WikiData and WikiMedia content.
 
 The [component library](https://github.com/timofeysie/socius) is underway and will be used by the various clients listed above.  It is written in [StencilJS](https://stenciljs.com/) which has a lot in common with React, but uses the compiler to generate standards-compliant web components which can be used in any front-end project.
-
-
-#
 
 ## Table of Contents
 
@@ -52,30 +44,37 @@ The [component library](https://github.com/timofeysie/socius) is underway and wi
 1. [Deploying to Heroku](#deploying-to-heroku)
 1. [Documentation](#documentation)
 
-#
-
-
-
 ## Setup and Workflow
 
 Start the server with ```npm start```.  Build the Angular project served in the app directory using the ```ng build``` command.  To install this app, ```npm i``` must be run in each of these locations.
 
 ### API endpoints
 
-Work in progress for a properly layered set of APIs that include Mongo records to track changes over time:
+```url
+api/details/:lang/:title
 ```
+
+Example:
+
+```url
+http://localhost:5000/api/details/en/Albert%20Einstein
+```
+
+Previous work in progress for a properly layered set of APIs that include Mongo records to track changes over time:
+
+```url
 /cognitive_bias/get_wikidata:lang
 ```
 
 Currently used APIs to get WikiData & WikiMedia lists and detail views:
-```
+
+```url
 /api/list/:lang
 /api/wiki-list/:id/:lang
 /api/data/query/:label/:lang
 /api/data/:id/:lang
 /api/detail/:id/:lang/:leaveCaseAlone
 ```
-
 
 ## Looking for changes in the list
 
