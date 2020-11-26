@@ -4,9 +4,11 @@ A NodeJS server app to query WikiData and parse WikiMedia for extra content and 
 
 A reference implementation app showing the results is available at [this location](https://radiant-springs-38893.herokuapp.com/).
 
-The link above points to an Angular version of the project which has a functionally similar implementations written in Ionic, React Native, React.  The other client projects are listed below.
+The link above points to an Angular version of the project which has a functionally similar implementations written in Ionic, React Native, React.  The other client projects implemented `in various frameworks are listed below.
 
 [React Redux version](https://github.com/timofeysie/viracocha)
+
+[Electron Angular Observable Store version](https://github.com/timofeysie/khipu)
 
 [React Native version](https://github.com/timofeysie/teretifolia)
 
