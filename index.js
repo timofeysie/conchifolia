@@ -72,7 +72,8 @@ express()
           rawData += chunk;
         });
         wikiRes.on("end", () => {
-          res.status(200).json(rawData);
+          let result = JSON.parse(rawData);
+          res.status(200).json(result);
         });
       })
       .on("error", (e) => {
