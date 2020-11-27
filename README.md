@@ -80,6 +80,36 @@ Currently used APIs to get WikiData & WikiMedia lists and detail views:
 /api/detail/:id/:lang/:leaveCaseAlone
 ```
 
+## Getting a Wikipedia description
+
+Since this app is being used to get descriptions for the Khipu app, this is a section to detail some of the things tried.
+
+This uri doesn't give us the long description:
+
+```txt
+https://${lang}.wikipedia.org/w/api.php?
+format=json&
+action=query&
+prop=pageimages%7Cpageterms&
+titles=${title}&
+formatversion=2`
+```
+
+This uri does:
+
+```txt
+https://${lang}.wikipedia.org/w/api.php?
+format=json&
+action=query&
+prop=extracts&
+exintro&
+explaintext&
+redirects=1&
+titles=${title}`;
+```
+
+To try it out locally, run the server ```node index.js``` and go to this url: http://localhost:5000/api/details/en/actor-observer_bias
+
 ## Looking for changes in the list
 
 Since this project started when there were only 192 biases on the list, we now have 198.  The number went down to 191 at one point, and someone had to compare the lists manually to see that the bystander effect was no longer now.

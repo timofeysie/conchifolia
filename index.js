@@ -53,14 +53,16 @@ express()
     const API = 'WIKIPEDIA_DETAILS';
     const lang = req.params.lang;
     const title = req.params.title;
-    const detailUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&titles=${title}&formatversion=2`;
-    console.log(API, detailUrl);
+    const wikiUrl = `https://${lang}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}`;
+    console.log(API, wikiUrl);
     https
-      .get(detailUrl, (wikiRes) => {
+      .get(wikiUrl, (wikiRes) => {
         const statusCode = wikiRes.statusCode;
         let error;
         if (statusCode !== 200) {
-          error = new Error(API+": Request Failed.\n" + `Status Code: ${statusCode}`);
+          error = new Error(
+            API + ": Request Failed.\n" + `Status Code: ${statusCode}`
+          );
         }
         if (error) {
           console.error(error.message);
