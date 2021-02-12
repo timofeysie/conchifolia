@@ -56,12 +56,14 @@ Start the server with ```npm start```.  Build the Angular project served in the 
 
 ```url
 api/details/:lang/:title
+api/wiki-list/:name/:section/:lang
 ```
 
 Example:
 
 ```url
 http://localhost:5000/api/details/en/Albert%20Einstein
+http://localhost:5000/api/wiki-list/fallacies/16/en
 ```
 
 Previous work in progress for a properly layered set of APIs that include Mongo records to track changes over time:
@@ -279,9 +281,6 @@ The most useful approach would also include using Redux in both frameworks to hi
 
 But wait, what does this mean for diffing the lists?  We will have to use a PWA approach to be able to save the previous lists in the browser local storage and do all the work on the client.  OK then.  Make it so.
 
-
-
-
 ### The config files
 
 We need to store keys can be read from file and from environment variable and keep them outside committed code (example packages: rc, nconf and config).  In this case we want to keep the db username and password out off our repo.
@@ -381,12 +380,11 @@ On top of this you could use [Nrwl](https://nrwl.io/) which is a great implement
 
 Cypress is an e2e test runner, Jest we all know, and Prettier is an opinionated code formatter.
 
-We chose the AirBnB linting with our [Strumosa-pipe](https://github.com/timofeysie/strumosa-pipe) which is an Azure DevOps CI/CD project.  That is definately a great setup, but limited by their outdated Docker images.  It would be good to create a similarly functioning CI/CD pipline using Heroku tools here.  On the job front, it's great to have projects that use Azure/AWS during an interview, but when a project isn't making any money, it shouldn't be costing any either.  So far the Azure pipeline is only costing cents a month, but that will change in the future when this project is advertised.  Another reason to go with the free tools for now.
+We chose the AirBnB linting with our [Strumosa-pipe](https://github.com/timofeysie/strumosa-pipe) which is an Azure DevOps CI/CD project.  That is definitely a great setup, but limited by their outdated Docker images.  It would be good to create a similarly functioning CI/CD pipeline using Heroku tools here.  On the job front, it's great to have projects that use Azure/AWS during an interview, but when a project isn't making any money, it shouldn't be costing any either.  So far the Azure pipeline is only costing cents a month, but that will change in the future when this project is advertised.  Another reason to go with the free tools for now.
 
 Getting back to best practices, the Nrwl approach was developed for Angular enterprise projects.  Since we are focusing on React/Redux right now, it's not the best way to go.  Also, when trying out the official [MERN stack](http://mern.io/), it's clear that when you don't know everything that a scaffolding CLI is creating for you, it's best to roll your own so that you understand everything that's going on.
 
-Nrwl makes a good point in it's React docs which we need to take note of.  I will repeat it here for reference:
-*Creating a new shared library can take from several hours to even weeks: a new repo needs to be provisioned, CI needs to be set up, etc.. In an Nx Workspace it takes minutes.
+Nrwl makes a good point in it's React docs which we need to take note of.  I will repeat it here for reference: *Creating a new shared library can take from several hours to even weeks: a new repo needs to be provisioned, CI needs to be set up, etc.. In an Nx Workspace it takes minutes.*
 
 You can share React components between multiple React applications. You can also share web components between React and Angular applications. You can even share code between the backend and the frontend. All can be done without any unnecessary ceremony.
 
@@ -394,7 +392,11 @@ Nx can verify that a code change to a reusable library does not break any applic
 
 If this ever becomes a commercially viable thing, it's really something to think about.  For now we will roll our own.
 
+The downside is the added complexity Nx brings.  It is after all a company that has premium services, and if you have issues with it, you could always end up stuck in older versions with growing technical debt as breaking changes come.
 
+In the end, this is mainly a proxy server, and using cloud services, lambdas or functions to reduce all the deployment and development overhead.  Also, rather than send the whole response to the client to parse, or if we have a separate parsing api, we are sending the response back again.  It may as well be done as an integrated service, so that the cloud function proxies the wikimedia call, parses the result and just sends a list with labe/definition pairs.
+
+For now, this server app is being used, but it's not the best approach.  I am currently trying out IBM Cloud, an always free tier.  Google has functions behind a pay threshold.  It would be good to use firebase, as we could share authentication, but if IBM is free, then authentication doesn't really matter at this point.
 
 ### Code structure
 
@@ -2176,12 +2178,14 @@ And then pass the lang arg on to the curator calls.  Then, to test it out, in th
 ```
 
 We can add the arg like this:
-```
+
+```js
 return this.httpClient.get<DetailModel>(this.backendDetailUrl+'/'+detailId+'/'+this.lang).pipe(data => data);
-```      
+```
 
 Next, the problems.  Our list looks like this:
-```
+
+```txt
 Q18570
 Q29598
 Q136783
@@ -2191,12 +2195,14 @@ Q136783
 Can fix that with encodings.  Or can we?  Those look more like Wikipedia item codes...
 
 It gets worse when we look at the url provided us from the curator for this page:
-```
+
+```uri
 https://kr.wikipedia.org/w/api.php?action=parse&section=1&prop=text&format=json&page=List_of_cognitive_biases
 ```
 
 The response being:
-```
+
+```json
 {"error":{"code":"missingtitle","info":"The page you specified doesn't exist.","*":"See https://kr.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/mailman/listinfo/mediawiki-api-announce&gt; for notice of API deprecations and breaking changes."},"servedby":"mw1344"}
 ```
 
@@ -2205,32 +2211,34 @@ The fact that there is no list of cognitive bias in Korean on Wikipedia should h
 But being Korean is the only other language we wanted to test, it's a bit of a disappointment.  The encoding for Korean is kr, but changing [the url](https://kr.wikipedia.org/wiki/List_of_cognitive_biases) in the browser from en to kr points to a closed page that shows what it was a Kanuri page which is a language in Northern Nigeria.  So it's actually ko!
 
 The first bias on the list, Ambiguity effect lists nine languages:
-```
-bn	এম্বিগিউইটি প্রভাব
-cs	Ambiguity effect
-en	Ambiguity effect
-fa	اثر فرار از ابهام
-fr	Effet d'ambiguité
-nl	Ambiguïteitseffect
-pt	Efeito de ambiguidade
-ru	Эффект неоднозначности
-uk	Ефект неоднозначності
+
+```txt
+bn এম্বিগিউইটি প্রভাব
+cs Ambiguity effect
+en Ambiguity effect
+fa اثر فرار از ابهام
+fr Effet d'ambiguité
+nl Ambiguïteitseffect
+pt Efeito de ambiguidade
+ru Эффект неоднозначности
+uk Ефект неоднозначності
 ```
 
 The main list of biases supports 12:
-```
-az	Təhrif
-ca	Llista de biaixos cognitius
-de	Liste von kognitiven Verzerrungen
-en	List of cognitive biases
-es	Anexo:Sesgos cognitivos
-fa	فهرست سوگیری‌های شناختی
-pl	Lista błędów poznawczych
-pt	Lista de vieses cognitivos
-ru	Список когнитивных искажений
-th	รายชื่อความเอนเอียงทางประชาน
-uk	Перелік когнітивних упереджень
-zh	認知偏誤列表
+
+```txt
+az Təhrif
+ca Llista de biaixos cognitius
+de Liste von kognitiven Verzerrungen
+en List of cognitive biases
+es Anexo:Sesgos cognitivos
+fa فهرست سوگیری‌های شناختی
+pl Lista błędów poznawczych
+pt Lista de vieses cognitivos
+ru Список когнитивных искажений
+th รายชื่อความเอนเอียงทางประชาน
+uk Перелік когнітивних упереджень
+zh 認知偏誤列表
 ```
 
 So this would be the main problem with even trying to support one setting for languages.  The full list would lead to dead ends for a lot of languages.

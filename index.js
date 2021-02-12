@@ -50,7 +50,7 @@ express()
   .set("view engine", "ejs")
   .use("/cognitive_bias", cognitive_bias)
   .get("/api/details/:lang/:title", function (req, res) {
-    const API = 'WIKIPEDIA_DETAILS';
+    const API = "WIKIPEDIA_DETAILS";
     const lang = req.params.lang;
     const title = req.params.title;
     const wikiUrl = `https://${lang}.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=${title}`;
@@ -131,6 +131,114 @@ express()
           res.status(e.status).send(e.message);
         }
       });
+  })
+  .get("/api/wiki-list/:id/:lang", function (req, res) {
+    if (req.method === "OPTIONS") {
+      var headers = {};
+      // IE8 does not allow domains to be specified, just the *
+      //headers["Access-Control-Allow-Origin"] = req.headers.origin;
+      headers["Access-Control-Allow-Origin"] = "*";
+      headers["Access-Control-Allow-Methods"] =
+        "POST, GET, PUT, DELETE, OPTIONS";
+      headers["Access-Control-Allow-Credentials"] = true;
+      headers["Access-Control-Max-Age"] = "86400"; // 24 hours
+      headers["Access-Control-Allow-Headers"] =
+        "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      res.writeHead(200, headers);
+      res.end();
+    } else {
+      const wikiMediaUrl = curator.createWikiMediaUrl(
+        req.params.id,
+        req.params.lang
+      );
+      console.log("wikiMediaUrl", wikiMediaUrl);
+      let newUrl = wikiMediaUrl.replace("http", "https");
+      https
+        .get(newUrl, (wikiRes) => {
+          const statusCode = wikiRes.statusCode;
+          let error;
+          if (statusCode !== 200) {
+            error = new Error(
+              "Request Failed.\n" + `Status Code: ${statusCode}`
+            );
+          }
+          if (error) {
+            console.error(error.message);
+            wikiRes.resume();
+            return;
+          }
+          let rawData = "";
+          wikiRes.on("data", (chunk) => {
+            rawData += chunk;
+          });
+          wikiRes.on("end", () => {
+            res.status(200).send(rawData);
+          });
+        })
+        .on("error", (e) => {
+          console.error(`Got error: ${e.message}`);
+          if (typeof e.status !== "undefined") {
+            res.status(e.status).send(e.message);
+          }
+        });
+    }
+  })
+  .get("/api/wiki-list/:name/:id/:lang", function (req, res) {
+    if (req.method === "OPTIONS") {
+      var headers = {};
+      // IE8 does not allow domains to be specified, just the *
+      //headers["Access-Control-Allow-Origin"] = req.headers.origin;
+      headers["Access-Control-Allow-Origin"] = "*";
+      headers["Access-Control-Allow-Methods"] =
+        "POST, GET, PUT, DELETE, OPTIONS";
+      headers["Access-Control-Allow-Credentials"] = true;
+      headers["Access-Control-Max-Age"] = "86400"; // 24 hours
+      headers["Access-Control-Allow-Headers"] =
+        "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      res.writeHead(200, headers);
+      res.end();
+    } else {
+      const wikiMediaUrl = curator.createWikiMediaUrlWithName(
+        req.params.name,
+        req.params.id,
+        req.params.lang
+      );
+      console.log("wikiMediaUrl", wikiMediaUrl);
+      const section = req.params.id;
+      let newUrl = wikiMediaUrl.replace("http", "https");
+      // TODO: move this into curator
+      if (section === "all") {
+        newUrl = newUrl.replace("&section=all", "");
+      }
+      https
+        .get(newUrl, (wikiRes) => {
+          const statusCode = wikiRes.statusCode;
+          let error;
+          if (statusCode !== 200) {
+            error = new Error(
+              "Request Failed.\n" + `Status Code: ${statusCode}`
+            );
+          }
+          if (error) {
+            console.error(error.message);
+            wikiRes.resume();
+            return;
+          }
+          let rawData = "";
+          wikiRes.on("data", (chunk) => {
+            rawData += chunk;
+          });
+          wikiRes.on("end", () => {
+            res.status(200).send(rawData);
+          });
+        })
+        .on("error", (e) => {
+          console.error(`Got error: ${e.message}`);
+          if (typeof e.status !== "undefined") {
+            res.status(e.status).send(e.message);
+          }
+        });
+    }
   })
   .get("/api/wiki-list/:id/:lang", function (req, res) {
     if (req.method === "OPTIONS") {
