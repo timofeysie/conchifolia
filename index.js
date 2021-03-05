@@ -183,7 +183,7 @@ express()
         });
     }
   })
-  .get("/api/wiki-list/:name/:id/:lang", function (req, res) {
+  .get("/api/wiki-list/:name/:section/:lang", function (req, res) {
     if (req.method === "OPTIONS") {
       var headers = {};
       // IE8 does not allow domains to be specified, just the *
@@ -200,14 +200,13 @@ express()
     } else {
       const wikiMediaUrl = curator.createWikiMediaUrlWithName(
         req.params.name,
-        req.params.id,
+        req.params.section,
         req.params.lang
       );
       console.log("wikiMediaUrl", wikiMediaUrl);
-      const section = req.params.id;
       let newUrl = wikiMediaUrl.replace("http", "https");
       // TODO: move this into curator
-      if (section === "all") {
+      if (req.params.section === "all") {
         newUrl = newUrl.replace("&section=all", "");
       }
       https
